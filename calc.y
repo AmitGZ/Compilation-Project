@@ -4,23 +4,21 @@
 #include <stdbool.h>
 #include "header.h"
 
+// Functions TODO move to separate .h .c files
 void insertIdToTable(char* id, char type, bool isConst){}
 bool isAssignValid(char kind1, char kind2) { return kind1 == kind2; }
-
 extern int yylex();
 extern int yyparse();
-
 void yyerror(const char* s);
+
 %}
 
 %union {
-  // all the types
   int ival;
   char* sval;
   char kind;
   abc number;
 }
-
 
 /* tokens & type of gramer variables */
 /* Declare the TOKENS */
@@ -94,7 +92,7 @@ type            :   INT { $$ = 'i'}
 cdecl           :   FINAL type ID ASSIGNOP NUM ';' cdecl {     
                       char my_kind = $2;
                       abc my_num = $5;                 
-                      if(!isAssignValid(my_kind, my_num.num_kind)) // TODO - Tables are LinkedList(head is the current table)
+                      if(!isAssignValid(my_kind, my_num._type)) // TODO - Tables are LinkedList(head is the current table)
                       {
                         /*error*/
                       }

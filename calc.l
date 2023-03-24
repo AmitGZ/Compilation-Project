@@ -1,13 +1,11 @@
 %option noyywrap
 
 %{
-
 #include "header.h"
-
-#define YY_DECL int yylex()
-
+//#define YY_DECL int yylex()
 #include "calc.tab.h"
 
+// Global variables
 int line = 1;
 %}
 
@@ -43,43 +41,45 @@ SPACES [ \t\n]
 
 \"({LETTER}|\.|,|\!|\?|{SPACES}|{DIGIT})*\" {
 	fprintf(yyout,"%s",yytext);
-	yylval.sval = strdup(yytext); return SENTENCE;
+	yylval.sval = strdup(yytext);
+	return SENTENCE;
 	}
 
 {LETTER}({LETTER}|{DIGIT}){0,8} {
 	fprintf(yyout," ID(%s)",yytext);
-	yylval.sval = strdup(yytext); return ID;
+	yylval.sval = strdup(yytext);
+	return ID;
 	}
 
 {DIGIT}+ 	{
 	fprintf(yyout," %s",yytext); 
-	//yylval.number.sval = strdup(yytext);
-	//yylval.number.num_kind = 'i'; 
+	yylval.number._name = strdup(yytext);
+	yylval.number._type = INTEGER; 
 	return NUM;
 	}
 
 {DIGIT}+\.{DIGIT}* {
 	fprintf(yyout," NUM(%s)",yytext);
-	//yylval.number.sval = strdup(yytext);
-	//yylval.number.num_kind = 'f'; 
+	yylval.number._name = strdup(yytext);
+	yylval.number._type = FLOATING; 
 	return NUM;
 	}
 
 (==|<>|<=|>=|<|>) {
 	fprintf(yyout," %s",yytext);
-	//yylval.op.comp = strdup(yytext);
+//	yylval.op.comp = strdup(yytext);
 	return RELOP;
 	}
 
 (\+|-) {
 	fprintf(yyout," %s",yytext);
-	//yylval.op.add = strdup(yytext);
+//	yylval.op.add = strdup(yytext);
 	return ADDOP;
 	}
 
 (\*|\/) {
 	fprintf(yyout,"%s",yytext);
-	//yylval.op.mul = strdup(yytext);
+//	yylval.op.mul = strdup(yytext);
 	return MULOP;
 	}
 

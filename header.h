@@ -1,9 +1,9 @@
 #pragma once
+typedef enum {INTEGER, FLOATING, STR} Type;
+
 struct abc
 {
-    char* sval;
-    char num_kind;
+    Type _type;
+    char* _name;
 };
 typedef struct abc abc;
-
-enum {INTEGER, FLOATING, STR} vtype;

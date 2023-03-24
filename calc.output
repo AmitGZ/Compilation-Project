@@ -1,0 +1,1415 @@
+Terminals which are not used
+
+   FLOAT
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: PROGRAM ID START declerations stmtlist END
+
+    2 declerations: DECL declarlist cdecl
+    3             | /* empty */
+
+    4 declarlist: declarlist decl
+    5           | decl
+
+    6 decl: type ':' list
+
+    7 list: ID ',' list
+    8     | ID
+
+    9 type: INT
+   10     | REAL
+   11     | STRING
+
+   12 cdecl: FINAL type ID ASSIGNOP NUM ';' cdecl
+   13      | /* empty */
+
+   14 stmtlist: stmtlist stmt
+   15         | /* empty */
+
+   16 stmt: assignment_stmt
+   17     | ID ASSIGNOP SENTENCE ';'
+   18     | control_stmt
+   19     | in_stmt
+   20     | out_stmt
+   21     | stmt_block
+
+   22 out_stmt: OUT '(' expression ')' ';'
+   23         | OUT '(' SENTENCE ')' ';'
+
+   24 in_stmt: IN '(' ID ')' ';'
+
+   25 assignment_stmt: ID ASSIGNOP expression ';'
+
+   26 control_stmt: IF ')' boolexpr '(' THEN stmt ELSE stmt
+   27             | WHILE ')' boolexpr '(' stmt_block
+   28             | FOREACH ID ASSIGNOP NUM TILL NUM WITH step stmt
+   29             | FOREACH ID ASSIGNOP NUM TILL ID WITH step stmt
+   30             | switch
+
+   31 stmt_block: '{' stmtlist '}'
+
+   32 switch: SWITCH '(' ID ')' '{' cases '}'
+
+   33 cases: CASE NUM ':' stmtlist BREAK ';' cases
+   34      | DEFAULT ':' stmtlist
+
+   35 step: ID ASSIGNOP ID ADDOP NUM
+   36     | ID ASSIGNOP ID MULOP NUM
+
+   37 boolexpr: boolexpr OROP boolterm
+   38         | boolterm
+
+   39 boolterm: boolterm ANDOP boolfactor
+   40         | boolfactor
+
+   41 boolfactor: '!' '(' boolfactor ')'
+   42           | expression RELOP expression
+
+   43 expression: expression ADDOP term
+   44           | term
+
+   45 term: term MULOP factor
+   46     | factor
+
+   47 factor: '(' expression ')'
+   48       | ID
+   49       | NUM
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'!' (33) 41
+'(' (40) 22 23 24 26 27 32 41 47
+')' (41) 22 23 24 26 27 32 41 47
+',' (44) 7
+':' (58) 6 33 34
+';' (59) 12 17 22 23 24 25 33
+'{' (123) 31 32
+'}' (125) 31 32
+error (256)
+BREAK (258) 33
+CASE (259) 33
+FINAL (260) 12
+DECL (261) 2
+DEFAULT (262) 34
+ELSE (263) 26
+END (264) 1
+FLOAT (265)
+FOREACH (266) 28 29
+IF (267) 26
+IN (268) 24
+INT (269) 9
+OUT (270) 22 23
+PROGRAM (271) 1
+REAL (272) 10
+START (273) 1
+STRING (274) 11
+SWITCH (275) 32
+THEN (276) 26
+TILL (277) 28 29
+WHILE (278) 27
+WITH (279) 28 29
+SENTENCE (280) 17 23
+ID (281) 1 7 8 12 17 24 25 28 29 32 35 36 48
+NUM (282) 12 28 29 33 35 36 49
+RELOP (283) 42
+ADDOP (284) 35 43
+MULOP (285) 36 45
+ASSIGNOP (286) 12 17 25 28 29 35 36
+OROP (287) 37
+ANDOP (288) 39
+
+
+Nonterminals, with rules where they appear
+
+$accept (42)
+    on left: 0
+program (43)
+    on left: 1, on right: 0
+declerations (44)
+    on left: 2 3, on right: 1
+declarlist (45)
+    on left: 4 5, on right: 2 4
+decl (46)
+    on left: 6, on right: 4 5
+list (47)
+    on left: 7 8, on right: 6 7
+type (48)
+    on left: 9 10 11, on right: 6 12
+cdecl (49)
+    on left: 12 13, on right: 2 12
+stmtlist (50)
+    on left: 14 15, on right: 1 14 31 33 34
+stmt (51)
+    on left: 16 17 18 19 20 21, on right: 14 26 28 29
+out_stmt (52)
+    on left: 22 23, on right: 20
+in_stmt (53)
+    on left: 24, on right: 19
+assignment_stmt (54)
+    on left: 25, on right: 16
+control_stmt (55)
+    on left: 26 27 28 29 30, on right: 18
+stmt_block (56)
+    on left: 31, on right: 21 27
+switch (57)
+    on left: 32, on right: 30
+cases (58)
+    on left: 33 34, on right: 32 33
+step (59)
+    on left: 35 36, on right: 28 29
+boolexpr (60)
+    on left: 37 38, on right: 26 27 37
+boolterm (61)
+    on left: 39 40, on right: 37 38 39
+boolfactor (62)
+    on left: 41 42, on right: 39 40 41
+expression (63)
+    on left: 43 44, on right: 22 25 42 43 47
+term (64)
+    on left: 45 46, on right: 43 44 45
+factor (65)
+    on left: 47 48 49, on right: 45 46
+
+
+state 0
+
+    0 $accept: . program $end
+
+    PROGRAM  shift, and go to state 1
+
+    program  go to state 2
+
+
+state 1
+
+    1 program: PROGRAM . ID START declerations stmtlist END
+
+    ID  shift, and go to state 3
+
+
+state 2
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 4
+
+
+state 3
+
+    1 program: PROGRAM ID . START declerations stmtlist END
+
+    START  shift, and go to state 5
+
+
+state 4
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+state 5
+
+    1 program: PROGRAM ID START . declerations stmtlist END
+
+    DECL  shift, and go to state 6
+
+    $default  reduce using rule 3 (declerations)
+
+    declerations  go to state 7
+
+
+state 6
+
+    2 declerations: DECL . declarlist cdecl
+
+    INT     shift, and go to state 8
+    REAL    shift, and go to state 9
+    STRING  shift, and go to state 10
+
+    declarlist  go to state 11
+    decl        go to state 12
+    type        go to state 13
+
+
+state 7
+
+    1 program: PROGRAM ID START declerations . stmtlist END
+
+    $default  reduce using rule 15 (stmtlist)
+
+    stmtlist  go to state 14
+
+
+state 8
+
+    9 type: INT .
+
+    $default  reduce using rule 9 (type)
+
+
+state 9
+
+   10 type: REAL .
+
+    $default  reduce using rule 10 (type)
+
+
+state 10
+
+   11 type: STRING .
+
+    $default  reduce using rule 11 (type)
+
+
+state 11
+
+    2 declerations: DECL declarlist . cdecl
+    4 declarlist: declarlist . decl
+
+    FINAL   shift, and go to state 15
+    INT     shift, and go to state 8
+    REAL    shift, and go to state 9
+    STRING  shift, and go to state 10
+
+    $default  reduce using rule 13 (cdecl)
+
+    decl   go to state 16
+    type   go to state 13
+    cdecl  go to state 17
+
+
+state 12
+
+    5 declarlist: decl .
+
+    $default  reduce using rule 5 (declarlist)
+
+
+state 13
+
+    6 decl: type . ':' list
+
+    ':'  shift, and go to state 18
+
+
+state 14
+
+    1 program: PROGRAM ID START declerations stmtlist . END
+   14 stmtlist: stmtlist . stmt
+
+    END      shift, and go to state 19
+    FOREACH  shift, and go to state 20
+    IF       shift, and go to state 21
+    IN       shift, and go to state 22
+    OUT      shift, and go to state 23
+    SWITCH   shift, and go to state 24
+    WHILE    shift, and go to state 25
+    ID       shift, and go to state 26
+    '{'      shift, and go to state 27
+
+    stmt             go to state 28
+    out_stmt         go to state 29
+    in_stmt          go to state 30
+    assignment_stmt  go to state 31
+    control_stmt     go to state 32
+    stmt_block       go to state 33
+    switch           go to state 34
+
+
+state 15
+
+   12 cdecl: FINAL . type ID ASSIGNOP NUM ';' cdecl
+
+    INT     shift, and go to state 8
+    REAL    shift, and go to state 9
+    STRING  shift, and go to state 10
+
+    type  go to state 35
+
+
+state 16
+
+    4 declarlist: declarlist decl .
+
+    $default  reduce using rule 4 (declarlist)
+
+
+state 17
+
+    2 declerations: DECL declarlist cdecl .
+
+    $default  reduce using rule 2 (declerations)
+
+
+state 18
+
+    6 decl: type ':' . list
+
+    ID  shift, and go to state 36
+
+    list  go to state 37
+
+
+state 19
+
+    1 program: PROGRAM ID START declerations stmtlist END .
+
+    $default  reduce using rule 1 (program)
+
+
+state 20
+
+   28 control_stmt: FOREACH . ID ASSIGNOP NUM TILL NUM WITH step stmt
+   29             | FOREACH . ID ASSIGNOP NUM TILL ID WITH step stmt
+
+    ID  shift, and go to state 38
+
+
+state 21
+
+   26 control_stmt: IF . ')' boolexpr '(' THEN stmt ELSE stmt
+
+    ')'  shift, and go to state 39
+
+
+state 22
+
+   24 in_stmt: IN . '(' ID ')' ';'
+
+    '('  shift, and go to state 40
+
+
+state 23
+
+   22 out_stmt: OUT . '(' expression ')' ';'
+   23         | OUT . '(' SENTENCE ')' ';'
+
+    '('  shift, and go to state 41
+
+
+state 24
+
+   32 switch: SWITCH . '(' ID ')' '{' cases '}'
+
+    '('  shift, and go to state 42
+
+
+state 25
+
+   27 control_stmt: WHILE . ')' boolexpr '(' stmt_block
+
+    ')'  shift, and go to state 43
+
+
+state 26
+
+   17 stmt: ID . ASSIGNOP SENTENCE ';'
+   25 assignment_stmt: ID . ASSIGNOP expression ';'
+
+    ASSIGNOP  shift, and go to state 44
+
+
+state 27
+
+   31 stmt_block: '{' . stmtlist '}'
+
+    $default  reduce using rule 15 (stmtlist)
+
+    stmtlist  go to state 45
+
+
+state 28
+
+   14 stmtlist: stmtlist stmt .
+
+    $default  reduce using rule 14 (stmtlist)
+
+
+state 29
+
+   20 stmt: out_stmt .
+
+    $default  reduce using rule 20 (stmt)
+
+
+state 30
+
+   19 stmt: in_stmt .
+
+    $default  reduce using rule 19 (stmt)
+
+
+state 31
+
+   16 stmt: assignment_stmt .
+
+    $default  reduce using rule 16 (stmt)
+
+
+state 32
+
+   18 stmt: control_stmt .
+
+    $default  reduce using rule 18 (stmt)
+
+
+state 33
+
+   21 stmt: stmt_block .
+
+    $default  reduce using rule 21 (stmt)
+
+
+state 34
+
+   30 control_stmt: switch .
+
+    $default  reduce using rule 30 (control_stmt)
+
+
+state 35
+
+   12 cdecl: FINAL type . ID ASSIGNOP NUM ';' cdecl
+
+    ID  shift, and go to state 46
+
+
+state 36
+
+    7 list: ID . ',' list
+    8     | ID .
+
+    ','  shift, and go to state 47
+
+    $default  reduce using rule 8 (list)
+
+
+state 37
+
+    6 decl: type ':' list .
+
+    $default  reduce using rule 6 (decl)
+
+
+state 38
+
+   28 control_stmt: FOREACH ID . ASSIGNOP NUM TILL NUM WITH step stmt
+   29             | FOREACH ID . ASSIGNOP NUM TILL ID WITH step stmt
+
+    ASSIGNOP  shift, and go to state 48
+
+
+state 39
+
+   26 control_stmt: IF ')' . boolexpr '(' THEN stmt ELSE stmt
+
+    ID   shift, and go to state 49
+    NUM  shift, and go to state 50
+    '('  shift, and go to state 51
+    '!'  shift, and go to state 52
+
+    boolexpr    go to state 53
+    boolterm    go to state 54
+    boolfactor  go to state 55
+    expression  go to state 56
+    term        go to state 57
+    factor      go to state 58
+
+
+state 40
+
+   24 in_stmt: IN '(' . ID ')' ';'
+
+    ID  shift, and go to state 59
+
+
+state 41
+
+   22 out_stmt: OUT '(' . expression ')' ';'
+   23         | OUT '(' . SENTENCE ')' ';'
+
+    SENTENCE  shift, and go to state 60
+    ID        shift, and go to state 49
+    NUM       shift, and go to state 50
+    '('       shift, and go to state 51
+
+    expression  go to state 61
+    term        go to state 57
+    factor      go to state 58
+
+
+state 42
+
+   32 switch: SWITCH '(' . ID ')' '{' cases '}'
+
+    ID  shift, and go to state 62
+
+
+state 43
+
+   27 control_stmt: WHILE ')' . boolexpr '(' stmt_block
+
+    ID   shift, and go to state 49
+    NUM  shift, and go to state 50
+    '('  shift, and go to state 51
+    '!'  shift, and go to state 52
+
+    boolexpr    go to state 63
+    boolterm    go to state 54
+    boolfactor  go to state 55
+    expression  go to state 56
+    term        go to state 57
+    factor      go to state 58
+
+
+state 44
+
+   17 stmt: ID ASSIGNOP . SENTENCE ';'
+   25 assignment_stmt: ID ASSIGNOP . expression ';'
+
+    SENTENCE  shift, and go to state 64
+    ID        shift, and go to state 49
+    NUM       shift, and go to state 50
+    '('       shift, and go to state 51
+
+    expression  go to state 65
+    term        go to state 57
+    factor      go to state 58
+
+
+state 45
+
+   14 stmtlist: stmtlist . stmt
+   31 stmt_block: '{' stmtlist . '}'
+
+    FOREACH  shift, and go to state 20
+    IF       shift, and go to state 21
+    IN       shift, and go to state 22
+    OUT      shift, and go to state 23
+    SWITCH   shift, and go to state 24
+    WHILE    shift, and go to state 25
+    ID       shift, and go to state 26
+    '{'      shift, and go to state 27
+    '}'      shift, and go to state 66
+
+    stmt             go to state 28
+    out_stmt         go to state 29
+    in_stmt          go to state 30
+    assignment_stmt  go to state 31
+    control_stmt     go to state 32
+    stmt_block       go to state 33
+    switch           go to state 34
+
+
+state 46
+
+   12 cdecl: FINAL type ID . ASSIGNOP NUM ';' cdecl
+
+    ASSIGNOP  shift, and go to state 67
+
+
+state 47
+
+    7 list: ID ',' . list
+
+    ID  shift, and go to state 36
+
+    list  go to state 68
+
+
+state 48
+
+   28 control_stmt: FOREACH ID ASSIGNOP . NUM TILL NUM WITH step stmt
+   29             | FOREACH ID ASSIGNOP . NUM TILL ID WITH step stmt
+
+    NUM  shift, and go to state 69
+
+
+state 49
+
+   48 factor: ID .
+
+    $default  reduce using rule 48 (factor)
+
+
+state 50
+
+   49 factor: NUM .
+
+    $default  reduce using rule 49 (factor)
+
+
+state 51
+
+   47 factor: '(' . expression ')'
+
+    ID   shift, and go to state 49
+    NUM  shift, and go to state 50
+    '('  shift, and go to state 51
+
+    expression  go to state 70
+    term        go to state 57
+    factor      go to state 58
+
+
+state 52
+
+   41 boolfactor: '!' . '(' boolfactor ')'
+
+    '('  shift, and go to state 71
+
+
+state 53
+
+   26 control_stmt: IF ')' boolexpr . '(' THEN stmt ELSE stmt
+   37 boolexpr: boolexpr . OROP boolterm
+
+    OROP  shift, and go to state 72
+    '('   shift, and go to state 73
+
+
+state 54
+
+   38 boolexpr: boolterm .
+   39 boolterm: boolterm . ANDOP boolfactor
+
+    ANDOP  shift, and go to state 74
+
+    $default  reduce using rule 38 (boolexpr)
+
+
+state 55
+
+   40 boolterm: boolfactor .
+
+    $default  reduce using rule 40 (boolterm)
+
+
+state 56
+
+   42 boolfactor: expression . RELOP expression
+   43 expression: expression . ADDOP term
+
+    RELOP  shift, and go to state 75
+    ADDOP  shift, and go to state 76
+
+
+state 57
+
+   44 expression: term .
+   45 term: term . MULOP factor
+
+    MULOP  shift, and go to state 77
+
+    $default  reduce using rule 44 (expression)
+
+
+state 58
+
+   46 term: factor .
+
+    $default  reduce using rule 46 (term)
+
+
+state 59
+
+   24 in_stmt: IN '(' ID . ')' ';'
+
+    ')'  shift, and go to state 78
+
+
+state 60
+
+   23 out_stmt: OUT '(' SENTENCE . ')' ';'
+
+    ')'  shift, and go to state 79
+
+
+state 61
+
+   22 out_stmt: OUT '(' expression . ')' ';'
+   43 expression: expression . ADDOP term
+
+    ADDOP  shift, and go to state 76
+    ')'    shift, and go to state 80
+
+
+state 62
+
+   32 switch: SWITCH '(' ID . ')' '{' cases '}'
+
+    ')'  shift, and go to state 81
+
+
+state 63
+
+   27 control_stmt: WHILE ')' boolexpr . '(' stmt_block
+   37 boolexpr: boolexpr . OROP boolterm
+
+    OROP  shift, and go to state 72
+    '('   shift, and go to state 82
+
+
+state 64
+
+   17 stmt: ID ASSIGNOP SENTENCE . ';'
+
+    ';'  shift, and go to state 83
+
+
+state 65
+
+   25 assignment_stmt: ID ASSIGNOP expression . ';'
+   43 expression: expression . ADDOP term
+
+    ADDOP  shift, and go to state 76
+    ';'    shift, and go to state 84
+
+
+state 66
+
+   31 stmt_block: '{' stmtlist '}' .
+
+    $default  reduce using rule 31 (stmt_block)
+
+
+state 67
+
+   12 cdecl: FINAL type ID ASSIGNOP . NUM ';' cdecl
+
+    NUM  shift, and go to state 85
+
+
+state 68
+
+    7 list: ID ',' list .
+
+    $default  reduce using rule 7 (list)
+
+
+state 69
+
+   28 control_stmt: FOREACH ID ASSIGNOP NUM . TILL NUM WITH step stmt
+   29             | FOREACH ID ASSIGNOP NUM . TILL ID WITH step stmt
+
+    TILL  shift, and go to state 86
+
+
+state 70
+
+   43 expression: expression . ADDOP term
+   47 factor: '(' expression . ')'
+
+    ADDOP  shift, and go to state 76
+    ')'    shift, and go to state 87
+
+
+state 71
+
+   41 boolfactor: '!' '(' . boolfactor ')'
+
+    ID   shift, and go to state 49
+    NUM  shift, and go to state 50
+    '('  shift, and go to state 51
+    '!'  shift, and go to state 52
+
+    boolfactor  go to state 88
+    expression  go to state 56
+    term        go to state 57
+    factor      go to state 58
+
+
+state 72
+
+   37 boolexpr: boolexpr OROP . boolterm
+
+    ID   shift, and go to state 49
+    NUM  shift, and go to state 50
+    '('  shift, and go to state 51
+    '!'  shift, and go to state 52
+
+    boolterm    go to state 89
+    boolfactor  go to state 55
+    expression  go to state 56
+    term        go to state 57
+    factor      go to state 58
+
+
+state 73
+
+   26 control_stmt: IF ')' boolexpr '(' . THEN stmt ELSE stmt
+
+    THEN  shift, and go to state 90
+
+
+state 74
+
+   39 boolterm: boolterm ANDOP . boolfactor
+
+    ID   shift, and go to state 49
+    NUM  shift, and go to state 50
+    '('  shift, and go to state 51
+    '!'  shift, and go to state 52
+
+    boolfactor  go to state 91
+    expression  go to state 56
+    term        go to state 57
+    factor      go to state 58
+
+
+state 75
+
+   42 boolfactor: expression RELOP . expression
+
+    ID   shift, and go to state 49
+    NUM  shift, and go to state 50
+    '('  shift, and go to state 51
+
+    expression  go to state 92
+    term        go to state 57
+    factor      go to state 58
+
+
+state 76
+
+   43 expression: expression ADDOP . term
+
+    ID   shift, and go to state 49
+    NUM  shift, and go to state 50
+    '('  shift, and go to state 51
+
+    term    go to state 93
+    factor  go to state 58
+
+
+state 77
+
+   45 term: term MULOP . factor
+
+    ID   shift, and go to state 49
+    NUM  shift, and go to state 50
+    '('  shift, and go to state 51
+
+    factor  go to state 94
+
+
+state 78
+
+   24 in_stmt: IN '(' ID ')' . ';'
+
+    ';'  shift, and go to state 95
+
+
+state 79
+
+   23 out_stmt: OUT '(' SENTENCE ')' . ';'
+
+    ';'  shift, and go to state 96
+
+
+state 80
+
+   22 out_stmt: OUT '(' expression ')' . ';'
+
+    ';'  shift, and go to state 97
+
+
+state 81
+
+   32 switch: SWITCH '(' ID ')' . '{' cases '}'
+
+    '{'  shift, and go to state 98
+
+
+state 82
+
+   27 control_stmt: WHILE ')' boolexpr '(' . stmt_block
+
+    '{'  shift, and go to state 27
+
+    stmt_block  go to state 99
+
+
+state 83
+
+   17 stmt: ID ASSIGNOP SENTENCE ';' .
+
+    $default  reduce using rule 17 (stmt)
+
+
+state 84
+
+   25 assignment_stmt: ID ASSIGNOP expression ';' .
+
+    $default  reduce using rule 25 (assignment_stmt)
+
+
+state 85
+
+   12 cdecl: FINAL type ID ASSIGNOP NUM . ';' cdecl
+
+    ';'  shift, and go to state 100
+
+
+state 86
+
+   28 control_stmt: FOREACH ID ASSIGNOP NUM TILL . NUM WITH step stmt
+   29             | FOREACH ID ASSIGNOP NUM TILL . ID WITH step stmt
+
+    ID   shift, and go to state 101
+    NUM  shift, and go to state 102
+
+
+state 87
+
+   47 factor: '(' expression ')' .
+
+    $default  reduce using rule 47 (factor)
+
+
+state 88
+
+   41 boolfactor: '!' '(' boolfactor . ')'
+
+    ')'  shift, and go to state 103
+
+
+state 89
+
+   37 boolexpr: boolexpr OROP boolterm .
+   39 boolterm: boolterm . ANDOP boolfactor
+
+    ANDOP  shift, and go to state 74
+
+    $default  reduce using rule 37 (boolexpr)
+
+
+state 90
+
+   26 control_stmt: IF ')' boolexpr '(' THEN . stmt ELSE stmt
+
+    FOREACH  shift, and go to state 20
+    IF       shift, and go to state 21
+    IN       shift, and go to state 22
+    OUT      shift, and go to state 23
+    SWITCH   shift, and go to state 24
+    WHILE    shift, and go to state 25
+    ID       shift, and go to state 26
+    '{'      shift, and go to state 27
+
+    stmt             go to state 104
+    out_stmt         go to state 29
+    in_stmt          go to state 30
+    assignment_stmt  go to state 31
+    control_stmt     go to state 32
+    stmt_block       go to state 33
+    switch           go to state 34
+
+
+state 91
+
+   39 boolterm: boolterm ANDOP boolfactor .
+
+    $default  reduce using rule 39 (boolterm)
+
+
+state 92
+
+   42 boolfactor: expression RELOP expression .
+   43 expression: expression . ADDOP term
+
+    ADDOP  shift, and go to state 76
+
+    $default  reduce using rule 42 (boolfactor)
+
+
+state 93
+
+   43 expression: expression ADDOP term .
+   45 term: term . MULOP factor
+
+    MULOP  shift, and go to state 77
+
+    $default  reduce using rule 43 (expression)
+
+
+state 94
+
+   45 term: term MULOP factor .
+
+    $default  reduce using rule 45 (term)
+
+
+state 95
+
+   24 in_stmt: IN '(' ID ')' ';' .
+
+    $default  reduce using rule 24 (in_stmt)
+
+
+state 96
+
+   23 out_stmt: OUT '(' SENTENCE ')' ';' .
+
+    $default  reduce using rule 23 (out_stmt)
+
+
+state 97
+
+   22 out_stmt: OUT '(' expression ')' ';' .
+
+    $default  reduce using rule 22 (out_stmt)
+
+
+state 98
+
+   32 switch: SWITCH '(' ID ')' '{' . cases '}'
+
+    CASE     shift, and go to state 105
+    DEFAULT  shift, and go to state 106
+
+    cases  go to state 107
+
+
+state 99
+
+   27 control_stmt: WHILE ')' boolexpr '(' stmt_block .
+
+    $default  reduce using rule 27 (control_stmt)
+
+
+state 100
+
+   12 cdecl: FINAL type ID ASSIGNOP NUM ';' . cdecl
+
+    FINAL  shift, and go to state 15
+
+    $default  reduce using rule 13 (cdecl)
+
+    cdecl  go to state 108
+
+
+state 101
+
+   29 control_stmt: FOREACH ID ASSIGNOP NUM TILL ID . WITH step stmt
+
+    WITH  shift, and go to state 109
+
+
+state 102
+
+   28 control_stmt: FOREACH ID ASSIGNOP NUM TILL NUM . WITH step stmt
+
+    WITH  shift, and go to state 110
+
+
+state 103
+
+   41 boolfactor: '!' '(' boolfactor ')' .
+
+    $default  reduce using rule 41 (boolfactor)
+
+
+state 104
+
+   26 control_stmt: IF ')' boolexpr '(' THEN stmt . ELSE stmt
+
+    ELSE  shift, and go to state 111
+
+
+state 105
+
+   33 cases: CASE . NUM ':' stmtlist BREAK ';' cases
+
+    NUM  shift, and go to state 112
+
+
+state 106
+
+   34 cases: DEFAULT . ':' stmtlist
+
+    ':'  shift, and go to state 113
+
+
+state 107
+
+   32 switch: SWITCH '(' ID ')' '{' cases . '}'
+
+    '}'  shift, and go to state 114
+
+
+state 108
+
+   12 cdecl: FINAL type ID ASSIGNOP NUM ';' cdecl .
+
+    $default  reduce using rule 12 (cdecl)
+
+
+state 109
+
+   29 control_stmt: FOREACH ID ASSIGNOP NUM TILL ID WITH . step stmt
+
+    ID  shift, and go to state 115
+
+    step  go to state 116
+
+
+state 110
+
+   28 control_stmt: FOREACH ID ASSIGNOP NUM TILL NUM WITH . step stmt
+
+    ID  shift, and go to state 115
+
+    step  go to state 117
+
+
+state 111
+
+   26 control_stmt: IF ')' boolexpr '(' THEN stmt ELSE . stmt
+
+    FOREACH  shift, and go to state 20
+    IF       shift, and go to state 21
+    IN       shift, and go to state 22
+    OUT      shift, and go to state 23
+    SWITCH   shift, and go to state 24
+    WHILE    shift, and go to state 25
+    ID       shift, and go to state 26
+    '{'      shift, and go to state 27
+
+    stmt             go to state 118
+    out_stmt         go to state 29
+    in_stmt          go to state 30
+    assignment_stmt  go to state 31
+    control_stmt     go to state 32
+    stmt_block       go to state 33
+    switch           go to state 34
+
+
+state 112
+
+   33 cases: CASE NUM . ':' stmtlist BREAK ';' cases
+
+    ':'  shift, and go to state 119
+
+
+state 113
+
+   34 cases: DEFAULT ':' . stmtlist
+
+    $default  reduce using rule 15 (stmtlist)
+
+    stmtlist  go to state 120
+
+
+state 114
+
+   32 switch: SWITCH '(' ID ')' '{' cases '}' .
+
+    $default  reduce using rule 32 (switch)
+
+
+state 115
+
+   35 step: ID . ASSIGNOP ID ADDOP NUM
+   36     | ID . ASSIGNOP ID MULOP NUM
+
+    ASSIGNOP  shift, and go to state 121
+
+
+state 116
+
+   29 control_stmt: FOREACH ID ASSIGNOP NUM TILL ID WITH step . stmt
+
+    FOREACH  shift, and go to state 20
+    IF       shift, and go to state 21
+    IN       shift, and go to state 22
+    OUT      shift, and go to state 23
+    SWITCH   shift, and go to state 24
+    WHILE    shift, and go to state 25
+    ID       shift, and go to state 26
+    '{'      shift, and go to state 27
+
+    stmt             go to state 122
+    out_stmt         go to state 29
+    in_stmt          go to state 30
+    assignment_stmt  go to state 31
+    control_stmt     go to state 32
+    stmt_block       go to state 33
+    switch           go to state 34
+
+
+state 117
+
+   28 control_stmt: FOREACH ID ASSIGNOP NUM TILL NUM WITH step . stmt
+
+    FOREACH  shift, and go to state 20
+    IF       shift, and go to state 21
+    IN       shift, and go to state 22
+    OUT      shift, and go to state 23
+    SWITCH   shift, and go to state 24
+    WHILE    shift, and go to state 25
+    ID       shift, and go to state 26
+    '{'      shift, and go to state 27
+
+    stmt             go to state 123
+    out_stmt         go to state 29
+    in_stmt          go to state 30
+    assignment_stmt  go to state 31
+    control_stmt     go to state 32
+    stmt_block       go to state 33
+    switch           go to state 34
+
+
+state 118
+
+   26 control_stmt: IF ')' boolexpr '(' THEN stmt ELSE stmt .
+
+    $default  reduce using rule 26 (control_stmt)
+
+
+state 119
+
+   33 cases: CASE NUM ':' . stmtlist BREAK ';' cases
+
+    $default  reduce using rule 15 (stmtlist)
+
+    stmtlist  go to state 124
+
+
+state 120
+
+   14 stmtlist: stmtlist . stmt
+   34 cases: DEFAULT ':' stmtlist .
+
+    FOREACH  shift, and go to state 20
+    IF       shift, and go to state 21
+    IN       shift, and go to state 22
+    OUT      shift, and go to state 23
+    SWITCH   shift, and go to state 24
+    WHILE    shift, and go to state 25
+    ID       shift, and go to state 26
+    '{'      shift, and go to state 27
+
+    $default  reduce using rule 34 (cases)
+
+    stmt             go to state 28
+    out_stmt         go to state 29
+    in_stmt          go to state 30
+    assignment_stmt  go to state 31
+    control_stmt     go to state 32
+    stmt_block       go to state 33
+    switch           go to state 34
+
+
+state 121
+
+   35 step: ID ASSIGNOP . ID ADDOP NUM
+   36     | ID ASSIGNOP . ID MULOP NUM
+
+    ID  shift, and go to state 125
+
+
+state 122
+
+   29 control_stmt: FOREACH ID ASSIGNOP NUM TILL ID WITH step stmt .
+
+    $default  reduce using rule 29 (control_stmt)
+
+
+state 123
+
+   28 control_stmt: FOREACH ID ASSIGNOP NUM TILL NUM WITH step stmt .
+
+    $default  reduce using rule 28 (control_stmt)
+
+
+state 124
+
+   14 stmtlist: stmtlist . stmt
+   33 cases: CASE NUM ':' stmtlist . BREAK ';' cases
+
+    BREAK    shift, and go to state 126
+    FOREACH  shift, and go to state 20
+    IF       shift, and go to state 21
+    IN       shift, and go to state 22
+    OUT      shift, and go to state 23
+    SWITCH   shift, and go to state 24
+    WHILE    shift, and go to state 25
+    ID       shift, and go to state 26
+    '{'      shift, and go to state 27
+
+    stmt             go to state 28
+    out_stmt         go to state 29
+    in_stmt          go to state 30
+    assignment_stmt  go to state 31
+    control_stmt     go to state 32
+    stmt_block       go to state 33
+    switch           go to state 34
+
+
+state 125
+
+   35 step: ID ASSIGNOP ID . ADDOP NUM
+   36     | ID ASSIGNOP ID . MULOP NUM
+
+    ADDOP  shift, and go to state 127
+    MULOP  shift, and go to state 128
+
+
+state 126
+
+   33 cases: CASE NUM ':' stmtlist BREAK . ';' cases
+
+    ';'  shift, and go to state 129
+
+
+state 127
+
+   35 step: ID ASSIGNOP ID ADDOP . NUM
+
+    NUM  shift, and go to state 130
+
+
+state 128
+
+   36 step: ID ASSIGNOP ID MULOP . NUM
+
+    NUM  shift, and go to state 131
+
+
+state 129
+
+   33 cases: CASE NUM ':' stmtlist BREAK ';' . cases
+
+    CASE     shift, and go to state 105
+    DEFAULT  shift, and go to state 106
+
+    cases  go to state 132
+
+
+state 130
+
+   35 step: ID ASSIGNOP ID ADDOP NUM .
+
+    $default  reduce using rule 35 (step)
+
+
+state 131
+
+   36 step: ID ASSIGNOP ID MULOP NUM .
+
+    $default  reduce using rule 36 (step)
+
+
+state 132
+
+   33 cases: CASE NUM ':' stmtlist BREAK ';' cases .
+
+    $default  reduce using rule 33 (cases)
