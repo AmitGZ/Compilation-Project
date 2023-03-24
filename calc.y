@@ -1,16 +1,26 @@
 %{
-  #include <stdio.h>
-  #include "header.h"
-  #include "Bison.tab.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "header.h"
+
+void insertIdToTable(char* id, char type, bool isConst){}
+bool isAssignValid(char kind1, char kind2) { return kind1 == kind2; }
+
+extern int yylex();
+extern int yyparse();
+
+void yyerror(const char* s);
 %}
 
-%union{
+%union {
   // all the types
   int ival;
   char* sval;
   char kind;
   abc number;
 }
+
 
 /* tokens & type of gramer variables */
 /* Declare the TOKENS */
@@ -165,14 +175,20 @@ factor          :   '(' expression ')' {}
 
 %%
 
-int main (int argc, char **argv)
-{  
-  FILE *yyin;
-  yyin = fopen (argv [1], "r");
-  yyparse ();
-  fclose (yyin);
-  return 0;
+int main() 
+{
+	FILE* yyin = stdin;
+
+	do 
+	{
+		yyparse();
+	} while(!feof(yyin));
+
+	return 0;
 }
 
-void yyerror (char *s)
-{  fprintf (stderr, "%s\n", s);}
+void yyerror(const char* s) 
+{
+	fprintf(stderr, "Parse error: %s\n", s);
+	exit(1);
+}

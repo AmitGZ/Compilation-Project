@@ -1,6 +1,4 @@
-#ifndef HEADERFILE_H
-#define HEADERFILE_H
-
+#pragma once
 struct abc
 {
     char* sval;
@@ -8,11 +6,4 @@ struct abc
 };
 typedef struct abc abc;
 
-/* yylex () and yyerror() need to be declared here */
 enum {INTEGER, FLOATING, STR} vtype;
-extern int yylex (void);
-void yyerror (char *s);
-void insertIdToTable(char* id,char type,bool isConst){}
-bool isAssignValid(char kind1, char kind2){return kind1 == kind2;}
-
-#endif
