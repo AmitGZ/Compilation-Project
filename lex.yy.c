@@ -530,8 +530,50 @@ char *yytext;
 
 // Global variables
 int line = 1;
-#line 533 "lex.yy.c"
-#line 534 "lex.yy.c"
+
+static RelOp GetRelOp(const char* s)
+{
+	if (!strcmp(s, "=="))
+		return EQ;
+	if (!strcmp(s, "<>"))
+		return NEQ; 
+	if (!strcmp(s, "<="))
+		return LE;
+	if (!strcmp(s, ">="))
+		return GE;
+	if (!strcmp(s, "<"))
+		return LT;
+	if (!strcmp(s, ">"))
+		return GT;
+
+	// TODO Handle exception
+	return EQ;
+}
+
+static MulOp GetMulOp(const char* s)
+{
+	if (!strcmp(s, "/"))
+		return DIV;
+	if (!strcmp(s, "*"))
+		return MUL;
+
+	// TODO Handle exception
+	return DIV;
+}
+
+static AddOp GetAddOp(const char* s)
+{
+	if (!strcmp(s, "+"))
+		return ADD;
+	if (!strcmp(s, "-"))
+		return SUB;
+
+	// TODO Handle exception
+	return ADD;
+}
+
+#line 575 "lex.yy.c"
+#line 576 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -748,9 +790,9 @@ YY_DECL
 		}
 
 	{
-#line 16 "calc.l"
+#line 58 "calc.l"
 
-#line 753 "lex.yy.c"
+#line 795 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -809,129 +851,129 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 17 "calc.l"
+#line 59 "calc.l"
 {fprintf(yyout," COMMENT");}
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 18 "calc.l"
+#line 60 "calc.l"
 {fprintf(yyout, "\n%d. ", ++line); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 19 "calc.l"
+#line 61 "calc.l"
 {fprintf(yyout,"%s",yytext); return BREAK;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 20 "calc.l"
+#line 62 "calc.l"
 {fprintf(yyout,"%s",yytext); return CASE;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 21 "calc.l"
+#line 63 "calc.l"
 {fprintf(yyout,"%s",yytext); return FINAL;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 22 "calc.l"
+#line 64 "calc.l"
 {fprintf(yyout,"%s",yytext); return DECL;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 23 "calc.l"
+#line 65 "calc.l"
 {fprintf(yyout,"%s",yytext); return DEFAULT;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 24 "calc.l"
+#line 66 "calc.l"
 {fprintf(yyout,"%s",yytext); return ELSE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 25 "calc.l"
+#line 67 "calc.l"
 {fprintf(yyout,"%s",yytext); return END;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 26 "calc.l"
+#line 68 "calc.l"
 {fprintf(yyout,"%s",yytext); return FLOAT;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 27 "calc.l"
+#line 69 "calc.l"
 {fprintf(yyout,"%s",yytext); return FOREACH;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 28 "calc.l"
+#line 70 "calc.l"
 {fprintf(yyout,"%s",yytext); return IF;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 29 "calc.l"
+#line 71 "calc.l"
 {fprintf(yyout,"%s",yytext); return IN;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 30 "calc.l"
+#line 72 "calc.l"
 {fprintf(yyout,"%s",yytext); return INT;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 31 "calc.l"
+#line 73 "calc.l"
 {fprintf(yyout,"%s",yytext); return OUT;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 32 "calc.l"
+#line 74 "calc.l"
 {fprintf(yyout,"%s",yytext); return PROGRAM;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 33 "calc.l"
+#line 75 "calc.l"
 {fprintf(yyout,"%s",yytext); return REAL;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 34 "calc.l"
+#line 76 "calc.l"
 {fprintf(yyout,"%s",yytext); return START;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 35 "calc.l"
+#line 77 "calc.l"
 {fprintf(yyout,"%s",yytext); return STRING;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 36 "calc.l"
+#line 78 "calc.l"
 {fprintf(yyout,"%s",yytext); return SWITCH;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 37 "calc.l"
+#line 79 "calc.l"
 {fprintf(yyout,"%s",yytext); return THEN;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 38 "calc.l"
+#line 80 "calc.l"
 {fprintf(yyout,"%s",yytext); return TILL;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 39 "calc.l"
+#line 81 "calc.l"
 {fprintf(yyout,"%s",yytext); return WHILE;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 40 "calc.l"
+#line 82 "calc.l"
 {fprintf(yyout,"%s",yytext); return WITH;}
 	YY_BREAK
 case 25:
 /* rule 25 can match eol */
 YY_RULE_SETUP
-#line 42 "calc.l"
+#line 84 "calc.l"
 {
 	fprintf(yyout,"%s",yytext);
 	yylval.sval = strdup(yytext);
@@ -940,7 +982,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 48 "calc.l"
+#line 90 "calc.l"
 {
 	fprintf(yyout," ID(%s)",yytext);
 	yylval.sval = strdup(yytext);
@@ -949,77 +991,77 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 54 "calc.l"
+#line 96 "calc.l"
 {
 	fprintf(yyout," %s",yytext); 
-	yylval.number._name = strdup(yytext);
+	yylval.number._sval = strdup(yytext);
 	yylval.number._type = INTEGER; 
 	return NUM;
 	}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 61 "calc.l"
+#line 103 "calc.l"
 {
 	fprintf(yyout," NUM(%s)",yytext);
-	yylval.number._name = strdup(yytext);
+	yylval.number._sval = strdup(yytext);
 	yylval.number._type = FLOATING; 
 	return NUM;
 	}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 68 "calc.l"
+#line 110 "calc.l"
 {
 	fprintf(yyout," %s",yytext);
-//	yylval.op.comp = strdup(yytext);
+	yylval.relOp = GetRelOp(strdup(yytext));
 	return RELOP;
 	}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 74 "calc.l"
+#line 116 "calc.l"
 {
 	fprintf(yyout," %s",yytext);
-//	yylval.op.add = strdup(yytext);
+	yylval.addOp = GetAddOp(strdup(yytext));
 	return ADDOP;
 	}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 80 "calc.l"
+#line 122 "calc.l"
 {
 	fprintf(yyout,"%s",yytext);
-//	yylval.op.mul = strdup(yytext);
+	yylval.mulOp = GetMulOp(strdup(yytext));
 	return MULOP;
 	}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 86 "calc.l"
+#line 128 "calc.l"
 {fprintf(yyout,"%s",yytext); return ASSIGNOP;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 87 "calc.l"
+#line 129 "calc.l"
 {fprintf(yyout,"%s",yytext); return OROP;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 88 "calc.l"
+#line 130 "calc.l"
 {fprintf(yyout,"%s",yytext); return ANDOP;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 89 "calc.l"
+#line 131 "calc.l"
 {fprintf(yyout,"%s",yytext);} // Error
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 90 "calc.l"
+#line 132 "calc.l"
 ECHO;
 	YY_BREAK
-#line 1022 "lex.yy.c"
+#line 1064 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2024,6 +2066,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 90 "calc.l"
+#line 132 "calc.l"
 
 

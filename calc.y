@@ -13,11 +13,15 @@ void yyerror(const char* s);
 
 %}
 
-%union {
+%union 
+{
   int ival;
   char* sval;
   char kind;
-  abc number;
+  Num number;
+  AddOp addOp;
+  RelOp relOp;
+  MulOp mulOp;
 }
 
 /* tokens & type of gramer variables */
@@ -50,9 +54,9 @@ void yyerror(const char* s);
 %token <sval> SENTENCE
 %token <sval> ID
 %token <number> NUM
-%token <op> RELOP
-%token <op> ADDOP
-%token <op> MULOP
+%token <relOp> RELOP
+%token <addOp> ADDOP
+%token <mulOp> MULOP
 %token ASSIGNOP
 %token OROP
 %token ANDOP
@@ -91,7 +95,7 @@ type            :   INT { $$ = 'i'}
 /* the value of id should not be changed during the program*/
 cdecl           :   FINAL type ID ASSIGNOP NUM ';' cdecl {     
                       char my_kind = $2;
-                      abc my_num = $5;                 
+                      Num my_num = $5;                 
                       if(!isAssignValid(my_kind, my_num._type)) // TODO - Tables are LinkedList(head is the current table)
                       {
                         /*error*/
@@ -173,9 +177,12 @@ factor          :   '(' expression ')' {}
 
 %%
 
-int main() 
+int main(int argc, char** argv) 
 {
-	FILE* yyin = stdin;
+	extern FILE* yyin;
+	extern FILE* yyout;
+  yyin = fopen(argv[1], "r");
+  yyout = fopen(argv[2], "w");
 
 	do 
 	{

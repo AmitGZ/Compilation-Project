@@ -7,6 +7,48 @@
 
 // Global variables
 int line = 1;
+
+static RelOp GetRelOp(const char* s)
+{
+	if (!strcmp(s, "=="))
+		return EQ;
+	if (!strcmp(s, "<>"))
+		return NEQ; 
+	if (!strcmp(s, "<="))
+		return LE;
+	if (!strcmp(s, ">="))
+		return GE;
+	if (!strcmp(s, "<"))
+		return LT;
+	if (!strcmp(s, ">"))
+		return GT;
+
+	// TODO Handle exception
+	return EQ;
+}
+
+static MulOp GetMulOp(const char* s)
+{
+	if (!strcmp(s, "/"))
+		return DIV;
+	if (!strcmp(s, "*"))
+		return MUL;
+
+	// TODO Handle exception
+	return DIV;
+}
+
+static AddOp GetAddOp(const char* s)
+{
+	if (!strcmp(s, "+"))
+		return ADD;
+	if (!strcmp(s, "-"))
+		return SUB;
+
+	// TODO Handle exception
+	return ADD;
+}
+
 %}
 
 LETTER [a-zA-Z]
@@ -53,33 +95,33 @@ SPACES [ \t\n]
 
 {DIGIT}+ 	{
 	fprintf(yyout," %s",yytext); 
-	yylval.number._name = strdup(yytext);
+	yylval.number._sval = strdup(yytext);
 	yylval.number._type = INTEGER; 
 	return NUM;
 	}
 
 {DIGIT}+\.{DIGIT}* {
 	fprintf(yyout," NUM(%s)",yytext);
-	yylval.number._name = strdup(yytext);
+	yylval.number._sval = strdup(yytext);
 	yylval.number._type = FLOATING; 
 	return NUM;
 	}
 
 (==|<>|<=|>=|<|>) {
 	fprintf(yyout," %s",yytext);
-//	yylval.op.comp = strdup(yytext);
+	yylval.relOp = GetRelOp(strdup(yytext));
 	return RELOP;
 	}
 
 (\+|-) {
 	fprintf(yyout," %s",yytext);
-//	yylval.op.add = strdup(yytext);
+	yylval.addOp = GetAddOp(strdup(yytext));
 	return ADDOP;
 	}
 
 (\*|\/) {
 	fprintf(yyout,"%s",yytext);
-//	yylval.op.mul = strdup(yytext);
+	yylval.mulOp = GetMulOp(strdup(yytext));
 	return MULOP;
 	}
 

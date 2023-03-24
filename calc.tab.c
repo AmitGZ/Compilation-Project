@@ -172,15 +172,18 @@ void yyerror(const char* s);
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 16 "calc.y"
+#line 17 "calc.y"
 {
   int ival;
   char* sval;
   char kind;
-  abc number;
+  Num number;
+  AddOp addOp;
+  RelOp relOp;
+  MulOp mulOp;
 }
 /* Line 193 of yacc.c.  */
-#line 184 "calc.tab.c"
+#line 187 "calc.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -193,7 +196,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 197 "calc.tab.c"
+#line 200 "calc.tab.c"
 
 #ifdef short
 # undef short
@@ -502,12 +505,12 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    64,    64,    67,    68,    71,    72,    75,    77,    81,
-      86,    87,    88,    92,   104,   107,   108,   111,   112,   113,
-     114,   115,   116,   119,   120,   123,   126,   129,   130,   131,
-     132,   133,   135,   138,   141,   142,   145,   146,   149,   150,
-     153,   154,   157,   158,   161,   162,   165,   166,   169,   170,
-     171
+       0,    68,    68,    71,    72,    75,    76,    79,    81,    85,
+      90,    91,    92,    96,   108,   111,   112,   115,   116,   117,
+     118,   119,   120,   123,   124,   127,   130,   133,   134,   135,
+     136,   137,   139,   142,   145,   146,   149,   150,   153,   154,
+     157,   158,   161,   162,   165,   166,   169,   170,   173,   174,
+     175
 };
 #endif
 
@@ -1507,37 +1510,37 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 64 "calc.y"
-    {;}
-    break;
-
-  case 3:
-#line 67 "calc.y"
-    {;}
-    break;
-
-  case 4:
 #line 68 "calc.y"
     {;}
     break;
 
-  case 5:
+  case 3:
 #line 71 "calc.y"
     {;}
     break;
 
-  case 6:
+  case 4:
 #line 72 "calc.y"
     {;}
     break;
 
-  case 7:
+  case 5:
 #line 75 "calc.y"
+    {;}
+    break;
+
+  case 6:
+#line 76 "calc.y"
+    {;}
+    break;
+
+  case 7:
+#line 79 "calc.y"
     {(yyvsp[(3) - (3)].kind) = '1';;}
     break;
 
   case 8:
-#line 77 "calc.y"
+#line 81 "calc.y"
     {
                                   (yyvsp[(3) - (3)].kind)=(yyval.kind);
                                   insertIdToTable((yyvsp[(1) - (3)].sval),(yyval.kind),false);
@@ -1545,32 +1548,32 @@ yyreduce:
     break;
 
   case 9:
-#line 81 "calc.y"
+#line 85 "calc.y"
     {
                           insertIdToTable((yyvsp[(1) - (1)].sval),(yyval.kind),false);
                         ;}
     break;
 
   case 10:
-#line 86 "calc.y"
+#line 90 "calc.y"
     { (yyval.kind) = 'i';}
     break;
 
   case 11:
-#line 87 "calc.y"
+#line 91 "calc.y"
     { (yyval.kind) = 'f';}
     break;
 
   case 12:
-#line 88 "calc.y"
+#line 92 "calc.y"
     { (yyval.kind) = 's';}
     break;
 
   case 13:
-#line 92 "calc.y"
+#line 96 "calc.y"
     {     
                       char my_kind = (yyvsp[(2) - (7)].kind);
-                      abc my_num = (yyvsp[(5) - (7)].number);                 
+                      Num my_num = (yyvsp[(5) - (7)].number);                 
                       if(!isAssignValid(my_kind, my_num._type)) // TODO - Tables are LinkedList(head is the current table)
                       {
                         /*error*/
@@ -1583,193 +1586,193 @@ yyreduce:
     break;
 
   case 14:
-#line 104 "calc.y"
-    {;}
-    break;
-
-  case 15:
-#line 107 "calc.y"
-    {;}
-    break;
-
-  case 16:
 #line 108 "calc.y"
     {;}
     break;
 
-  case 17:
+  case 15:
 #line 111 "calc.y"
     {;}
     break;
 
-  case 18:
+  case 16:
 #line 112 "calc.y"
     {;}
     break;
 
-  case 19:
-#line 113 "calc.y"
-    {;}
-    break;
-
-  case 20:
-#line 114 "calc.y"
-    {;}
-    break;
-
-  case 21:
+  case 17:
 #line 115 "calc.y"
     {;}
     break;
 
-  case 22:
+  case 18:
 #line 116 "calc.y"
     {;}
     break;
 
-  case 23:
+  case 19:
+#line 117 "calc.y"
+    {;}
+    break;
+
+  case 20:
+#line 118 "calc.y"
+    {;}
+    break;
+
+  case 21:
 #line 119 "calc.y"
     {;}
     break;
 
-  case 24:
+  case 22:
 #line 120 "calc.y"
     {;}
     break;
 
-  case 25:
+  case 23:
 #line 123 "calc.y"
     {;}
     break;
 
+  case 24:
+#line 124 "calc.y"
+    {;}
+    break;
+
+  case 25:
+#line 127 "calc.y"
+    {;}
+    break;
+
   case 26:
-#line 126 "calc.y"
-    {;}
-    break;
-
-  case 27:
-#line 129 "calc.y"
-    {;}
-    break;
-
-  case 28:
 #line 130 "calc.y"
     {;}
     break;
 
-  case 29:
-#line 131 "calc.y"
-    {;}
-    break;
-
-  case 30:
-#line 132 "calc.y"
-    {;}
-    break;
-
-  case 31:
+  case 27:
 #line 133 "calc.y"
     {;}
     break;
 
-  case 32:
+  case 28:
+#line 134 "calc.y"
+    {;}
+    break;
+
+  case 29:
 #line 135 "calc.y"
     {;}
     break;
 
+  case 30:
+#line 136 "calc.y"
+    {;}
+    break;
+
+  case 31:
+#line 137 "calc.y"
+    {;}
+    break;
+
+  case 32:
+#line 139 "calc.y"
+    {;}
+    break;
+
   case 33:
-#line 138 "calc.y"
-    {;}
-    break;
-
-  case 34:
-#line 141 "calc.y"
-    {;}
-    break;
-
-  case 35:
 #line 142 "calc.y"
     {;}
     break;
 
-  case 36:
+  case 34:
 #line 145 "calc.y"
     {;}
     break;
 
-  case 37:
+  case 35:
 #line 146 "calc.y"
     {;}
     break;
 
-  case 38:
+  case 36:
 #line 149 "calc.y"
     {;}
     break;
 
-  case 39:
+  case 37:
 #line 150 "calc.y"
     {;}
     break;
 
-  case 40:
+  case 38:
 #line 153 "calc.y"
     {;}
     break;
 
-  case 41:
+  case 39:
 #line 154 "calc.y"
     {;}
     break;
 
-  case 42:
+  case 40:
 #line 157 "calc.y"
     {;}
     break;
 
-  case 43:
+  case 41:
 #line 158 "calc.y"
     {;}
     break;
 
-  case 44:
+  case 42:
 #line 161 "calc.y"
     {;}
     break;
 
-  case 45:
+  case 43:
 #line 162 "calc.y"
     {;}
     break;
 
-  case 46:
+  case 44:
 #line 165 "calc.y"
     {;}
     break;
 
-  case 47:
+  case 45:
 #line 166 "calc.y"
     {;}
     break;
 
-  case 48:
+  case 46:
 #line 169 "calc.y"
     {;}
     break;
 
-  case 49:
+  case 47:
 #line 170 "calc.y"
     {;}
     break;
 
+  case 48:
+#line 173 "calc.y"
+    {;}
+    break;
+
+  case 49:
+#line 174 "calc.y"
+    {;}
+    break;
+
   case 50:
-#line 171 "calc.y"
+#line 175 "calc.y"
     {;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1773 "calc.tab.c"
+#line 1776 "calc.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1983,12 +1986,15 @@ yyreturn:
 }
 
 
-#line 174 "calc.y"
+#line 178 "calc.y"
 
 
-int main() 
+int main(int argc, char** argv) 
 {
-	FILE* yyin = stdin;
+	extern FILE* yyin;
+	extern FILE* yyout;
+  yyin = fopen(argv[1], "r");
+  yyout = fopen(argv[2], "w");
 
 	do 
 	{

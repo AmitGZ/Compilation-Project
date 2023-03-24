@@ -1,0 +1,3 @@
+program   ID(Min)   COMMENT
+2. start
+3. decl real :  ID(a)
