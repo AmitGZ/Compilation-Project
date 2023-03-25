@@ -1,3 +1,12 @@
-program   ID(Min)   COMMENT
+program  ID(Min)   COMMENT
 2. start
-3. decl real :  ID(a)
+3. decl real : ID(a),ID(b);
+4.     string: ID(d);
+5.     
+6.     in(ID(a));
+7.     in(ID(b));
+8.     ID(d)="the result is ";
+9.     out(ID(d));
+10.     if (ID(a) <ID(b)) then out(ID(a));
+11. 	else   out(ID(b));
+12. end

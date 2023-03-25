@@ -61,15 +61,23 @@
      TILL = 277,
      WHILE = 278,
      WITH = 279,
-     SENTENCE = 280,
-     ID = 281,
-     NUM = 282,
-     RELOP = 283,
-     ADDOP = 284,
-     MULOP = 285,
-     ASSIGNOP = 286,
-     OROP = 287,
-     ANDOP = 288
+     COMMA = 280,
+     COLON = 281,
+     O_PARENTHESES = 282,
+     C_PARENTHESES = 283,
+     O_BRACKET = 284,
+     C_BRACKET = 285,
+     EXCLAMATION = 286,
+     SEMICOLON = 287,
+     SENTENCE = 288,
+     ID = 289,
+     NUM = 290,
+     RELOP = 291,
+     ADDOP = 292,
+     MULOP = 293,
+     ASSIGNOP = 294,
+     OROP = 295,
+     ANDOP = 296
    };
 #endif
 /* Tokens.  */
@@ -95,33 +103,41 @@
 #define TILL 277
 #define WHILE 278
 #define WITH 279
-#define SENTENCE 280
-#define ID 281
-#define NUM 282
-#define RELOP 283
-#define ADDOP 284
-#define MULOP 285
-#define ASSIGNOP 286
-#define OROP 287
-#define ANDOP 288
+#define COMMA 280
+#define COLON 281
+#define O_PARENTHESES 282
+#define C_PARENTHESES 283
+#define O_BRACKET 284
+#define C_BRACKET 285
+#define EXCLAMATION 286
+#define SEMICOLON 287
+#define SENTENCE 288
+#define ID 289
+#define NUM 290
+#define RELOP 291
+#define ADDOP 292
+#define MULOP 293
+#define ASSIGNOP 294
+#define OROP 295
+#define ANDOP 296
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 17 "calc.y"
+#line 13 "calc.y"
 {
-  int ival;
-  char* sval;
-  char kind;
-  Num number;
-  AddOp addOp;
-  RelOp relOp;
-  MulOp mulOp;
+  Type  _type;   /**< Description */
+  int   _ival;   /**< Description */
+  char* _sval;   /**< Description */
+  Num   _num;    /**< Description */
+  AddOp _addOp;  /**< Description */
+  RelOp _relOp;  /**< Description */
+  MulOp _mulOp;  /**< Description */
 }
 /* Line 1529 of yacc.c.  */
-#line 125 "calc.tab.h"
+#line 141 "calc.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

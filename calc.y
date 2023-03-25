@@ -2,26 +2,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "header.h"
+#include "structures.h"
+#include "my_functions.h"
 
-// Functions TODO move to separate .h .c files
-void insertIdToTable(char* id, char type, bool isConst){}
-bool isAssignValid(char kind1, char kind2) { return kind1 == kind2; }
 extern int yylex();
 extern int yyparse();
-void yyerror(const char* s);
-
 %}
 
 %union 
 {
-  int ival;
-  char* sval;
-  char kind;
-  Num number;
-  AddOp addOp;
-  RelOp relOp;
-  MulOp mulOp;
+  Type  _type;   /**< Description */
+  int   _ival;   /**< Description */
+  char* _sval;   /**< Description */
+  Num   _num;    /**< Description */
+  AddOp _addOp;  /**< Description */
+  RelOp _relOp;  /**< Description */
+  MulOp _mulOp;  /**< Description */
 }
 
 /* tokens & type of gramer variables */
@@ -50,19 +46,27 @@ void yyerror(const char* s);
 %token TILL
 %token WHILE
 %token WITH
+%token COMMA
+%token COLON
+%token O_PARENTHESES
+%token C_PARENTHESES
+%token O_BRACKET
+%token C_BRACKET
+%token EXCLAMATION
+%token SEMICOLON
 
-%token <sval> SENTENCE
-%token <sval> ID
-%token <number> NUM
-%token <relOp> RELOP
-%token <addOp> ADDOP
-%token <mulOp> MULOP
+%token <_sval> SENTENCE
+%token <_sval> ID
+%token <_num> NUM
+%token <_relOp> RELOP
+%token <_addOp> ADDOP
+%token <_mulOp> MULOP
 %token ASSIGNOP
 %token OROP
 %token ANDOP
 
-%type <kind> list
-%type <kind> type
+%type <_type> list
+%type <_type> type
 
 %%
 program         :   PROGRAM ID START declerations stmtlist END {}
@@ -76,34 +80,34 @@ declarlist      :   declarlist decl {}
                 |   decl {}
                 ;
  
-decl            :   type ':' list {$3 = '1';}
+decl            :   type COLON list SEMICOLON{ /*$3 = $1;  Setting list's type */ }
 
-list            :   ID ',' list {
-                                  $3=$$;
-                                  insertIdToTable($1,$$,false);
+list            :   ID COMMA list {
+                                  $3 = $$;
+                                  InsertIdToTable($1, $$, false);
                                 }
                 |   ID  {
-                          insertIdToTable($1,$$,false);
+                          InsertIdToTable($1, $$, false);
                         }
                 ;
 
-type            :   INT { $$ = 'i'} 
-                |   REAL { $$ = 'f'}
-                |   STRING { $$ = 's'}
+type            :   INT { $$ = INTEGER } 
+                |   REAL { $$ = FLOATING }
+                |   STRING { $$ = STR }
                 ;  
  
 /* the value of id should not be changed during the program*/
-cdecl           :   FINAL type ID ASSIGNOP NUM ';' cdecl {     
+cdecl           :   FINAL type ID ASSIGNOP NUM SEMICOLON cdecl {
                       char my_kind = $2;
                       Num my_num = $5;                 
-                      if(!isAssignValid(my_kind, my_num._type)) // TODO - Tables are LinkedList(head is the current table)
+                      if(!IsAssignValid(my_kind, my_num._type)) // TODO - Tables are LinkedList(head is the current table)
                       {
                         /*error*/
                       }
                       else
                       {
-                        insertIdToTable($3, my_kind,true);
-                      }       
+                        InsertIdToTable($3, my_kind,true);
+                      }
                 }
                 | {}
                 ; 
@@ -113,37 +117,37 @@ stmtlist        :  stmtlist stmt {}
                 ;
 
 stmt            :   assignment_stmt {}
-                |   ID ASSIGNOP SENTENCE ';' {}
+                |   ID ASSIGNOP SENTENCE SEMICOLON {}
                 |   control_stmt {} 
                 |   in_stmt {} 
                 |   out_stmt {}
                 |   stmt_block {}
                 ;
 
-out_stmt        :   OUT '(' expression ')' ';' {}
-                |   OUT '(' SENTENCE ')' ';' {}
+out_stmt        :   OUT O_PARENTHESES expression C_PARENTHESES SEMICOLON {}
+                |   OUT O_PARENTHESES SENTENCE C_PARENTHESES SEMICOLON {}
                 ;
 
-in_stmt         :   IN '(' ID ')' ';' {}
+in_stmt         :   IN O_PARENTHESES ID C_PARENTHESES SEMICOLON {}
                 ;
 
-assignment_stmt :   ID ASSIGNOP expression ';' {}
+assignment_stmt :   ID ASSIGNOP expression SEMICOLON {}
                 ;
 
-control_stmt    :   IF ')' boolexpr '(' THEN stmt ELSE stmt {} 
-		            |   WHILE ')' boolexpr '(' stmt_block {}
+control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN stmt ELSE stmt {} 
+		            |   WHILE O_PARENTHESES boolexpr C_PARENTHESES stmt_block {}
                 |   FOREACH ID ASSIGNOP NUM TILL NUM WITH step stmt {}
                 |   FOREACH ID ASSIGNOP NUM TILL ID WITH step stmt {}
                 |   switch {}
 
-stmt_block      :   '{' stmtlist '}' {}
+stmt_block      :   O_BRACKET stmtlist C_BRACKET {}
                 ;
 
-switch          :   SWITCH '(' ID ')' '{' cases '}' {}
+switch          :   SWITCH O_PARENTHESES ID C_PARENTHESES O_BRACKET cases C_BRACKET {}
                 ;
 
-cases           :   CASE NUM ':' stmtlist BREAK ';' cases {}
-                |   DEFAULT ':' stmtlist {}
+cases           :   CASE NUM COLON stmtlist BREAK SEMICOLON cases {}
+                |   DEFAULT COLON stmtlist {}
                 ;
 
 step            :   ID ASSIGNOP ID ADDOP NUM {}
@@ -158,7 +162,7 @@ boolterm        :   boolterm ANDOP boolfactor {}
                 |   boolfactor {}
                 ;
         
-boolfactor      :   '!' '(' boolfactor ')' {} /*Meaning not BOOLFACTOR*/
+boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES {} /*Meaning not BOOLFACTOR*/
                 |   expression RELOP expression {}
                 ;  
 
@@ -170,7 +174,7 @@ term            :   term MULOP factor {}
                 |   factor {}
                 ;
 
-factor          :   '(' expression ')' {}
+factor          :   O_PARENTHESES expression C_PARENTHESES {}
                 |   ID {}
                 |   NUM {}
                 ;
@@ -190,10 +194,4 @@ int main(int argc, char** argv)
 	} while(!feof(yyin));
 
 	return 0;
-}
-
-void yyerror(const char* s) 
-{
-	fprintf(stderr, "Parse error: %s\n", s);
-	exit(1);
 }
