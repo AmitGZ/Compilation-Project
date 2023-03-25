@@ -860,163 +860,163 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 59 "calc.l"
-{ fprintf(yyout," COMMENT");  col += strlen(yytext);                       }
+{ fprintf(yyout," COMMENT");  col += strlen(yytext);                          }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
 #line 60 "calc.l"
-{ fprintf(yyout, "\n%zu. ", ++line); col = 0U;                             }
+{ fprintf(yyout, "\n%zu. ", ++line); col = 0U;                                }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 61 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return BREAK;         }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return BREAK;         }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 62 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return CASE;          }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return CASE;          }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 63 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return FINAL;         }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return FINAL;         }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 64 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return DECL;          }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return DECL;          }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 65 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return DEFAULT;       }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return DEFAULT;       }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 66 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return ELSE;          }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return ELSE;          }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 67 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return END;           }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return END;           }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 68 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return FLOAT;         }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return FLOAT;         }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 69 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return FOREACH;       }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return FOREACH;       }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 70 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return IF;            }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return IF;            }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 71 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return IN;            }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return IN;            }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 72 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return INT;           }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return INT;           }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 73 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return OUT;           }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return OUT;           }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 74 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return PROGRAM;       }
+{ fprintf(yyout,"1. %s",yytext); col += strlen(yytext); return PROGRAM;       }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 75 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return REAL;          }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return REAL;          }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 76 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return START;         }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return START;         }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 77 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return STRING;        }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return STRING;        }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 78 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return SWITCH;        }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return SWITCH;        }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 79 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return THEN;          }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return THEN;          }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 80 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return TILL;          }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return TILL;          }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 81 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return WHILE;         }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return WHILE;         }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 82 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return WITH;          }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return WITH;          }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 83 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return COMMA;         }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return COMMA;         }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 84 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return COLON;         }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return COLON;         }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 85 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return O_PARENTHESES; }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return O_PARENTHESES; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 86 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return C_PARENTHESES; }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return C_PARENTHESES; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 87 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return O_BRACKET;     }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return O_BRACKET;     }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 88 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return C_BRACKET;     }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return C_BRACKET;     }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 89 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return EXCLAMATION;   }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return EXCLAMATION;   }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 90 "calc.l"
-{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return SEMICOLON;     }
+{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return SEMICOLON;     }
 	YY_BREAK
 case 33:
 /* rule 33 can match eol */

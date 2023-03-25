@@ -1549,7 +1549,7 @@ yyreduce:
 
   case 7:
 #line 83 "calc.y"
-    { /*$3 = $1;  Setting list's type */ ;}
+    { (yyvsp[(3) - (4)]._type) = (yyvsp[(1) - (4)]._type);  /* Setting list's type */ ;}
     break;
 
   case 8:
@@ -1585,15 +1585,15 @@ yyreduce:
   case 13:
 #line 100 "calc.y"
     {
-                      char my_kind = (yyvsp[(2) - (7)]._type);
-                      Num my_num = (yyvsp[(5) - (7)]._num);                 
-                      if(!IsAssignValid(my_kind, my_num._type)) // TODO - Tables are LinkedList(head is the current table)
+                      Type my_type = (yyvsp[(2) - (7)]._type);
+                      Num my_num = (yyvsp[(5) - (7)]._num);  
+                      if(!IsAssignValid(my_type, my_num._type)) // TODO - Tables are LinkedList(head is the current table)
                       {
-                        /*error*/
+                        // yyerror("Invalid type conversion, cannot convert variable: \"%s\" of type %s to \"%s\"" , my_num._sval, my_num._type, my_type);
                       }
                       else
                       {
-                        InsertIdToTable((yyvsp[(3) - (7)]._sval), my_kind,true);
+                        InsertIdToTable((yyvsp[(3) - (7)]._sval), my_type, true);
                       }
                 ;}
     break;

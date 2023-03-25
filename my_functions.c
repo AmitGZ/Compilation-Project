@@ -1,13 +1,13 @@
 #include "my_functions.h"
 
-void InsertIdToTable(const char* id, char type, bool isConst)
+void InsertIdToTable(const char* id, Type t, bool isConst)
 {
 
 }
 
-bool IsAssignValid(char kind1, char kind2) 
+bool IsAssignValid(Type type1, Type type2) 
 {
-     return kind1 == kind2; 
+    return (type1 == type2) || (type1 == FLOATING); 
 }
 
 void yyerror(const char* s)

@@ -80,7 +80,7 @@ declarlist      :   declarlist decl {}
                 |   decl {}
                 ;
  
-decl            :   type COLON list SEMICOLON{ /*$3 = $1;  Setting list's type */ }
+decl            :   type COLON list SEMICOLON{ $3 = $1;  /* Setting list's type */ }
 
 list            :   ID COMMA list {
                                   $3 = $$;
@@ -98,15 +98,15 @@ type            :   INT { $$ = INTEGER }
  
 /* the value of id should not be changed during the program*/
 cdecl           :   FINAL type ID ASSIGNOP NUM SEMICOLON cdecl {
-                      char my_kind = $2;
-                      Num my_num = $5;                 
-                      if(!IsAssignValid(my_kind, my_num._type)) // TODO - Tables are LinkedList(head is the current table)
+                      Type my_type = $2;
+                      Num my_num = $5;  
+                      if(!IsAssignValid(my_type, my_num._type)) // TODO - Tables are LinkedList(head is the current table)
                       {
-                        /*error*/
+                        // yyerror("Invalid type conversion, cannot convert variable: \"%s\" of type %s to \"%s\"" , my_num._sval, my_num._type, my_type);
                       }
                       else
                       {
-                        InsertIdToTable($3, my_kind,true);
+                        InsertIdToTable($3, my_type, true);
                       }
                 }
                 | {}
@@ -162,7 +162,7 @@ boolterm        :   boolterm ANDOP boolfactor {}
                 |   boolfactor {}
                 ;
         
-boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES {} /*Meaning not BOOLFACTOR*/
+boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES {} /* Meaning not BOOLFACTOR */
                 |   expression RELOP expression {}
                 ;  
 

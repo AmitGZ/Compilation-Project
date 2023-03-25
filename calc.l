@@ -56,38 +56,38 @@ DIGIT [0-9]
 SPACES [ \t\n\r]
 
 %%
-\/\*.*\*\/	{ fprintf(yyout," COMMENT");  col += strlen(yytext);                       }
-[\n] 		{ fprintf(yyout, "\n%zu. ", ++line); col = 0U;                             }
-"break" 	{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return BREAK;         }
-"case" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return CASE;          }
-"final" 	{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return FINAL;         }
-"decl"		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return DECL;          }
-"default" 	{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return DEFAULT;       }
-"else" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return ELSE;          }
-"end" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return END;           }
-"float" 	{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return FLOAT;         }
-"foreach" 	{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return FOREACH;       }
-"if" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return IF;            }
-"in" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return IN;            }
-"int" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return INT;           }
-"out" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return OUT;           }
-"program" 	{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return PROGRAM;       }
-"real" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return REAL;          }
-"start"		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return START;         }
-"string"	{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return STRING;        }
-"switch" 	{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return SWITCH;        }
-"then" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return THEN;          }
-"till" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return TILL;          }
-"while" 	{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return WHILE;         }
-"with" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return WITH;          }
-"," 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return COMMA;         }
-":" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return COLON;         }
-"(" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return O_PARENTHESES; }
-")" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return C_PARENTHESES; }
-"{" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return O_BRACKET;     }
-"}" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return C_BRACKET;     }
-"!" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return EXCLAMATION;   }
-";" 		{ fprintf(yyout,"%s",yytext); col += strlen(yytext); return SEMICOLON;     }
+\/\*.*\*\/	{ fprintf(yyout," COMMENT");  col += strlen(yytext);                          }
+[\n] 		{ fprintf(yyout, "\n%zu. ", ++line); col = 0U;                                }
+"break" 	{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return BREAK;         }
+"case" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return CASE;          }
+"final" 	{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return FINAL;         }
+"decl"		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return DECL;          }
+"default" 	{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return DEFAULT;       }
+"else" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return ELSE;          }
+"end" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return END;           }
+"float" 	{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return FLOAT;         }
+"foreach" 	{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return FOREACH;       }
+"if" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return IF;            }
+"in" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return IN;            }
+"int" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return INT;           }
+"out" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return OUT;           }
+"program" 	{ fprintf(yyout,"1. %s",yytext); col += strlen(yytext); return PROGRAM;       }
+"real" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return REAL;          }
+"start"		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return START;         }
+"string"	{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return STRING;        }
+"switch" 	{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return SWITCH;        }
+"then" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return THEN;          }
+"till" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return TILL;          }
+"while" 	{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return WHILE;         }
+"with" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return WITH;          }
+"," 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return COMMA;         }
+":" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return COLON;         }
+"(" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return O_PARENTHESES; }
+")" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return C_PARENTHESES; }
+"{" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return O_BRACKET;     }
+"}" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return C_BRACKET;     }
+"!" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return EXCLAMATION;   }
+";" 		{ fprintf(yyout,"%s",yytext);    col += strlen(yytext); return SEMICOLON;     }
 
 \"({LETTER}|\.|,|\!|\?|{SPACES}|{DIGIT})*\" {
 	fprintf(yyout,"%s",yytext);
