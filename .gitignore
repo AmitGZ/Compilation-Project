@@ -1,3 +1,4 @@
+*.DS_Store
 calc.tab.c
 calc.tab.h
 calc
