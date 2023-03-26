@@ -1,0 +1,5 @@
+calc.tab.c
+calc.tab.h
+calc
+calc.output
+lex.yy.c

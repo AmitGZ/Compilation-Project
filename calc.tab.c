@@ -154,6 +154,10 @@
 /* Copy the first part of user declarations.  */
 #line 1 "calc.y"
 
+// Questions
+// Can we use .cpp?
+// Can we use TABLE_SIZE for hash table?
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -187,17 +191,17 @@ Bucket table[TABLE_SIZE];
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 16 "calc.y"
+#line 20 "calc.y"
 {
   Type  _type;   /**< Description */
+  Val   _val;    /**< Description */
   char* _name;   /**< Description */
-  Val    _val;   /**< Description */
   AddOp _addOp;  /**< Description */
   RelOp _relOp;  /**< Description */
   MulOp _mulOp;  /**< Description */
 }
 /* Line 193 of yacc.c.  */
-#line 201 "calc.tab.c"
+#line 205 "calc.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -210,7 +214,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 214 "calc.tab.c"
+#line 218 "calc.tab.c"
 
 #ifdef short
 # undef short
@@ -520,12 +524,12 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    80,    80,    83,    84,    87,    88,    91,    93,    97,
-     102,   103,   104,   108,   120,   123,   124,   127,   128,   129,
-     130,   131,   132,   135,   136,   139,   142,   145,   146,   147,
-     148,   149,   151,   154,   157,   158,   161,   169,   172,   173,
-     176,   177,   180,   181,   184,   185,   188,   189,   192,   193,
-     203
+       0,    84,    84,    87,    88,    91,    92,    95,    97,   101,
+     106,   107,   108,   112,   124,   127,   128,   131,   132,   133,
+     134,   135,   136,   139,   140,   143,   146,   149,   150,   151,
+     152,   153,   155,   158,   161,   162,   165,   173,   183,   184,
+     187,   188,   191,   192,   195,   196,   199,   200,   203,   204,
+     214
 };
 #endif
 
@@ -1521,67 +1525,67 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 80 "calc.y"
-    {;}
-    break;
-
-  case 3:
-#line 83 "calc.y"
-    {;}
-    break;
-
-  case 4:
 #line 84 "calc.y"
     {;}
     break;
 
-  case 5:
+  case 3:
 #line 87 "calc.y"
-    {;}
+    {  ;}
     break;
 
-  case 6:
+  case 4:
 #line 88 "calc.y"
     {;}
     break;
 
-  case 7:
+  case 5:
 #line 91 "calc.y"
+    {;}
+    break;
+
+  case 6:
+#line 92 "calc.y"
+    {;}
+    break;
+
+  case 7:
+#line 95 "calc.y"
     { (yyvsp[(3) - (4)]._type) = (yyvsp[(1) - (4)]._type);  /* Setting list's type */ ;}
     break;
 
   case 8:
-#line 93 "calc.y"
+#line 97 "calc.y"
     {
                                   (yyvsp[(3) - (3)]._type) = (yyval._type);
                                   InsertToTable(table, (yyvsp[(1) - (3)]._name), (yyval._type), false);
-                                ;}
+                                  ;}
     break;
 
   case 9:
-#line 97 "calc.y"
+#line 101 "calc.y"
     {
                           InsertToTable(table, (yyvsp[(1) - (1)]._name), (yyval._type), false);
                         ;}
     break;
 
   case 10:
-#line 102 "calc.y"
+#line 106 "calc.y"
     { (yyval._type) = INTEGER ;}
     break;
 
   case 11:
-#line 103 "calc.y"
+#line 107 "calc.y"
     { (yyval._type) = FLOATING ;}
     break;
 
   case 12:
-#line 104 "calc.y"
+#line 108 "calc.y"
     { (yyval._type) = STR ;}
     break;
 
   case 13:
-#line 108 "calc.y"
+#line 112 "calc.y"
     {
                       Type my_type = (yyvsp[(2) - (7)]._type);
                       Val my_val = (yyvsp[(5) - (7)]._val);  
@@ -1597,117 +1601,117 @@ yyreduce:
     break;
 
   case 14:
-#line 120 "calc.y"
-    {;}
-    break;
-
-  case 15:
-#line 123 "calc.y"
-    {;}
-    break;
-
-  case 16:
 #line 124 "calc.y"
     {;}
     break;
 
-  case 17:
+  case 15:
 #line 127 "calc.y"
     {;}
     break;
 
-  case 18:
+  case 16:
 #line 128 "calc.y"
     {;}
     break;
 
-  case 19:
-#line 129 "calc.y"
-    {;}
-    break;
-
-  case 20:
-#line 130 "calc.y"
-    {;}
-    break;
-
-  case 21:
+  case 17:
 #line 131 "calc.y"
     {;}
     break;
 
-  case 22:
+  case 18:
 #line 132 "calc.y"
     {;}
     break;
 
-  case 23:
+  case 19:
+#line 133 "calc.y"
+    {;}
+    break;
+
+  case 20:
+#line 134 "calc.y"
+    {;}
+    break;
+
+  case 21:
 #line 135 "calc.y"
     {;}
     break;
 
-  case 24:
+  case 22:
 #line 136 "calc.y"
     {;}
     break;
 
-  case 25:
+  case 23:
 #line 139 "calc.y"
     {;}
     break;
 
+  case 24:
+#line 140 "calc.y"
+    {;}
+    break;
+
+  case 25:
+#line 143 "calc.y"
+    {;}
+    break;
+
   case 26:
-#line 142 "calc.y"
+#line 146 "calc.y"
     {  ;}
     break;
 
   case 27:
-#line 145 "calc.y"
-    {;}
-    break;
-
-  case 28:
-#line 146 "calc.y"
-    {;}
-    break;
-
-  case 29:
-#line 147 "calc.y"
-    {;}
-    break;
-
-  case 30:
-#line 148 "calc.y"
-    {;}
-    break;
-
-  case 31:
 #line 149 "calc.y"
     {;}
     break;
 
-  case 32:
+  case 28:
+#line 150 "calc.y"
+    {;}
+    break;
+
+  case 29:
 #line 151 "calc.y"
     {;}
     break;
 
+  case 30:
+#line 152 "calc.y"
+    {;}
+    break;
+
+  case 31:
+#line 153 "calc.y"
+    {;}
+    break;
+
+  case 32:
+#line 155 "calc.y"
+    {;}
+    break;
+
   case 33:
-#line 154 "calc.y"
-    {;}
-    break;
-
-  case 34:
-#line 157 "calc.y"
-    {;}
-    break;
-
-  case 35:
 #line 158 "calc.y"
     {;}
     break;
 
-  case 36:
+  case 34:
 #line 161 "calc.y"
+    {;}
+    break;
+
+  case 35:
+#line 162 "calc.y"
+    {;}
+    break;
+
+  case 36:
+#line 165 "calc.y"
     { Node* node1 = GetFromTable(table, (yyvsp[(1) - (5)]._name));
                                                Node* node2 = GetFromTable(table, (yyvsp[(3) - (5)]._name));
                                                Val* val = &((yyvsp[(5) - (5)]._val));
@@ -1719,67 +1723,74 @@ yyreduce:
     break;
 
   case 37:
-#line 169 "calc.y"
-    { /* MipsMul($1, $3, $5); */ ;}
+#line 173 "calc.y"
+    { Node* node1 = GetFromTable(table, (yyvsp[(1) - (5)]._name));
+                                               Node* node2 = GetFromTable(table, (yyvsp[(3) - (5)]._name));
+                                               Val* val = &((yyvsp[(5) - (5)]._val));
+                                               if (((node1 != NULL) && (node2 != NULL)) && IsAssignValid(node1->_type, val->_type))
+                                                MipsMul(node1->_name, node2->_name, val->_sval);
+                                               else
+                                                // Throw exception
+                                             ;}
     break;
 
   case 38:
-#line 172 "calc.y"
+#line 183 "calc.y"
     { MipsOr((yyval._name), (yyvsp[(1) - (3)]._name), (yyvsp[(3) - (3)]._name)); ;}
     break;
 
   case 39:
-#line 173 "calc.y"
+#line 184 "calc.y"
     { (yyval._name) = (yyvsp[(1) - (1)]._name); ;}
     break;
 
   case 40:
-#line 176 "calc.y"
+#line 187 "calc.y"
     { MipsAnd((yyval._name), (yyvsp[(1) - (3)]._name), (yyvsp[(3) - (3)]._name)); ;}
     break;
 
   case 41:
-#line 177 "calc.y"
+#line 188 "calc.y"
     { (yyval._name) = (yyvsp[(1) - (1)]._name); ;}
     break;
 
   case 42:
-#line 180 "calc.y"
+#line 191 "calc.y"
     { MipsNot((yyval._name), (yyvsp[(3) - (4)]._name)); ;}
     break;
 
   case 43:
-#line 181 "calc.y"
+#line 192 "calc.y"
     { MipsRelop((yyval._name), (yyvsp[(1) - (3)]._name), (yyvsp[(3) - (3)]._name), (yyvsp[(2) - (3)]._relOp)); ;}
     break;
 
   case 44:
-#line 184 "calc.y"
+#line 195 "calc.y"
     { MipsAdd((yyval._name), (yyvsp[(1) - (3)]._name), (yyvsp[(3) - (3)]._name)); ;}
     break;
 
   case 45:
-#line 185 "calc.y"
+#line 196 "calc.y"
     { (yyval._name) = (yyvsp[(1) - (1)]._name); ;}
     break;
 
   case 46:
-#line 188 "calc.y"
+#line 199 "calc.y"
     { MipsMul((yyval._name), (yyvsp[(1) - (3)]._name), (yyvsp[(3) - (3)]._name)); ;}
     break;
 
   case 47:
-#line 189 "calc.y"
+#line 200 "calc.y"
     { (yyval._name) = (yyvsp[(1) - (1)]._name); ;}
     break;
 
   case 48:
-#line 192 "calc.y"
+#line 203 "calc.y"
     { (yyval._name) = (yyvsp[(2) - (3)]._name); ;}
     break;
 
   case 49:
-#line 193 "calc.y"
+#line 204 "calc.y"
     { Node* node = GetFromTable(table, (yyvsp[(1) - (1)]._name));
                          if(node->_type == STR)
                          {
@@ -1793,13 +1804,13 @@ yyreduce:
     break;
 
   case 50:
-#line 203 "calc.y"
+#line 214 "calc.y"
     { (yyval._name) = (yyvsp[(1) - (1)]._val)._sval; ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1803 "calc.tab.c"
+#line 1814 "calc.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2013,21 +2024,30 @@ yyreturn:
 }
 
 
-#line 206 "calc.y"
+#line 217 "calc.y"
 
 
 int main(int argc, char** argv) 
 {
+  // Openning files
 	extern FILE* yyin;
 	extern FILE* yyout;
   yyin = fopen(argv[1], "r");
   yyout = fopen(argv[2], "w");
 
+  // Parsing
+  FILE* fp = fopen("parseOutput.txt", "w");
 	do
 	{
 		yyparse();
 	} while(!feof(yyin));
 
+  // Closing files
+  fclose(fp);
+  fclose(yyin);
+  fclose(yyout);
+
+  // Freeing
   FreeTable(table);
 	return 0;
 }

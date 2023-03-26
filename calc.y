@@ -1,4 +1,8 @@
 %{
+// Questions
+// Can we use .cpp?
+// Can we use TABLE_SIZE for hash table?
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -15,8 +19,8 @@ Bucket table[TABLE_SIZE];
 %union 
 {
   Type  _type;   /**< Description */
+  Val   _val;    /**< Description */
   char* _name;   /**< Description */
-  Val    _val;   /**< Description */
   AddOp _addOp;  /**< Description */
   RelOp _relOp;  /**< Description */
   MulOp _mulOp;  /**< Description */
@@ -80,7 +84,7 @@ Bucket table[TABLE_SIZE];
 program         :   PROGRAM ID START declerations stmtlist END {}
                 ;
 
-declerations    :   DECL declarlist cdecl {}
+declerations    :   DECL declarlist cdecl {  }
                 | {}
                 ;
  
@@ -93,7 +97,7 @@ decl            :   type COLON list SEMICOLON{ $3 = $1;  /* Setting list's type 
 list            :   ID COMMA list {
                                   $3 = $$;
                                   InsertToTable(table, $1, $$, false);
-                                }
+                                  }
                 |   ID  {
                           InsertToTable(table, $1, $$, false);
                         }
@@ -166,7 +170,14 @@ step            :   ID ASSIGNOP ID ADDOP NUM { Node* node1 = GetFromTable(table,
                                                else
                                                 // Throw exception
                                              }
-	              |   ID ASSIGNOP ID MULOP NUM { /* MipsMul($1, $3, $5); */ }
+	              |   ID ASSIGNOP ID MULOP NUM { Node* node1 = GetFromTable(table, $1);
+                                               Node* node2 = GetFromTable(table, $3);
+                                               Val* val = &($5);
+                                               if (((node1 != NULL) && (node2 != NULL)) && IsAssignValid(node1->_type, val->_type))
+                                                MipsMul(node1->_name, node2->_name, val->_sval);
+                                               else
+                                                // Throw exception
+                                             }
                 ;
 
 boolexpr        :   boolexpr OROP boolterm  { MipsOr($$, $1, $3); }
@@ -207,16 +218,25 @@ factor          :   O_PARENTHESES expression C_PARENTHESES { $$ = $2; }
 
 int main(int argc, char** argv) 
 {
+  // Openning files
 	extern FILE* yyin;
 	extern FILE* yyout;
   yyin = fopen(argv[1], "r");
   yyout = fopen(argv[2], "w");
 
+  // Parsing
+  FILE* fp = fopen("parseOutput.txt", "w");
 	do
 	{
 		yyparse();
 	} while(!feof(yyin));
 
+  // Closing files
+  fclose(fp);
+  fclose(yyin);
+  fclose(yyout);
+
+  // Freeing
   FreeTable(table);
 	return 0;
 }

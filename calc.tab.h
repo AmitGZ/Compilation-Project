@@ -126,11 +126,11 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 16 "calc.y"
+#line 20 "calc.y"
 {
   Type  _type;   /**< Description */
+  Val   _val;    /**< Description */
   char* _name;   /**< Description */
-  Val    _val;   /**< Description */
   AddOp _addOp;  /**< Description */
   RelOp _relOp;  /**< Description */
   MulOp _mulOp;  /**< Description */

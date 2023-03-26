@@ -27,8 +27,12 @@ Node* GetFromTable(const Bucket* table, const char* name)
 
 void InsertToTable(Bucket* table, char* id, Type t, bool isConst)
 {
+    Node* tmp = GetFromTable(table, id);
     if (GetFromTable(table, id) != NULL)
-        yyerror(strcat("Redefinition of variable: ", id));
+    {
+        yyerror(strcat("Redeclaration of variable: ", id)); // Variable name already exists
+        return;
+    }
     int index = Hash(id);
     Node *new_node = (Node*) malloc(sizeof(Node));
     new_node->_name = id;
@@ -66,35 +70,35 @@ bool IsAssignValid(Type type1, Type type2)
 void yyerror(const char* s)
 {
 	fprintf(stderr, "Parse error: %s\n", s);
-	exit(1);
+	//exit(1);
 }
 
 void MipsAdd(char* result, const char* reg1, const char* reg2)
 {
-    
+
 }
 
 void MipsMul(char* result, const char* reg1, const char* reg2)
 {
-    
+
 }
 
 void MipsOr(char* result, const char* reg1, const char* reg2)
 {
-    
+
 }
 
 void MipsAnd(char* result, const char* reg1, const char* reg2)
 {
-    
+
 }
 
 void MipsRelop(char* result, const char* reg1, const char* reg2, RelOp relOp)
 {
-    
+
 }
 
 void MipsNot(char* result, const char* reg1)
 {
-    
+
 }
