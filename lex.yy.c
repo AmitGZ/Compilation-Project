@@ -532,7 +532,7 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "calc.l"
 #line 4 "calc.l"
-#include "structures.h"
+#include "my_structs.h"
 #include "calc.tab.h"
 
 // Global variables
@@ -541,17 +541,17 @@ size_t col = 1U;
 
 static RelOp GetRelOp(const char* s)
 {
-	if (!strcmp(s, "=="))
+	if (strcmp(s, "==") == 0U)
 		return EQ;
-	if (!strcmp(s, "<>"))
+	if (strcmp(s, "<>") == 0U)
 		return NEQ; 
-	if (!strcmp(s, "<="))
+	if (strcmp(s, "<=") == 0U)
 		return LE;
-	if (!strcmp(s, ">="))
+	if (strcmp(s, ">=") == 0U)
 		return GE;
-	if (!strcmp(s, "<"))
+	if (strcmp(s, "<") == 0U)
 		return LT;
-	if (!strcmp(s, ">"))
+	if (strcmp(s, ">") == 0U)
 		return GT;
 
 	// TODO Handle exception
@@ -560,9 +560,9 @@ static RelOp GetRelOp(const char* s)
 
 static MulOp GetMulOp(const char* s)
 {
-	if (!strcmp(s, "/"))
+	if (strcmp(s, "/") == 0U)
 		return DIV;
-	if (!strcmp(s, "*"))
+	if (strcmp(s, "*") == 0U)
 		return MUL;
 
 	// TODO Handle exception
@@ -571,9 +571,9 @@ static MulOp GetMulOp(const char* s)
 
 static AddOp GetAddOp(const char* s)
 {
-	if (!strcmp(s, "+"))
+	if (strcmp(s, "+") == 0U)
 		return ADD;
-	if (!strcmp(s, "-"))
+	if (strcmp(s, "-") == 0U)
 		return SUB;
 
 	// TODO Handle exception
@@ -1025,45 +1025,46 @@ YY_RULE_SETUP
 {
 	fprintf(yyout,"%s",yytext);
 	col += strlen(yytext);
-	yylval._sval = strdup(yytext);
+	yylval._val._sval = strdup(yytext);
+	yylval._val._type = STR;
 	return SENTENCE;
 	}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 99 "calc.l"
+#line 100 "calc.l"
 {
 	fprintf(yyout,"ID(%s)",yytext);
 	col += strlen(yytext);
-	yylval._sval = strdup(yytext);
+	yylval._name = strdup(yytext);
 	return ID;
 	}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 106 "calc.l"
+#line 107 "calc.l"
 {
 	fprintf(yyout," %s",yytext); 
 	col += strlen(yytext);
-	yylval._num._sval = strdup(yytext);
-	yylval._num._type = INTEGER; 
+	yylval._val._sval = strdup(yytext);
+	yylval._val._type = INTEGER; 
 	return NUM;
 	}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 114 "calc.l"
+#line 115 "calc.l"
 {
 	fprintf(yyout,"NUM(%s)",yytext);
 	col += strlen(yytext);
-	yylval._num._sval = strdup(yytext);
-	yylval._num._type = FLOATING; 
+	yylval._val._sval = strdup(yytext);
+	yylval._val._type = FLOATING; 
 	return NUM;
 	}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 122 "calc.l"
+#line 123 "calc.l"
 {
 	fprintf(yyout," %s",yytext);
 	col += strlen(yytext);
@@ -1073,7 +1074,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 129 "calc.l"
+#line 130 "calc.l"
 {
 	fprintf(yyout," %s",yytext);
 	col += strlen(yytext);
@@ -1083,7 +1084,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 136 "calc.l"
+#line 137 "calc.l"
 {
 	fprintf(yyout,"%s",yytext);
 	col += strlen(yytext);
@@ -1093,36 +1094,36 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 143 "calc.l"
+#line 144 "calc.l"
 { fprintf(yyout,"%s",yytext); col += strlen(yytext); return ASSIGNOP; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 144 "calc.l"
+#line 145 "calc.l"
 { fprintf(yyout,"%s",yytext); col += strlen(yytext); return OROP; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 145 "calc.l"
+#line 146 "calc.l"
 { fprintf(yyout,"%s",yytext); col += strlen(yytext); return ANDOP; }
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
-#line 146 "calc.l"
+#line 147 "calc.l"
 { fprintf(yyout,"%s",yytext); col += strlen(yytext); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 147 "calc.l"
+#line 148 "calc.l"
 { fprintf(yyout,"%s",yytext); printf("Lex error: %s, line: %zu, col: %zu\n", yytext, line, col); } // Error
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 148 "calc.l"
+#line 149 "calc.l"
 ECHO;
 	YY_BREAK
-#line 1125 "lex.yy.c"
+#line 1126 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2127,6 +2128,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 148 "calc.l"
+#line 149 "calc.l"
 
 

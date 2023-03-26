@@ -69,8 +69,8 @@
      C_BRACKET = 285,
      EXCLAMATION = 286,
      SEMICOLON = 287,
-     SENTENCE = 288,
-     ID = 289,
+     ID = 288,
+     SENTENCE = 289,
      NUM = 290,
      RELOP = 291,
      ADDOP = 292,
@@ -111,8 +111,8 @@
 #define C_BRACKET 285
 #define EXCLAMATION 286
 #define SEMICOLON 287
-#define SENTENCE 288
-#define ID 289
+#define ID 288
+#define SENTENCE 289
 #define NUM 290
 #define RELOP 291
 #define ADDOP 292
@@ -126,18 +126,17 @@
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 13 "calc.y"
+#line 16 "calc.y"
 {
   Type  _type;   /**< Description */
-  int   _ival;   /**< Description */
-  char* _sval;   /**< Description */
-  Num   _num;    /**< Description */
+  char* _name;   /**< Description */
+  Val    _val;   /**< Description */
   AddOp _addOp;  /**< Description */
   RelOp _relOp;  /**< Description */
   MulOp _mulOp;  /**< Description */
 }
 /* Line 1529 of yacc.c.  */
-#line 141 "calc.tab.h"
+#line 140 "calc.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

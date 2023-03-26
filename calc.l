@@ -1,7 +1,7 @@
 %option noyywrap
 
 %{
-#include "structures.h"
+#include "my_structs.h"
 #include "calc.tab.h"
 
 // Global variables
@@ -10,17 +10,17 @@ size_t col = 1U;
 
 static RelOp GetRelOp(const char* s)
 {
-	if (!strcmp(s, "=="))
+	if (strcmp(s, "==") == 0U)
 		return EQ;
-	if (!strcmp(s, "<>"))
+	if (strcmp(s, "<>") == 0U)
 		return NEQ; 
-	if (!strcmp(s, "<="))
+	if (strcmp(s, "<=") == 0U)
 		return LE;
-	if (!strcmp(s, ">="))
+	if (strcmp(s, ">=") == 0U)
 		return GE;
-	if (!strcmp(s, "<"))
+	if (strcmp(s, "<") == 0U)
 		return LT;
-	if (!strcmp(s, ">"))
+	if (strcmp(s, ">") == 0U)
 		return GT;
 
 	// TODO Handle exception
@@ -29,9 +29,9 @@ static RelOp GetRelOp(const char* s)
 
 static MulOp GetMulOp(const char* s)
 {
-	if (!strcmp(s, "/"))
+	if (strcmp(s, "/") == 0U)
 		return DIV;
-	if (!strcmp(s, "*"))
+	if (strcmp(s, "*") == 0U)
 		return MUL;
 
 	// TODO Handle exception
@@ -40,9 +40,9 @@ static MulOp GetMulOp(const char* s)
 
 static AddOp GetAddOp(const char* s)
 {
-	if (!strcmp(s, "+"))
+	if (strcmp(s, "+") == 0U)
 		return ADD;
-	if (!strcmp(s, "-"))
+	if (strcmp(s, "-") == 0U)
 		return SUB;
 
 	// TODO Handle exception
@@ -92,30 +92,31 @@ SPACES [ \t\n\r]
 \"({LETTER}|\.|,|\!|\?|{SPACES}|{DIGIT})*\" {
 	fprintf(yyout,"%s",yytext);
 	col += strlen(yytext);
-	yylval._sval = strdup(yytext);
+	yylval._val._sval = strdup(yytext);
+	yylval._val._type = STR;
 	return SENTENCE;
 	}
 
 {LETTER}({LETTER}|{DIGIT}){0,8} {
 	fprintf(yyout,"ID(%s)",yytext);
 	col += strlen(yytext);
-	yylval._sval = strdup(yytext);
+	yylval._name = strdup(yytext);
 	return ID;
 	}
 
 {DIGIT}+ 	{
 	fprintf(yyout," %s",yytext); 
 	col += strlen(yytext);
-	yylval._num._sval = strdup(yytext);
-	yylval._num._type = INTEGER; 
+	yylval._val._sval = strdup(yytext);
+	yylval._val._type = INTEGER; 
 	return NUM;
 	}
 
 {DIGIT}+\.{DIGIT}* {
 	fprintf(yyout,"NUM(%s)",yytext);
 	col += strlen(yytext);
-	yylval._num._sval = strdup(yytext);
-	yylval._num._type = FLOATING; 
+	yylval._val._sval = strdup(yytext);
+	yylval._val._type = FLOATING; 
 	return NUM;
 	}
 

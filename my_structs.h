@@ -8,4 +8,4 @@ typedef struct
 {
     Type _type;
     char* _sval;
-} Num;
+} Val;
