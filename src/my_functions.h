@@ -37,22 +37,22 @@ void FreeBucket(Bucket* bucket);
 void FreeTable(Bucket* table);
 
 // Write addition of two registers and store in result
-void MipsAdd(char* result, const char* reg1, const char* reg2);
+void MipsAdd(FILE* file, char* result, const char* reg1, const char* reg2);
 
 // Write multiplication of two registers and store in result
-void MipsMul(char* result, const char* reg1, const char* reg2);
+void MipsMul(FILE* file, char* result, const char* reg1, const char* reg2);
 
 // Write or operation of two registers and store in result
-void MipsOr(char* result, const char* reg1, const char* reg2);
+void MipsOr(FILE* file, char* result, const char* reg1, const char* reg2);
 
 // Write and operation of two registers and store in result
-void MipsAnd(char* result, const char* reg1, const char* reg2);
+void MipsAnd(FILE* file, char* result, const char* reg1, const char* reg2);
 
 // Write relational operation of two registers and store in result
-void MipsRelop(char* result, const char* reg1, const char* reg2, RelOp relOp);
+void MipsRelop(FILE* file, char* result, const char* reg1, const char* reg2, RelOp relOp);
 
 // Write not operation of reg1 into result
-void MipsNot(char* result, const char* reg1);
+void MipsNot(FILE* file, char* result, const char* reg1);
 
 // Throws error and exits
 void yyerror(const char* s);

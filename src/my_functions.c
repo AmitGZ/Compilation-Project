@@ -73,32 +73,32 @@ void yyerror(const char* s)
 	//exit(1);
 }
 
-void MipsAdd(char* result, const char* reg1, const char* reg2)
+void MipsAdd(FILE* file, char* result, const char* reg1, const char* reg2)
 {
 
 }
 
-void MipsMul(char* result, const char* reg1, const char* reg2)
+void MipsMul(FILE* file, char* result, const char* reg1, const char* reg2)
 {
 
 }
 
-void MipsOr(char* result, const char* reg1, const char* reg2)
+void MipsOr(FILE* file, char* result, const char* reg1, const char* reg2)
 {
 
 }
 
-void MipsAnd(char* result, const char* reg1, const char* reg2)
+void MipsAnd(FILE* file, char* result, const char* reg1, const char* reg2)
 {
 
 }
 
-void MipsRelop(char* result, const char* reg1, const char* reg2, RelOp relOp)
+void MipsRelop(FILE* file, char* result, const char* reg1, const char* reg2, RelOp relOp)
 {
 
 }
 
-void MipsNot(char* result, const char* reg1)
+void MipsNot(FILE* file, char* result, const char* reg1)
 {
 
 }

@@ -12,6 +12,7 @@
 extern int yylex();
 extern int yyparse();
 
+FILE* mips;
 Bucket table[TABLE_SIZE];
 
 %}
@@ -166,7 +167,7 @@ step            :   ID ASSIGNOP ID ADDOP NUM { Node* node1 = GetFromTable(table,
                                                Node* node2 = GetFromTable(table, $3);
                                                Val* val = &($5);
                                                if (((node1 != NULL) && (node2 != NULL)) && IsAssignValid(node1->_type, val->_type))
-                                                MipsAdd(node1->_name, node2->_name, val->_sval);
+                                                MipsAdd(mips, node1->_name, node2->_name, val->_sval);
                                                else
                                                 // Throw exception
                                              }
@@ -174,29 +175,29 @@ step            :   ID ASSIGNOP ID ADDOP NUM { Node* node1 = GetFromTable(table,
                                                Node* node2 = GetFromTable(table, $3);
                                                Val* val = &($5);
                                                if (((node1 != NULL) && (node2 != NULL)) && IsAssignValid(node1->_type, val->_type))
-                                                MipsMul(node1->_name, node2->_name, val->_sval);
+                                                MipsMul(mips, node1->_name, node2->_name, val->_sval);
                                                else
                                                 // Throw exception
                                              }
                 ;
 
-boolexpr        :   boolexpr OROP boolterm  { MipsOr($$, $1, $3); }
+boolexpr        :   boolexpr OROP boolterm  { MipsOr(mips, $$, $1, $3); }
                 |   boolterm { $$ = $1; }
                 ;
 
-boolterm        :   boolterm ANDOP boolfactor { MipsAnd($$, $1, $3); }
+boolterm        :   boolterm ANDOP boolfactor { MipsAnd(mips, $$, $1, $3); }
                 |   boolfactor { $$ = $1; }
                 ;
         
-boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES { MipsNot($$, $3); }
-                |   expression RELOP expression { MipsRelop($$, $1, $3, $2); }
+boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES { MipsNot(mips, $$, $3); }
+                |   expression RELOP expression { MipsRelop(mips, $$, $1, $3, $2); }
                 ;  
 
-expression      :   expression ADDOP term { MipsAdd($$, $1, $3); }
+expression      :   expression ADDOP term { MipsAdd(mips, $$, $1, $3); }
                 |   term { $$ = $1; }
                 ;
 
-term            :   term MULOP factor { MipsMul($$, $1, $3); }
+term            :   term MULOP factor { MipsMul(mips, $$, $1, $3); }
                 |   factor { $$ = $1; }
                 ;
 
@@ -223,16 +224,15 @@ int main(int argc, char** argv)
 	extern FILE* yyout;
   yyin = fopen(argv[1], "r");
   yyout = fopen(argv[2], "w");
+  mips = fopen(argv[3], "w");
 
-  // Parsing
-  FILE* fp = fopen("parseOutput.txt", "w");
 	do
 	{
 		yyparse();
 	} while(!feof(yyin));
 
   // Closing files
-  fclose(fp);
+  fclose(mips);
   fclose(yyin);
   fclose(yyout);
 
