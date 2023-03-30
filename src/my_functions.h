@@ -54,5 +54,21 @@ void MipsRelop(FILE* file, char* result, const char* reg1, const char* reg2, Rel
 // Write not operation of reg1 into result
 void MipsNot(FILE* file, char* result, const char* reg1);
 
+void MipsIn(FILE* file, const Node* node);
+
+void MipsAdd(FILE* file, char* result, const char* reg1, const char* reg2);
+
+void MipsMul(FILE* file, char* result, const char* reg1, const char* reg2);
+
+void MipsOr(FILE* file, char* result, const char* reg1, const char* reg2);
+
+void MipsAnd(FILE* file, char* result, const char* reg1, const char* reg2);
+
+void MipsRelop(FILE* file, char* result, const char* reg1, const char* reg2, RelOp relOp);
+
+void MipsNot(FILE* file, char* result, const char* reg1);
+
+void MipsDecl(FILE* file, Type t, const char* id, const char* val);
+
 // Throws error and exits
 void yyerror(const char* s);

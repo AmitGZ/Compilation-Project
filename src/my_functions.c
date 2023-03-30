@@ -37,6 +37,7 @@ void InsertToTable(Bucket* table, char* id, Type t, bool isConst)
     Node *new_node = (Node*) malloc(sizeof(Node));
     new_node->_name = id;
     new_node->_isConst = isConst;
+    new_node->_type = t;
     new_node->_next = table[index]._head;
     table[index]._head = new_node;
 }
@@ -71,6 +72,56 @@ void yyerror(const char* s)
 {
 	fprintf(stderr, "Parse error: %s\n", s);
 	//exit(1);
+}
+
+void MipsDecl(FILE* file, Type t, const char* id, const char* val)
+{
+    char* tStr;
+    if (t == STR)
+    {
+        tStr = "asciiz";
+    }
+    else if (t == INTEGER)
+    {
+        tStr = "word";
+    }
+    else
+    {
+        tStr = "float";
+    }
+    fprintf(file, "\t%s:\t.%s %s\n", id, tStr, val);
+}
+
+// li $v0 8 
+// la $a0, id
+// li $a1, buffersize
+// syscall
+void MipsIn(FILE* file, const Node* node)
+{
+    printf("%s %d\n", node->_name, node->_type);
+    if (node->_type == STR)
+    {
+        fprintf(file, "\tli $v0, 8    # set $v0 to indicate we want to read input\n");
+        fprintf(file, "\tla $a0, %s   # Buffer adress\n", node->_name);
+        fprintf(file, "\tli $a1, 256, # Buffer size of 256 bytes\n");
+        fprintf(file, "\tsyscall      # execute the syscall instruction to read the input\n");
+
+    }
+    else
+    {
+        int readCmd;
+        if (node->_type == INTEGER)
+        {
+            readCmd = 5;
+        }
+        else
+        {
+            readCmd = 6;
+        }
+        fprintf(file, "\tli $v0, %d    # set $v0 to indicate we want to read input\n", readCmd);
+        fprintf(file, "\tsyscall      # execute the syscall instruction to read the input\n");
+        fprintf(file, "\tsw $v0, %s   # store the input\n\n", node->_name);
+    }
 }
 
 void MipsAdd(FILE* file, char* result, const char* reg1, const char* reg2)

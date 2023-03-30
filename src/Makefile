@@ -1,7 +1,7 @@
 all: calc
 
 calc.tab.c calc.tab.h:	calc.y
-	bison -t -v -d calc.y
+	bison -t -d calc.y
 
 lex.yy.c: calc.l calc.tab.h
 	flex calc.l
@@ -12,5 +12,5 @@ calc: lex.yy.c calc.tab.c calc.tab.h
 clean:
 	rm ../bin/calc calc.tab.c lex.yy.c calc.tab.h calc.output
 
-create:
-	../bin/calc "../TestFiles/input1.txt" "../bin/output.txt" "../bin/mips.asm"
+compile:
+	../bin/calc "../TestFiles/input1.txt" "../bin/output.txt" "../bin/mips.s"

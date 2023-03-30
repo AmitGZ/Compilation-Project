@@ -13,6 +13,7 @@ extern int yylex();
 extern int yyparse();
 
 FILE* mips;
+Type currentType;
 Bucket table[TABLE_SIZE];
 
 %}
@@ -85,7 +86,7 @@ Bucket table[TABLE_SIZE];
 program         :   PROGRAM ID START declerations stmtlist END {}
                 ;
 
-declerations    :   DECL declarlist cdecl {  }
+declerations    :   DECL  { fprintf(mips, ".data\n"); } declarlist cdecl
                 | {}
                 ;
  
@@ -93,14 +94,15 @@ declarlist      :   declarlist decl {}
                 |   decl {}
                 ;
  
-decl            :   type COLON list SEMICOLON{ $3 = $1;  /* Setting list's type */ }
+decl            :   type { currentType = $1 } COLON list SEMICOLON
 
 list            :   ID COMMA list {
-                                  $3 = $$;
-                                  InsertToTable(table, $1, $$, false);
+                                    InsertToTable(table, $1, currentType, false);
+                                    MipsDecl(mips, currentType, $1, "");
                                   }
                 |   ID  {
-                          InsertToTable(table, $1, $$, false);
+                          InsertToTable(table, $1, currentType, false);
+                          MipsDecl(mips, currentType, $1, "");
                         }
                 ;
 
@@ -141,7 +143,17 @@ out_stmt        :   OUT O_PARENTHESES expression C_PARENTHESES SEMICOLON {}
                 |   OUT O_PARENTHESES SENTENCE C_PARENTHESES SEMICOLON {}
                 ;
 
-in_stmt         :   IN O_PARENTHESES ID C_PARENTHESES SEMICOLON {}
+in_stmt         :   IN O_PARENTHESES ID C_PARENTHESES SEMICOLON { 
+                    Node* node = GetFromTable(table, $3);
+                    if (node != NULL)
+                    {
+                      MipsIn(mips, node); 
+                    }
+                    else
+                    {
+                      // yyerror
+                    }
+                    }
                 ;
 
 assignment_stmt :   ID ASSIGNOP expression SEMICOLON {  }
