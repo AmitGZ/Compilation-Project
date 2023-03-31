@@ -89,13 +89,9 @@ void MipsDecl(FILE* file, Type t, const char* id, const char* val)
     {
         tStr = "float";
     }
-    fprintf(file, "\t%s:\t.%s %s\n", id, tStr, val);
+    fprintf(file, "%s:\t.%s %s\n", id, tStr, val);
 }
 
-// li $v0 8 
-// la $a0, id
-// li $a1, buffersize
-// syscall
 void MipsIn(FILE* file, const Node* node)
 {
     printf("%s %d\n", node->_name, node->_type);
@@ -118,7 +114,7 @@ void MipsIn(FILE* file, const Node* node)
         {
             readCmd = 6;
         }
-        fprintf(file, "\tli $v0, %d    # set $v0 to indicate we want to read input\n", readCmd);
+        fprintf(file, "\tli $v0, %d   # set $v0 to indicate we want to read input\n", readCmd);
         fprintf(file, "\tsyscall      # execute the syscall instruction to read the input\n");
         fprintf(file, "\tsw $v0, %s   # store the input\n\n", node->_name);
     }
