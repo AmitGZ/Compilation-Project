@@ -126,6 +126,24 @@ void MipsExit(FILE* file);
 const char* MipsLogOp(FILE* file, LogOp logOp, const char* reg1, const char* reg2);
 
 /**
+ * @brief 
+ * 
+ * @param file 
+ * @param val 
+ * @param reg 
+ */
+void MipsLoad(FILE* file, const Val* val, char reg);
+
+/**
+ * @brief 
+ * 
+ * @param file 
+ * @param node 
+ * @param p 
+ */
+void MipsAssign(FILE* file, const Node* node, const void* p);
+
+/**
  * @brief throws error
  * @param s error description
  */

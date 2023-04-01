@@ -1,4 +1,6 @@
 #pragma once
+#include <stdbool.h>
+
 typedef enum { INTEGER, FLOATING, STR, TYPE_COUNT } Type;
 typedef enum { EQ, NEQ, LT, GT, LE, GE, REL_OP_COUNT } RelOp;
 typedef enum { ADD, SUB, ADD_OP_COUNT} AddOp;
@@ -9,6 +11,7 @@ static const char* Temporaries[] = { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "
 
 typedef struct
 {
-    Type _type;
-    char* _sval;
+    Type        _type;        /**< Description */
+    const char* _sval;        /**< Description */
+    bool        _isImmediate; /**< Description */
 } Val;

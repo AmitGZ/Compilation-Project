@@ -77,9 +77,9 @@ Bucket table[TABLE_SIZE];
 
 %type <_type> list
 %type <_type> type
-%type <_name> factor
-%type <_name> term
-%type <_name> expression
+%type <_val>  factor
+%type <_val>  term
+%type <_val>  expression
 %type <_name> boolfactor
 %type <_name> boolterm
 %type <_name> boolexpr
@@ -140,7 +140,26 @@ stmtlist        :  stmtlist stmt {}
                 ;
 
 stmt            :   assignment_stmt {}
-                |   ID ASSIGNOP SENTENCE SEMICOLON {}
+                |   ID ASSIGNOP SENTENCE SEMICOLON{ 
+                                                    Node* node = GetFromTable(table, $1);
+                                                    if (node != NULL)
+                                                    {
+                                                      if (node->_type == STR)
+                                                      {
+                                                        MipsLoad(mips, &($3), '0'); 
+                                                        MipsAssign(mips, node, "$s0");
+                                                      }
+                                                      else
+                                                      {
+                                                        yyerror("Can't assign string to non string type\n");
+                                                      }
+                                                    }
+                                                    else
+                                                    {
+                                                      yyerror(strcat("ID does not exist: ", $1));
+                                                    }
+
+                                                  }
                 |   control_stmt {}
                 |   in_stmt {}
                 |   out_stmt {}
@@ -207,29 +226,59 @@ boolterm        :   boolterm ANDOP boolfactor { $$ = MipsLogOp(mips, AND, $1, $3
                 ;
         
 boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES { $$ = MipsLogOp(mips, NOR, $3, "$zero"); }
-                |   expression RELOP expression { $$ = MipsRelOp(mips, $2, $1, $3); }
+                |   expression RELOP expression { $$ = MipsRelOp(mips, $2, $1._sval, $3._sval); }
                 ;  
 
-expression      :   expression ADDOP term { $$ = MipsAddOp(mips, $2, $1, $3); }
+expression      :   expression ADDOP term { 
+                                            $$._isImmediate = false;
+                                            $$._type = INTEGER;
+                                            $$._sval = MipsAddOp(mips, $2, $1._sval, $3._sval);
+                                          }
                 |   term { $$ = $1; }
                 ;
 
-term            :   term MULOP factor { $$ = MipsMulOp(mips, $2, $1, $3); }
-                |   factor { $$ = $1; }
+term            :   term MULOP factor { 
+                                        Val* val1 = &($1);
+                                        Val* val2 = &($3);
+                                        if((val1->_type == STR) || (val2->_type == STR))
+                                        {
+                                          yyerror("Can't perform arithmetic operations on type string\n");
+                                        }
+                                        else
+                                        {
+                                          $$._sval = MipsMulOp(mips, $2, val1->_sval, val2->_sval); 
+                                          $$._isImmediate = false;
+                                          $$._type = ((val1->_type == FLOATING) || (val2->_type == FLOATING)) ? FLOATING : INTEGER;
+                                        }
+                                      }
+                |   factor  {
+                              if ($1._type == STR)
+                              {
+                                MipsLoad(mips, &($1), '0'); 
+                                $$ = $1;
+                              }
+                              else
+                              {
+
+                              }
+                            }
                 ;
 
 factor          :   O_PARENTHESES expression C_PARENTHESES { $$ = $2; }
-                |   ID{ Node* node = GetFromTable(table, $1);
-                        if(node->_type == STR)
+                |   ID{ 
+                        Node* node = GetFromTable(table, $1);
+                        if (node != NULL)
                         {
-                         yyerror("Can't perform arithmetic operations on type string\n");
+                          $$._type = node->_type;
+                          $$._sval = node->_name;
+                          $$._isImmediate = false;
                         }
                         else
                         {
-                         $$ = $1;
+                          yyerror(strcat("ID does not exist: ", $1));
                         }
                       }
-                |   NUM { $$ = $1._sval; }
+                |   NUM { $$ = $1 }
                 ;
 
 %%

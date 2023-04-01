@@ -95,6 +95,7 @@ SPACES [ \t\n\r]
 	col += strlen(yytext);
 	yylval._val._sval = strdup(yytext);
 	yylval._val._type = STR;
+	yylval._val._isImmediate = true;
 	return SENTENCE;
 	}
 
@@ -110,6 +111,7 @@ SPACES [ \t\n\r]
 	col += strlen(yytext);
 	yylval._val._sval = strdup(yytext);
 	yylval._val._type = INTEGER; 
+	yylval._val._isImmediate = false;
 	return NUM;
 	}
 
@@ -118,6 +120,7 @@ SPACES [ \t\n\r]
 	col += strlen(yytext);
 	yylval._val._sval = strdup(yytext);
 	yylval._val._type = FLOATING; 
+	yylval._val._isImmediate = false;
 	return NUM;
 	}
 

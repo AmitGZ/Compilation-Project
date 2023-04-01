@@ -113,7 +113,7 @@ void MipsIn(FILE* file, const Node* node)
 
     if (node->_type == STR)
     {
-        fprintf(file, "\tli $v0, 8    # set $v0 to indicate we want to read input\n");
+        fprintf(file, "\n\tli $v0, 8    # set $v0 to indicate we want to read input\n");
         fprintf(file, "\tla $a0, %s   # Buffer adress\n", node->_name);
         fprintf(file, "\tli $a1, 256, # Buffer size of 256 bytes\n");
         fprintf(file, "\tsyscall      # execute the syscall instruction to read the input\n");
@@ -130,9 +130,9 @@ void MipsIn(FILE* file, const Node* node)
         {
             readCmd = 6;
         }
-        fprintf(file, "\tli $v0, %d   # set $v0 to indicate we want to read input\n", readCmd);
+        fprintf(file, "\n\tli $v0, %d   # set $v0 to indicate we want to read input\n", readCmd);
         fprintf(file, "\tsyscall      # execute the syscall instruction to read the input\n");
-        fprintf(file, "\tsw $v0, %s   # store the input\n\n", node->_name);
+        fprintf(file, "\tsw $v0, %s   # store the input\n", node->_name);
     }
 }
 
@@ -197,4 +197,61 @@ void MipsExit(FILE* file)
     fprintf(file, "\n\t# exit the program\
                    \n\tli $v0, 10\
                    \n\tsyscall");
+}
+
+void MipsLoad(FILE* file, const Val* val, char reg)
+{
+    assert((file != NULL) && (val != NULL) && (val->_type < TYPE_COUNT) && (val->_sval != NULL));
+
+    if (val->_type == STR)
+    {
+        if (val->_isImmediate)
+        {
+            size_t len = strlen(val->_sval);
+            
+            fprintf(file, "\n\t# allocate space on the stack for the string\n"  \
+                          "\tli $t0, %zu\n"                                   \
+                          "\taddi $t0, $t0, 1 # add 1 for null terminator\n"  \
+                          "\tadd $sp, $sp, -$t0\n", len);
+
+            fprintf(file, "\n\t# write the string %s to the allocated space on the stack\n", val->_sval);
+            for (size_t i = 0U; i < len; ++i)
+            {
+                fprintf(file, "\tli $t1, \'%c\'\n", val->_sval[i]);
+                fprintf(file, "\tsw $t1, 0($sp)\n");
+            }
+            fprintf(file, "\n\t# store pointer to string in $s0\n");
+            fprintf(file, "\tmove $s0, $sp\n");
+        }
+        else
+        {
+            fprintf(file, "\n\tla $t%c, %s\n", reg, val->_sval);
+        }
+    }
+    else if (val->_type == INTEGER)
+    {
+        if (val->_isImmediate)
+        {
+            fprintf(file, "\n\tli $t%c, %s\n", reg, val->_sval);
+        }
+        else
+        {
+            fprintf(file, "\n\tlw $t%c, %s\n", reg, val->_sval);
+        }
+    }
+    else // FLOATING
+    {
+        if (val->_isImmediate)
+        {
+            // reinterpret cast to int
+            float f = strtof(val->_sval, NULL);
+            int* x = (int*)&(f);
+            fprintf(file, "\n\tli $t%c, 0x%x\n", reg, (*x));
+            fprintf(file, "\tmtc1 %s, $f%c\n", val->_sval, reg);
+        }
+        else
+        {
+            fprintf(file, "\n\tl.s $f%c, %s\n", reg, val->_sval);
+        }
+    }
 }
