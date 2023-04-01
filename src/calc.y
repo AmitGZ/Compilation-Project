@@ -11,6 +11,7 @@
 
 extern int yylex();
 extern int yyparse();
+extern size_t errorCount;
 
 FILE* mips;
 Type currentType;
@@ -62,6 +63,7 @@ Bucket table[TABLE_SIZE];
 %token C_BRACKET
 %token EXCLAMATION
 %token SEMICOLON
+%token ERROR
 
 %token <_name> ID
 %token <_val> SENTENCE
@@ -119,13 +121,15 @@ type            :   INT { $$ = INTEGER }
 cdecl           :   FINAL type ID ASSIGNOP NUM SEMICOLON cdecl{
                                                                 Type my_type = $2;
                                                                 Val my_val = $5;  
-                                                                if(!IsAssignValid(my_type, my_val._type))
+
+                                                                if(IsAssignValid(my_type, my_val._type))
                                                                 {
-                                                                  // yyerror("Invalid type conversion, cannot convert variable: \"%s\" of type %s to \"%s\"" , my_val._name, my_val._type, my_type);
+                                                                  InsertToTable(table, $3, my_type, true);
+                                                                  //MipsDecl(mips, my_type, my_val., my_val._sval);
                                                                 }
                                                                 else
                                                                 {
-                                                                  InsertToTable(table, $3, my_type, true);
+                                                                  // yyerror("Invalid type conversion, cannot convert variable: \"%s\" of type %s to \"%s\"" , my_val._name, my_val._type, my_type);
                                                                 }
                                                               }
                 | {}
@@ -243,11 +247,17 @@ int main(int argc, char** argv)
 	{
 		yyparse();
 	} while(!feof(yyin));
-
+  
   // Closing files
   fclose(mips);
   fclose(yyin);
   fclose(yyout);
+
+  printf("error Count: %zu\n", errorCount);
+  if(errorCount > 0U)
+  {
+    remove(argv[3]); // Removing compiled file in case of error
+  }
 
   // Freeing
   FreeTable(table);

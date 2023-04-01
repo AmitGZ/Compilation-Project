@@ -1,5 +1,7 @@
 #include "my_functions.h"
 
+extern size_t errorCount;
+
 int Hash(const char* key)
 {
     assert(key != NULL);
@@ -81,8 +83,8 @@ bool IsAssignValid(Type type1, Type type2)
 
 void yyerror(const char* s)
 {
+    errorCount++;
 	fprintf(stderr, "Parse error: %s\n", s);
-	//exit(1);
 }
 
 void MipsDecl(FILE* file, Type t, const char* id, const char* val)
@@ -109,7 +111,6 @@ void MipsIn(FILE* file, const Node* node)
 {
     assert((file != NULL) && (node != NULL));
 
-    printf("%s %d\n", node->_name, node->_type);
     if (node->_type == STR)
     {
         fprintf(file, "\tli $v0, 8    # set $v0 to indicate we want to read input\n");
@@ -158,7 +159,20 @@ const char* MipsRelOp(FILE* file, RelOp relOp, const char* reg1, const char* reg
 
 void MipsAssign(FILE* file, const Node* node, const void* p)
 {
-    assert((file != NULL) && (node != NULL) && (p != NULL));
+    assert((file != NULL) && (node != NULL) && (node->_type < TYPE_COUNT) && (p != NULL));
+
+    if (node->_type == STR)
+    {
+
+    }
+    else if (node->_type == INTEGER)
+    {
+
+    }
+    else // FLOATING
+    {
+
+    }
 
 }
 
@@ -179,6 +193,7 @@ const char* MipsLogOp(FILE* file, LogOp logOp, const char* reg1, const char* reg
 void MipsExit(FILE* file)
 {   
     assert(file != NULL);
+
     fprintf(file, "\n\t# exit the program\
                    \n\tli $v0, 10\
                    \n\tsyscall");

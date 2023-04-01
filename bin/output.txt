@@ -1,4 +1,4 @@
-1. program  ID(Min)   COMMENT
+1. program  ID(Min)  COMMENT
 2. start
 3. decl real : ID(a),ID(b),ID(c),ID(e);
 4.     string: ID(d);
