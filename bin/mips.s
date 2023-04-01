@@ -5,8 +5,8 @@ b:	.float
 a:	.float 
 d:	.asciiz 
 
-	.text
-	.globl main
+	.text                                                                                           
+	.globl main                                                                                           
 
 main:
 	li $v0, 6   # set $v0 to indicate we want to read input
@@ -17,3 +17,7 @@ main:
 	syscall      # execute the syscall instruction to read the input
 	sw $v0, b   # store the input
 
+
+	# exit the program                   
+	li $v0, 10                   
+	syscall

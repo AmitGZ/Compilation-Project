@@ -20,12 +20,12 @@ Bucket table[TABLE_SIZE];
 
 %union 
 {
-  Type  _type;   /**< Description */
-  Val   _val;    /**< Description */
-  char* _name;   /**< Description */
-  AddOp _addOp;  /**< Description */
-  RelOp _relOp;  /**< Description */
-  MulOp _mulOp;  /**< Description */
+  Type        _type;   /**< Description */
+  Val         _val;    /**< Description */
+  const char* _name;   /**< Description */
+  AddOp       _addOp;  /**< Description */
+  RelOp       _relOp;  /**< Description */
+  MulOp       _mulOp;  /**< Description */
 }
 
 /* tokens & type of gramer variables */
@@ -83,10 +83,14 @@ Bucket table[TABLE_SIZE];
 %type <_name> boolexpr
 
 %%
-program         :   PROGRAM ID START declerations stmtlist END {}
+program         :   PROGRAM ID START declerations stmtlist END{ MipsExit(mips); }
                 ;
 
-declerations    :   DECL  { fprintf(mips, "\t.data\n"); } declarlist cdecl { fprintf(mips, "\n\t.text\n\t.globl main\n\nmain:\n"); /* Start main scope */ }
+declerations    :   DECL { fprintf(mips, "\t.data\n"); } declarlist cdecl { 
+                                                                            fprintf(mips, "\n\t.text\
+                                                                                           \n\t.globl main\
+                                                                                           \n\nmain:\n"); /* Start main scope */ 
+                                                                          }
                 | {}
                 ;
  
@@ -112,18 +116,18 @@ type            :   INT { $$ = INTEGER }
                 ;  
  
 /* the value of id should not be changed during the program*/
-cdecl           :   FINAL type ID ASSIGNOP NUM SEMICOLON cdecl {
-                      Type my_type = $2;
-                      Val my_val = $5;  
-                      if(!IsAssignValid(my_type, my_val._type))
-                      {
-                        // yyerror("Invalid type conversion, cannot convert variable: \"%s\" of type %s to \"%s\"" , my_val._name, my_val._type, my_type);
-                      }
-                      else
-                      {
-                        InsertToTable(table, $3, my_type, true);
-                      }
-                }
+cdecl           :   FINAL type ID ASSIGNOP NUM SEMICOLON cdecl{
+                                                                Type my_type = $2;
+                                                                Val my_val = $5;  
+                                                                if(!IsAssignValid(my_type, my_val._type))
+                                                                {
+                                                                  // yyerror("Invalid type conversion, cannot convert variable: \"%s\" of type %s to \"%s\"" , my_val._name, my_val._type, my_type);
+                                                                }
+                                                                else
+                                                                {
+                                                                  InsertToTable(table, $3, my_type, true);
+                                                                }
+                                                              }
                 | {}
                 ; 
 
@@ -144,16 +148,9 @@ out_stmt        :   OUT O_PARENTHESES expression C_PARENTHESES SEMICOLON {}
                 ;
 
 in_stmt         :   IN O_PARENTHESES ID C_PARENTHESES SEMICOLON { 
-                    Node* node = GetFromTable(table, $3);
-                    if (node != NULL)
-                    {
-                      MipsIn(mips, node); 
-                    }
-                    else
-                    {
-                      // yyerror
-                    }
-                    }
+                                                                  Node* node = GetFromTable(table, $3);
+                                                                  MipsIn(mips, node); 
+                                                                }
                 ;
 
 assignment_stmt :   ID ASSIGNOP expression SEMICOLON {  }
@@ -175,55 +172,59 @@ cases           :   CASE NUM COLON stmtlist BREAK SEMICOLON cases {}
                 |   DEFAULT COLON stmtlist {}
                 ;
 
-step            :   ID ASSIGNOP ID ADDOP NUM { Node* node1 = GetFromTable(table, $1);
-                                               Node* node2 = GetFromTable(table, $3);
-                                               Val* val = &($5);
-                                               if (((node1 != NULL) && (node2 != NULL)) && IsAssignValid(node1->_type, val->_type))
-                                                MipsAdd(mips, node1->_name, node2->_name, val->_sval);
-                                               else
+step            :   ID ASSIGNOP ID ADDOP NUM{ 
+                                              Node* node1 = GetFromTable(table, $1);
+                                              Node* node2 = GetFromTable(table, $3);
+                                              Val* val = &($5);
+                                              AddOp addOp = $4;
+                                              if (((node1 != NULL) && (node2 != NULL)) && IsAssignValid(node1->_type, val->_type))
+                                                node1->_name = MipsAddOp(mips, addOp, node2->_name, val->_sval);
+                                              else
                                                 // Throw exception
-                                             }
-	              |   ID ASSIGNOP ID MULOP NUM { Node* node1 = GetFromTable(table, $1);
-                                               Node* node2 = GetFromTable(table, $3);
-                                               Val* val = &($5);
-                                               if (((node1 != NULL) && (node2 != NULL)) && IsAssignValid(node1->_type, val->_type))
-                                                MipsMul(mips, node1->_name, node2->_name, val->_sval);
-                                               else
+                                            }
+	              |   ID ASSIGNOP ID MULOP NUM{ 
+                                              Node* node1 = GetFromTable(table, $1);
+                                              Node* node2 = GetFromTable(table, $3);
+                                              Val* val = &($5);
+                                              MulOp mulOp = $4;
+                                              if (((node1 != NULL) && (node2 != NULL)) && IsAssignValid(node1->_type, val->_type))
+                                                node1->_name = MipsMulOp(mips, mulOp, node2->_name, val->_sval);
+                                              else
                                                 // Throw exception
-                                             }
+                                            }
                 ;
 
-boolexpr        :   boolexpr OROP boolterm  { MipsOr(mips, $$, $1, $3); }
+boolexpr        :   boolexpr OROP boolterm  { $$ = MipsLogOp(mips, OR, $1, $3); }
                 |   boolterm { $$ = $1; }
                 ;
 
-boolterm        :   boolterm ANDOP boolfactor { MipsAnd(mips, $$, $1, $3); }
+boolterm        :   boolterm ANDOP boolfactor { $$ = MipsLogOp(mips, AND, $1, $3); }
                 |   boolfactor { $$ = $1; }
                 ;
         
-boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES { MipsNot(mips, $$, $3); }
-                |   expression RELOP expression { MipsRelop(mips, $$, $1, $3, $2); }
+boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES { $$ = MipsLogOp(mips, NOR, $3, "$zero"); }
+                |   expression RELOP expression { $$ = MipsRelOp(mips, $2, $1, $3); }
                 ;  
 
-expression      :   expression ADDOP term { MipsAdd(mips, $$, $1, $3); }
+expression      :   expression ADDOP term { $$ = MipsAddOp(mips, $2, $1, $3); }
                 |   term { $$ = $1; }
                 ;
 
-term            :   term MULOP factor { MipsMul(mips, $$, $1, $3); }
+term            :   term MULOP factor { $$ = MipsMulOp(mips, $2, $1, $3); }
                 |   factor { $$ = $1; }
                 ;
 
 factor          :   O_PARENTHESES expression C_PARENTHESES { $$ = $2; }
-                |   ID { Node* node = GetFromTable(table, $1);
-                         if(node->_type == STR)
-                         {
-                          yyerror("Can't perform arithmetic operations on type string\n");
-                         }
-                         else
-                         {
-                          $$ = $1;
-                         }
+                |   ID{ Node* node = GetFromTable(table, $1);
+                        if(node->_type == STR)
+                        {
+                         yyerror("Can't perform arithmetic operations on type string\n");
                         }
+                        else
+                        {
+                         $$ = $1;
+                        }
+                      }
                 |   NUM { $$ = $1._sval; }
                 ;
 

@@ -2,73 +2,131 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <assert.h>
 #include "my_structs.h"
 
 #define TABLE_SIZE 100
 
 typedef struct node 
 {
-    char* _name;        /**< Description */
-    bool _isConst;      /**< Description */
-    Type _type;         /**< Description */
-    struct node *_next; /**< Description */
+    const char*  _name;     /**< Description */
+    bool         _isConst;  /**< Description */
+    Type         _type;     /**< Description */
+    struct node* _next;     /**< Description */
 } Node;
 
 typedef struct {
     Node *_head; /**< Description */
 } Bucket;
 
-// Hash algorithm, sums all chars and returns int
+/**
+ * @brief Hash algorithm
+ * @param key string to hash
+ * @return int sum of all chars
+ */
 int Hash(const char* key);
 
-// Hash table get, returns pointer to node with the specified key
+/**
+ * @brief Get the From Table object
+ * @param in table 
+ * @param in name 
+ * @return Node* with the specified key
+ */
 Node* GetFromTable(const Bucket* table, const char* name);
 
-// Hash table insert
-void InsertToTable(Bucket* table, char* id, Type t, bool isConst);
+/**
+ * @brief Hash table insert
+ * @param table 
+ * @param id 
+ * @param t 
+ * @param isConst 
+ */
+void InsertToTable(Bucket* table, const char* id, Type t, bool isConst);
 
-// Helper function to check if variable assign is valid
+/**
+ * @brief Helper function to check if variable assign is valid
+ * @param type1 assignee
+ * @param type2 assignor
+ * @return bool is assignment valid 
+ */
 bool IsAssignValid(Type type1, Type type2);
 
-// Free bucket method
+/**
+ * @brief Free bucket 
+ * @param bucket 
+ */
 void FreeBucket(Bucket* bucket);
 
-// Free table method
+/**
+ * @brief Free symbol table
+ * @param table 
+ */
 void FreeTable(Bucket* table);
 
-// Write addition of two registers and store in result
-void MipsAdd(FILE* file, char* result, const char* reg1, const char* reg2);
-
-// Write multiplication of two registers and store in result
-void MipsMul(FILE* file, char* result, const char* reg1, const char* reg2);
-
-// Write or operation of two registers and store in result
-void MipsOr(FILE* file, char* result, const char* reg1, const char* reg2);
-
-// Write and operation of two registers and store in result
-void MipsAnd(FILE* file, char* result, const char* reg1, const char* reg2);
-
-// Write relational operation of two registers and store in result
-void MipsRelop(FILE* file, char* result, const char* reg1, const char* reg2, RelOp relOp);
-
-// Write not operation of reg1 into result
-void MipsNot(FILE* file, char* result, const char* reg1);
-
+/**
+ * @brief Ask the user for input
+ * @param file name
+ * @param node write input value to node
+ */
 void MipsIn(FILE* file, const Node* node);
 
-void MipsAdd(FILE* file, char* result, const char* reg1, const char* reg2);
+/**
+ * @brief 
+ * @param file 
+ * @param addOp 
+ * @param reg1 
+ * @param reg2 
+ * @return const char* 
+ */
+const char* MipsAddOp(FILE* file, AddOp addOp, const char* reg1, const char* reg2);
 
-void MipsMul(FILE* file, char* result, const char* reg1, const char* reg2);
+/**
+ * @brief 
+ * @param file 
+ * @param mulOp 
+ * @param reg1 
+ * @param reg2 
+ * @return const char* 
+ */
+const char* MipsMulOp(FILE* file, MulOp mulOp, const char* reg1, const char* reg2);
 
-void MipsOr(FILE* file, char* result, const char* reg1, const char* reg2);
+/**
+ * @brief 
+ * @param file 
+ * @param relOp 
+ * @param reg1 
+ * @param reg2 
+ * @return const char* 
+ */
+const char* MipsRelOp(FILE* file, RelOp relOp, const char* reg1, const char* reg2);
 
-void MipsAnd(FILE* file, char* result, const char* reg1, const char* reg2);
-
-void MipsRelop(FILE* file, char* result, const char* reg1, const char* reg2, RelOp relOp);
-
-void MipsNot(FILE* file, char* result, const char* reg1);
-
+/**
+ * @brief 
+ * @param file 
+ * @param t 
+ * @param id 
+ * @param val 
+ */
 void MipsDecl(FILE* file, Type t, const char* id, const char* val);
 
-// Throws error and exits
+/**
+ * @brief Terminates the program
+ * @param file 
+ */
+void MipsExit(FILE* file);
+
+/**
+ * @brief Compile logical operation
+ * @param file file to write to
+ * @param logOp logical operation enum
+ * @param reg1 first reg
+ * @param reg2 second reg
+ * @return const char* 
+ */
+const char* MipsLogOp(FILE* file, LogOp logOp, const char* reg1, const char* reg2);
+
+/**
+ * @brief throws error
+ * @param s error description
+ */
 void yyerror(const char* s);
