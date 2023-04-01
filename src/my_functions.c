@@ -92,11 +92,7 @@ void MipsDecl(FILE* file, Type t, const char* id, const char* val)
     assert((file != NULL) && (t < TYPE_COUNT) && (id != NULL) && (val != NULL));
 
     char* tStr;
-    if (t == STR)
-    {
-        tStr = "asciiz";
-    }
-    else if (t == INTEGER)
+    if ((t == STR) || (t == INTEGER))
     {
         tStr = "word";
     }
@@ -109,7 +105,7 @@ void MipsDecl(FILE* file, Type t, const char* id, const char* val)
 
 void MipsIn(FILE* file, const Node* node)
 {
-    assert((file != NULL) && (node != NULL));
+    assert((file != NULL) && (node != NULL) && (node->_type < TYPE_COUNT));
 
     if (node->_type == STR)
     {
@@ -136,6 +132,18 @@ void MipsIn(FILE* file, const Node* node)
     }
 }
 
+void MipsOut(FILE* file, const Val* val)
+{
+    assert((file != NULL) && (val != NULL) && (val->_type < TYPE_COUNT));
+
+    static const int OutTable[] = { 1, 2, 4 };
+
+    fprintf(file, "\n\tli $v0, %d    # system call for printing \n" \
+                  "\tlw $a0, %s      # set argument print \n"       \
+                  "\tsyscall         # execute system call\n", OutTable[val->_type], val->_sval);
+
+}
+
 const char* MipsAddOp(FILE* file, AddOp addOp, const char* reg1, const char* reg2)
 {
     assert((file != NULL) && (addOp < ADD_OP_COUNT) && (reg1 != NULL) && (reg2 != NULL));
@@ -157,9 +165,11 @@ const char* MipsRelOp(FILE* file, RelOp relOp, const char* reg1, const char* reg
     return "";
 }
 
-void MipsAssign(FILE* file, const Node* node, const void* p)
+void MipsAssign(FILE* file, const Node* node, const char* name)
 {
-    assert((file != NULL) && (node != NULL) && (node->_type < TYPE_COUNT) && (p != NULL));
+    assert((file != NULL) && (node != NULL) && (node->_type < TYPE_COUNT) && (name != NULL));
+
+    fprintf(file, "\n\tsw %s, %s", name, node->_name);
 
     if (node->_type == STR)
     {
@@ -209,19 +219,19 @@ void MipsLoad(FILE* file, const Val* val, char reg)
         {
             size_t len = strlen(val->_sval);
             
-            fprintf(file, "\n\t# allocate space on the stack for the string\n"  \
-                          "\tli $t0, %zu\n"                                   \
-                          "\taddi $t0, $t0, 1 # add 1 for null terminator\n"  \
-                          "\tadd $sp, $sp, -$t0\n", len);
+            fprintf(file, "\n\t# allocate space on the stack for the string\n" \
+                          "\tli $t0, %zu\n"                                    \
+                          "\taddi $t0, $t0, 1 # add 1 for null terminator\n"   \
+                          "\tsub $sp, $sp, $t0\n", len);
 
             fprintf(file, "\n\t# write the string %s to the allocated space on the stack\n", val->_sval);
             for (size_t i = 0U; i < len; ++i)
             {
-                fprintf(file, "\tli $t1, \'%c\'\n", val->_sval[i]);
-                fprintf(file, "\tsw $t1, 0($sp)\n");
+                fprintf(file, "\tli $t1, \'%c\'\n" \
+                              "\tsb $t1, %zu($sp)\n", val->_sval[i], i);
             }
-            fprintf(file, "\n\t# store pointer to string in $s0\n");
-            fprintf(file, "\tmove $s0, $sp\n");
+            fprintf(file, "\n\t# store pointer to string in $s0\n" \
+                          "\tmove $s0, $sp\n");
         }
         else
         {
@@ -243,9 +253,8 @@ void MipsLoad(FILE* file, const Val* val, char reg)
     {
         if (val->_isImmediate)
         {
-            // reinterpret cast to int
-            float f = strtof(val->_sval, NULL);
-            int* x = (int*)&(f);
+            float f = strtof(val->_sval, NULL); // Converting string to float
+            int* x = (int*)&(f);                // reinterpret_cast to int
             fprintf(file, "\n\tli $t%c, 0x%x\n", reg, (*x));
             fprintf(file, "\tmtc1 %s, $f%c\n", val->_sval, reg);
         }

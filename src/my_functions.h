@@ -139,9 +139,17 @@ void MipsLoad(FILE* file, const Val* val, char reg);
  * 
  * @param file 
  * @param node 
- * @param p 
+ * @param name
  */
-void MipsAssign(FILE* file, const Node* node, const void* p);
+void MipsAssign(FILE* file, const Node* node, const char* name);
+
+/**
+ * @brief 
+ * 
+ * @param file 
+ * @param node 
+ */
+void MipsOut(FILE* file, const Val* val);
 
 /**
  * @brief throws error

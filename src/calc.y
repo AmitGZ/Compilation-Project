@@ -104,11 +104,11 @@ decl            :   type { currentType = $1 } COLON list SEMICOLON
 
 list            :   ID COMMA list {
                                     InsertToTable(table, $1, currentType, false);
-                                    MipsDecl(mips, currentType, $1, "");
+                                    MipsDecl(mips, currentType, $1, "0");
                                   }
                 |   ID  {
                           InsertToTable(table, $1, currentType, false);
-                          MipsDecl(mips, currentType, $1, "");
+                          MipsDecl(mips, currentType, $1, "0");
                         }
                 ;
 
@@ -166,8 +166,11 @@ stmt            :   assignment_stmt {}
                 |   stmt_block {}
                 ;
 
-out_stmt        :   OUT O_PARENTHESES expression C_PARENTHESES SEMICOLON {}
-                |   OUT O_PARENTHESES SENTENCE C_PARENTHESES SEMICOLON {}
+out_stmt        :   OUT O_PARENTHESES expression C_PARENTHESES SEMICOLON { MipsOut(mips, &($3)); }
+                |   OUT O_PARENTHESES SENTENCE C_PARENTHESES SEMICOLON{ 
+                                                                        MipsLoad(mips, &($3), '0'); 
+                                                                        MipsOut(mips, &($3)); 
+                                                                      }
                 ;
 
 in_stmt         :   IN O_PARENTHESES ID C_PARENTHESES SEMICOLON { 
