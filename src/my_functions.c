@@ -144,9 +144,9 @@ void MipsOut(FILE* file, const Val* val)
     static const int OutTable[] = { 1, 2, 4 };
     static const char* CmdTable[] = { "lw $a0", "l.s $f12", "lw $a0" };
 
-    fprintf(file, "\n\t# printing  \n" \
-                  "\tli $v0, %d   \n" \
-                  "\t%s, %s       \n" \
+    fprintf(file, "\n\t# printing  \n"\
+                  "\tli $v0, %d   \n"\
+                  "\t%s, %s       \n"\
                   "\tsyscall      \n", OutTable[val->_type], CmdTable[val->_type], val->_sval);
 
 }
@@ -275,15 +275,17 @@ void MipsLoad(FILE* file, Val* val, int reg)
     {
         if (val->_isImmediate)
         {
-            const char* str = "input_prompt";
+            static size_t stringCount = 0U;
+            const char* str = "str";
 
-            fprintf(file, "\n\t.data\n"      \
-                          "%s: .asciiz %s\n" \
-	                      "\t.text\n", str, val->_sval);
+            fprintf(file, "\n\t.data\n"\
+                          "%s%zu: .asciiz %s\n"\
+	                      "\t.text\n", str, stringCount, val->_sval);
 
-            fprintf(file, "\n\t# store pointer to string in $s%d\n" \
-                          "\tla $s%d, %s\n", reg, reg, str);
+            fprintf(file, "\n\t# store pointer to string in $s%d\n"\
+                          "\tla $s%d, %s%zu\n", reg, reg, str, stringCount);
 
+            ++stringCount;
             val->_sval = SaveRegs[reg];
         }
         else

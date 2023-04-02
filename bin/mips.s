@@ -29,11 +29,11 @@ main:
 	mul.s $f0, $f0, $f1
 
 	.data
-input_prompt: .asciiz "the result is "
+str0: .asciiz "the result is "
 	.text
 
 	# store pointer to string in $s0
-	la $s0, input_prompt
+	la $s0, str0
 
 	# assigning value
 	sw $s0, d
