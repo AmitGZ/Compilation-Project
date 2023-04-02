@@ -6,8 +6,9 @@
 6.     
 7.     in(ID(a));
 8.     in(ID(b));
-9.     ID(d)="the result is ";
-10.     out(ID(d));
-11.     if (ID(a) <ID(b)) then out(ID(a));
-12. 	else   out(ID(b));
-13. end
+9.     ID(b) = ID(c)*ID(e);
+10.     ID(d)="the result is ";
+11.     out(ID(d));
+12.     if (ID(a) <ID(b)) then out(ID(a));
+13. 	else   out(ID(b));
+14. end

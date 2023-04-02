@@ -28,26 +28,19 @@ static RelOp GetRelOp(const char* s)
 	return EQ;
 }
 
-static MulOp GetMulOp(const char* s)
+static MathOp GetMathOp(const char* s)
 {
 	if (strcmp(s, "/") == 0U)
 		return DIV;
 	if (strcmp(s, "*") == 0U)
 		return MUL;
-
-	// TODO Handle exception
-	return DIV;
-}
-
-static AddOp GetAddOp(const char* s)
-{
 	if (strcmp(s, "+") == 0U)
 		return ADD;
 	if (strcmp(s, "-") == 0U)
 		return SUB;
 
 	// TODO Handle exception
-	return ADD;
+	return DIV;
 }
 
 %}
@@ -134,14 +127,14 @@ SPACES [ \t\n\r]
 (\+|-) {
 	fprintf(yyout," %s",yytext);
 	col += strlen(yytext);
-	yylval._addOp = GetAddOp(strdup(yytext));
+	yylval._mathOp = GetMathOp(strdup(yytext));
 	return ADDOP;
 	}
 
 (\*|\/) {
 	fprintf(yyout,"%s",yytext);
 	col += strlen(yytext);
-	yylval._mulOp = GetMulOp(strdup(yytext));
+	yylval._mathOp = GetMathOp(strdup(yytext));
 	return MULOP;
 	}
 

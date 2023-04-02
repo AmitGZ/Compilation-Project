@@ -21,6 +21,13 @@ main:
 	syscall      
 	s.s $f0, b  
 
+	l.s $f0, c
+
+	l.s $f1, e
+
+	# multiply two floats
+	mul.s $f0, $f0, $f1
+
 	.data
 input_prompt: .asciiz "the result is "
 	.text
@@ -35,6 +42,13 @@ input_prompt: .asciiz "the result is "
 	li $v0, 4   
 	lw $a0, d       
 	syscall      
+
+	lw $t0, a
+
+	l.s $f1, b
+
+	# multiply two floats
+	LT.s $f0, $t0, $f1
 
 	# printing  
 	li $v0, 1   

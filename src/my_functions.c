@@ -151,25 +151,62 @@ void MipsOut(FILE* file, const Val* val)
 
 }
 
-const char* MipsAddOp(FILE* file, AddOp addOp, const char* reg1, const char* reg2)
+void MipsMathOp(FILE* file, MathOp mathOp, Val* res, const Val* val0, const Val* val1)
 {
-    assert((file != NULL) && (addOp < ADD_OP_COUNT) && (reg1 != NULL) && (reg2 != NULL));
+    assert((file != NULL) && (mathOp < MATH_OP_COUNT) && (res != NULL) && (val0 != NULL) && (val1 != NULL));
 
-    return "";
+    if ((val0->_type == STR) || (val1->_type == STR))
+    {
+        yyerror("can't perform arithmetic operations on string");
+        return;
+    }
+
+    res->_isImmediate = false;
+    res->_type = ((val0->_type == FLOATING) || (val1->_type == FLOATING)) ? FLOATING : INTEGER;
+    static const char* MathOpTable[] = { "add", "sub", "mul", "div" };
+    const char* op = MathOpTable[mathOp];
+
+    if (res->_type == FLOATING)
+    {
+        res->_sval = FloatRegs[0];
+        fprintf(file, "\n\t# multiply two floats\n"\
+                      "\t%s.s %s, %s, %s\n", op, res->_sval, val0->_sval, val1->_sval);
+    }
+    else // INTEGER
+    {
+        res->_sval = TmpRegs[0];
+        fprintf(file, "\n\t# multiply two ints\n"\
+                      "\t%s %s, %s, %s\n", op, res->_sval, val0->_sval, val1->_sval);
+    }
 }
 
-const char* MipsMulOp(FILE* file, MulOp mulOp, const char* reg1, const char* reg2)
+void MipsRelOp(FILE* file, RelOp relOp, Val* res, const Val* val0, const Val* val1)
 {
-    assert((file != NULL) && (mulOp < MUL_OP_COUNT) && (reg1 != NULL) && (reg2 != NULL));
+    assert((file != NULL) && (relOp < REL_OP_COUNT) && (res != NULL) && (val0 != NULL) && (val1 != NULL));
 
-    return "";
-}
+    if ((val0->_type == STR) || (val1->_type == STR))
+    {
+        yyerror("can't perform arithmetic operations on string");
+        return;
+    }
 
-const char* MipsRelOp(FILE* file, RelOp relOp, const char* reg1, const char* reg2)
-{
-    assert((file != NULL) && (relOp < REL_OP_COUNT) && (reg1 != NULL) && (reg2 != NULL));
+    res->_isImmediate = false;
+    res->_type = ((val0->_type == FLOATING) || (val1->_type == FLOATING)) ? FLOATING : INTEGER;
+    static const char* RelOpTable[] = { "EQ", "NEQ", "LT", "GT", "LE", "GE" };
+    const char* op = RelOpTable[relOp];
 
-    return "";
+    if (res->_type == FLOATING)
+    {
+        res->_sval = FloatRegs[0];
+        fprintf(file, "\n\t# multiply two floats\n"\
+                      "\t%s.s %s, %s, %s\n", op, res->_sval, val0->_sval, val1->_sval);
+    }
+    else // INTEGER
+    {
+        res->_sval = TmpRegs[0];
+        fprintf(file, "\n\t# multiply two ints\n"\
+                      "\t%s %s, %s, %s\n", op, res->_sval, val0->_sval, val1->_sval);
+    }
 }
 
 void MipsAssign(FILE* file, const Node* node, const char* name)
@@ -193,17 +230,23 @@ void MipsAssign(FILE* file, const Node* node, const char* name)
     }
 }
 
-const char* MipsLogOp(FILE* file, LogOp logOp, const char* reg1, const char* reg2)
+void MipsLogOp(FILE* file, LogOp logOp, Val* res, const Val* val0, const Val* val1)
 {
-    assert((file != NULL) && (logOp < LOG_OP_COUNT) && (reg1 != NULL) && (reg2 != NULL));
-    
+    assert((file != NULL) && (logOp < LOG_OP_COUNT) && (res != NULL) && (val0 != NULL) && (val1 != NULL));
+
+    if ((val0->_type == STR) || (val1->_type == STR))
+    {
+        yyerror("can't perform arithmetic operations on string");
+        return;
+    }
+
+    res->_isImmediate = false;
+    res->_type = ((val0->_type == FLOATING) || (val1->_type == FLOATING)) ? FLOATING : INTEGER;
     static const char* LogOpTable[] = { "and", "or", "nor" };
     const char* op = LogOpTable[logOp];
-    const char* result = TmpRegs[0];
 
-    fprintf(file, "%s %s, %s, %s", op, result, reg1, reg2);
+    fprintf(file, "%s %s, %s, %s", op, res->_sval, val0->_sval, val1->_sval);
 
-    return result;
 }
 
 void MipsExit(FILE* file)
@@ -215,7 +258,7 @@ void MipsExit(FILE* file)
                   "\tsyscall\n");
 }
 
-void MipsLoad(FILE* file, const Val* val, char reg)
+void MipsLoad(FILE* file, Val* val, int reg)
 {
     assert((file != NULL) && (val != NULL) && (val->_type < TYPE_COUNT) && (val->_sval != NULL));
 
@@ -229,24 +272,25 @@ void MipsLoad(FILE* file, const Val* val, char reg)
                           "%s: .asciiz %s\n" \
 	                      "\t.text\n", str, val->_sval);
 
-            fprintf(file, "\n\t# store pointer to string in $s%c\n" \
-                          "\tla $s%c, %s\n", reg, reg, str);
+            fprintf(file, "\n\t# store pointer to string in $s%d\n" \
+                          "\tla $s%d, %s\n", reg, reg, str);
         }
         else
         {
-            fprintf(file, "\n\tla $t%c, %s\n", reg, val->_sval);
+            fprintf(file, "\n\tla $t%d, %s\n", reg, val->_sval);
         }
     }
     else if (val->_type == INTEGER)
     {
         if (val->_isImmediate)
         {
-            fprintf(file, "\n\tli $t%c, %s\n", reg, val->_sval);
+            fprintf(file, "\n\tli $t%d, %s\n", reg, val->_sval);
         }
         else
         {
-            fprintf(file, "\n\tlw $t%c, %s\n", reg, val->_sval);
+            fprintf(file, "\n\tlw $t%d, %s\n", reg, val->_sval);
         }
+        val->_sval = TmpRegs[reg];
     }
     else // FLOATING
     {
@@ -254,12 +298,13 @@ void MipsLoad(FILE* file, const Val* val, char reg)
         {
             float f = strtof(val->_sval, NULL); // Converting string to float
             int* x = (int*)&(f);                // reinterpret_cast to int
-            fprintf(file, "\n\tli $t%c, 0x%x\n", reg, (*x));
-            fprintf(file, "\tmtc1 %s, $f%c\n", val->_sval, reg);
+            fprintf(file, "\n\tli $t%d, 0x%x\n", reg, (*x));
+            fprintf(file, "\tmtc1 %s, $f%d\n", val->_sval, reg);
         }
         else
         {
-            fprintf(file, "\n\tl.s $f%c, %s\n", reg, val->_sval);
+            fprintf(file, "\n\tl.s $f%d, %s\n", reg, val->_sval);
         }
+        val->_sval = FloatRegs[reg];
     }
 }

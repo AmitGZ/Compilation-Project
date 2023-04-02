@@ -24,9 +24,8 @@ Bucket table[TABLE_SIZE];
   Type        _type;   /**< Description */
   Val         _val;    /**< Description */
   const char* _name;   /**< Description */
-  AddOp       _addOp;  /**< Description */
   RelOp       _relOp;  /**< Description */
-  MulOp       _mulOp;  /**< Description */
+  MathOp      _mathOp;  /**< Description */
 }
 
 /* tokens & type of gramer variables */
@@ -69,8 +68,8 @@ Bucket table[TABLE_SIZE];
 %token <_val> SENTENCE
 %token <_val> NUM
 %token <_relOp> RELOP
-%token <_addOp> ADDOP
-%token <_mulOp> MULOP
+%token <_mathOp> ADDOP
+%token <_mathOp> MULOP
 %token ASSIGNOP
 %token OROP
 %token ANDOP
@@ -80,9 +79,9 @@ Bucket table[TABLE_SIZE];
 %type <_val>  factor
 %type <_val>  term
 %type <_val>  expression
-%type <_name> boolfactor
-%type <_name> boolterm
-%type <_name> boolexpr
+%type <_val> boolfactor
+%type <_val> boolterm
+%type <_val> boolexpr
 
 %%
 program         :   PROGRAM ID START declerations stmtlist END{ MipsExit(mips); }
@@ -146,7 +145,7 @@ stmt            :   assignment_stmt {}
                                                     {
                                                       if (node->_type == STR)
                                                       {
-                                                        MipsLoad(mips, &($3), '0'); 
+                                                        MipsLoad(mips, &($3), 0); 
                                                         MipsAssign(mips, node, "$s0");
                                                       }
                                                       else
@@ -168,7 +167,7 @@ stmt            :   assignment_stmt {}
 
 out_stmt        :   OUT O_PARENTHESES expression C_PARENTHESES SEMICOLON { MipsOut(mips, &($3)); }
                 |   OUT O_PARENTHESES SENTENCE C_PARENTHESES SEMICOLON{ 
-                                                                        MipsLoad(mips, &($3), '0'); 
+                                                                        MipsLoad(mips, &($3), 0); 
                                                                         MipsOut(mips, &($3)); 
                                                                       }
                 ;
@@ -199,72 +198,69 @@ cases           :   CASE NUM COLON stmtlist BREAK SEMICOLON cases {}
                 ;
 
 step            :   ID ASSIGNOP ID ADDOP NUM{ 
-                                              Node* node1 = GetFromTable(table, $1);
-                                              Node* node2 = GetFromTable(table, $3);
-                                              Val* val = &($5);
-                                              AddOp addOp = $4;
-                                              if (((node1 != NULL) && (node2 != NULL)) && IsAssignValid(node1->_type, val->_type))
-                                                node1->_name = MipsAddOp(mips, addOp, node2->_name, val->_sval);
-                                              else
-                                                // Throw exception
                                             }
 	              |   ID ASSIGNOP ID MULOP NUM{ 
-                                              Node* node1 = GetFromTable(table, $1);
-                                              Node* node2 = GetFromTable(table, $3);
+                                              Node* node0 = GetFromTable(table, $1);
+                                              Node* node1 = GetFromTable(table, $3);
                                               Val* val = &($5);
-                                              MulOp mulOp = $4;
-                                              if (((node1 != NULL) && (node2 != NULL)) && IsAssignValid(node1->_type, val->_type))
-                                                node1->_name = MipsMulOp(mips, mulOp, node2->_name, val->_sval);
+                                              MathOp mathOp = $4;
+                                              if ((node0 != NULL) && (node1 != NULL))
+                                              {
+                                                Val val0 = { node0->_type, node0->_name, false };
+                                                Val val1 = { node1->_type, node1->_name, false };
+                                                MipsLoad(mips, &val0, 0);
+                                                MipsLoad(mips, &val1, 1);
+                                                Val res;
+                                                //MipsMathOp(mips, $2, &res, &val0, &val1);
+                                                // Assign
+                                              }
                                               else
+                                              {
                                                 // Throw exception
+                                              }
                                             }
                 ;
 
-boolexpr        :   boolexpr OROP boolterm  { $$ = MipsLogOp(mips, OR, $1, $3); }
+boolexpr        :   boolexpr OROP boolterm  { MipsLogOp(mips, OR, &($$), &($1), &($3)); }
                 |   boolterm { $$ = $1; }
                 ;
 
-boolterm        :   boolterm ANDOP boolfactor { $$ = MipsLogOp(mips, AND, $1, $3); }
+boolterm        :   boolterm ANDOP boolfactor { MipsLogOp(mips, AND, &($$), &($1), &($3)); }
                 |   boolfactor { $$ = $1; }
                 ;
         
-boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES { $$ = MipsLogOp(mips, NOR, $3, "$zero"); }
-                |   expression RELOP expression { $$ = MipsRelOp(mips, $2, $1._sval, $3._sval); }
+boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES { MipsLogOp(mips, AND, &($$), &($3), &(ZeroReg));}
+                |   expression RELOP expression {
+                                                  Val* res = &($$);
+                                                  Val* val0 = &($1);
+                                                  Val* val1 = &($3);
+                                                  MipsLoad(mips, val0, 0);
+                                                  MipsLoad(mips, val1, 1);
+                                                  MipsRelOp(mips, $2, res, val0, val1);
+                                                }
                 ;  
 
 expression      :   expression ADDOP term { 
-                                            $$._isImmediate = false;
-                                            $$._type = INTEGER;
-                                            $$._sval = MipsAddOp(mips, $2, $1._sval, $3._sval);
+                                            Val* res = &($$);
+                                            Val* val0 = &($1);
+                                            Val* val1 = &($3);
+                                            MipsLoad(mips, val0, 0);
+                                            MipsLoad(mips, val1, 1);
+                                            MipsMathOp(mips, $2, res, val0, val1);
                                           }
                 |   term { $$ = $1; }
                 ;
 
 term            :   term MULOP factor { 
-                                        Val* val1 = &($1);
-                                        Val* val2 = &($3);
-                                        if((val1->_type == STR) || (val2->_type == STR))
-                                        {
-                                          yyerror("Can't perform arithmetic operations on type string\n");
-                                        }
-                                        else
-                                        {
-                                          $$._sval = MipsMulOp(mips, $2, val1->_sval, val2->_sval); 
-                                          $$._isImmediate = false;
-                                          $$._type = ((val1->_type == FLOATING) || (val2->_type == FLOATING)) ? FLOATING : INTEGER;
-                                        }
+                                        // TODO move to function
+                                        Val* res = &($$);
+                                        Val* val0 = &($1);
+                                        Val* val1 = &($3);
+                                        MipsLoad(mips, val0, 0);
+                                        MipsLoad(mips, val1, 1);
+                                        MipsMathOp(mips, $2, res, val0, val1);
                                       }
-                |   factor  {
-                              if ($1._type == STR)
-                              {
-                                //MipsLoad(mips, &($1), '0'); 
-                                $$ = $1;
-                              }
-                              else
-                              {
-
-                              }
-                            }
+                |   factor  { $$ = $1; }
                 ;
 
 factor          :   O_PARENTHESES expression C_PARENTHESES { $$ = $2; }
