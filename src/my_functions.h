@@ -108,7 +108,7 @@ void MipsLoad(FILE* file, Val* val, int reg);
  * @param node 
  * @param name
  */
-void MipsAssign(FILE* file, const Node* node, const char* name);
+void MipsAssign(FILE* file, const Node* node, const Val* val);
 
 /**
  * @brief 

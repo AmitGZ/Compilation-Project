@@ -143,15 +143,9 @@ stmt            :   assignment_stmt {}
                                                     Node* node = GetFromTable(table, $1);
                                                     if (node != NULL)
                                                     {
-                                                      if (node->_type == STR)
-                                                      {
-                                                        MipsLoad(mips, &($3), 0); 
-                                                        MipsAssign(mips, node, "$s0");
-                                                      }
-                                                      else
-                                                      {
-                                                        yyerror("Can't assign string to non string type\n");
-                                                      }
+                                                      Val* val = &($3);
+                                                      MipsLoad(mips, val, 0); 
+                                                      MipsAssign(mips, node, val);
                                                     }
                                                     else
                                                     {
@@ -211,8 +205,8 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                                 MipsLoad(mips, &val0, 0);
                                                 MipsLoad(mips, &val1, 1);
                                                 Val res;
-                                                //MipsMathOp(mips, $2, &res, &val0, &val1);
-                                                // Assign
+                                                MipsMathOp(mips, $4, &res, &val0, &val1);
+                                                MipsAssign(mips, node0, &res);
                                               }
                                               else
                                               {

@@ -192,29 +192,38 @@ void MipsRelOp(FILE* file, RelOp relOp, Val* res, const Val* val0, const Val* va
 
     res->_isImmediate = false;
     res->_type = ((val0->_type == FLOATING) || (val1->_type == FLOATING)) ? FLOATING : INTEGER;
-    static const char* RelOpTable[] = { "EQ", "NEQ", "LT", "GT", "LE", "GE" };
-    const char* op = RelOpTable[relOp];
+    const char* op;
 
     if (res->_type == FLOATING)
     {
+        static const char* FloatRelOpTable[] = { "seq", "sne", "slt", "sgt", "sle", "sge" };
+        op = FloatRelOpTable[relOp];
         res->_sval = FloatRegs[0];
-        fprintf(file, "\n\t# multiply two floats\n"\
+        fprintf(file, "\n\t# compare two floats\n"\
                       "\t%s.s %s, %s, %s\n", op, res->_sval, val0->_sval, val1->_sval);
     }
     else // INTEGER
     {
+        static const char* IntRelOpTable[] = { "seq", "sne", "slt", "sgt", "sle", "sge" };
+        const char* op = IntRelOpTable[relOp];
         res->_sval = TmpRegs[0];
-        fprintf(file, "\n\t# multiply two ints\n"\
+        fprintf(file, "\n\t# compare two ints\n"\
                       "\t%s %s, %s, %s\n", op, res->_sval, val0->_sval, val1->_sval);
     }
 }
 
-void MipsAssign(FILE* file, const Node* node, const char* name)
+void MipsAssign(FILE* file, const Node* node, const Val* val)
 {
-    assert((file != NULL) && (node != NULL) && (node->_type < TYPE_COUNT) && (name != NULL));
+    assert((file != NULL) && (node != NULL) && (node->_type < TYPE_COUNT) && (val != NULL) && (val->_type < TYPE_COUNT));
+
+    if (!IsAssignValid(node->_type, val->_type))
+    {
+        yyerror("Assignment invalid");
+        return;
+    }
 
     fprintf(file, "\n\t# assigning value\n"
-                  "\tsw %s, %s\n", name, node->_name);
+                  "\tsw %s, %s\n", val->_sval, node->_name);
 
     if (node->_type == STR)
     {
@@ -274,6 +283,8 @@ void MipsLoad(FILE* file, Val* val, int reg)
 
             fprintf(file, "\n\t# store pointer to string in $s%d\n" \
                           "\tla $s%d, %s\n", reg, reg, str);
+
+            val->_sval = SaveRegs[reg];
         }
         else
         {

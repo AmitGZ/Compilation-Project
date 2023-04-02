@@ -47,8 +47,8 @@ input_prompt: .asciiz "the result is "
 
 	l.s $f1, b
 
-	# multiply two floats
-	LT.s $f0, $t0, $f1
+	# compare two floats
+	slt.s $f0, $t0, $f1
 
 	# printing  
 	li $v0, 1   
