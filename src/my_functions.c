@@ -220,20 +220,14 @@ void MipsLoad(FILE* file, const Val* val, char reg)
     {
         if (val->_isImmediate)
         {
-            size_t len = strlen(val->_sval) + 1U; // +1 for '\0'
-            
-            fprintf(file, "\n\t# allocate space on the stack for the string +1 for \\0\n" \
-                          "\tli $t0, %zu\n"                                               \
-                          "\tsub $sp, $sp, $t0\n", len);
+            const char* str = "input_prompt";
 
-            fprintf(file, "\n\t# write the string %s to the allocated space on the stack\n", val->_sval);
-            for (size_t i = 0U; i < len; ++i) 
-            {
-                fprintf(file, "\tli $t1, \'%c\'\n" \
-                              "\tsb $t1, %zu($sp)\n", val->_sval[i], i);
-            }
+            fprintf(file, "\t.data\n"                        \
+                          "%s: .asciiz %s\n" \
+	                      "\t.text\n", str, val->_sval);
+
             fprintf(file, "\n\t# store pointer to string in $s%c\n" \
-                          "\tmove $s%c, $sp\n", reg, reg);
+                          "\tla $s%c, %s\n", reg, reg, str);
         }
         else
         {
