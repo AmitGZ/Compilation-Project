@@ -193,7 +193,7 @@ const char* MipsLogOp(FILE* file, LogOp logOp, const char* reg1, const char* reg
     static const char* LogOpTable[] = { "and", "or", "nor" };
     const char* op = LogOpTable[logOp];
 
-    const char* result = Temporaries[0];
+    const char* result = TmpRegs[0];
 
     fprintf(file, "%s %s, %s, %s", op, result, reg1, reg2);
 
@@ -217,21 +217,20 @@ void MipsLoad(FILE* file, const Val* val, char reg)
     {
         if (val->_isImmediate)
         {
-            size_t len = strlen(val->_sval);
+            size_t len = strlen(val->_sval) + 1U; // +1 for '\0'
             
-            fprintf(file, "\n\t# allocate space on the stack for the string\n" \
-                          "\tli $t0, %zu\n"                                    \
-                          "\taddi $t0, $t0, 1 # add 1 for null terminator\n"   \
+            fprintf(file, "\n\t# allocate space on the stack for the string +1 for \\0\n" \
+                          "\tli $t0, %zu\n"                                               \
                           "\tsub $sp, $sp, $t0\n", len);
 
             fprintf(file, "\n\t# write the string %s to the allocated space on the stack\n", val->_sval);
-            for (size_t i = 0U; i < len; ++i)
+            for (size_t i = 0U; i < len; ++i) 
             {
                 fprintf(file, "\tli $t1, \'%c\'\n" \
                               "\tsb $t1, %zu($sp)\n", val->_sval[i], i);
             }
-            fprintf(file, "\n\t# store pointer to string in $s0\n" \
-                          "\tmove $s0, $sp\n");
+            fprintf(file, "\n\t# store pointer to string in $s%c\n" \
+                          "\tmove $s%c, $sp\n", reg, reg);
         }
         else
         {
