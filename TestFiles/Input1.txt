@@ -1,6 +1,7 @@
 program  Min  /* Finding minimum between two numbers */
 start
-decl real : a,b,c,e;
+decl real : b,c,e;
+    int: a;
     string: d;
     
     in(a);

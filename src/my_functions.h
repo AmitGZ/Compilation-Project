@@ -6,6 +6,7 @@
 #include "my_structs.h"
 
 #define TABLE_SIZE 100
+#define BUFFER_SIZE 256
 
 typedef struct node 
 {
@@ -150,6 +151,13 @@ void MipsAssign(FILE* file, const Node* node, const char* name);
  * @param node 
  */
 void MipsOut(FILE* file, const Val* val);
+
+/**
+ * @brief 
+ * 
+ * @param file 
+ */
+void MipsData(FILE* file);
 
 /**
  * @brief throws error

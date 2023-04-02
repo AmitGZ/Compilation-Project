@@ -88,7 +88,7 @@ Bucket table[TABLE_SIZE];
 program         :   PROGRAM ID START declerations stmtlist END{ MipsExit(mips); }
                 ;
 
-declerations    :   DECL { fprintf(mips, "\t.data\n"); } declarlist cdecl { 
+declerations    :   DECL { MipsData(mips); } declarlist cdecl { 
                                                                             fprintf(mips, "\n\t.text\
                                                                                            \n\t.globl main\
                                                                                            \n\nmain:\n"); /* Start main scope */ 

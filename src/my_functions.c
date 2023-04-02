@@ -87,6 +87,13 @@ void yyerror(const char* s)
 	fprintf(stderr, "Parse error: %s\n", s);
 }
 
+void MipsData(FILE* file)
+{
+    assert(file != NULL);
+    fprintf(file, "\t.data\n" \
+                  "buffer: .space %d   # allocate %d bytes for the input buffer\n", BUFFER_SIZE, BUFFER_SIZE);
+}  
+
 void MipsDecl(FILE* file, Type t, const char* id, const char* val)
 {
     assert((file != NULL) && (t < TYPE_COUNT) && (id != NULL) && (val != NULL));
@@ -110,25 +117,21 @@ void MipsIn(FILE* file, const Node* node)
     if (node->_type == STR)
     {
         fprintf(file, "\n\tli $v0, 8    # set $v0 to indicate we want to read input\n");
-        fprintf(file, "\tla $a0, %s   # Buffer adress\n", node->_name);
-        fprintf(file, "\tli $a1, 256, # Buffer size of 256 bytes\n");
+        fprintf(file, "\tla $a0, buffer   # Buffer adress\n");
+        fprintf(file, "\tli $a1, %d, # Buffer size of %d bytes\n", BUFFER_SIZE, BUFFER_SIZE);
         fprintf(file, "\tsyscall      # execute the syscall instruction to read the input\n");
-
     }
-    else
+    else if (node->_type == INTEGER)
     {
-        int readCmd;
-        if (node->_type == INTEGER)
-        {
-            readCmd = 5;
-        }
-        else
-        {
-            readCmd = 6;
-        }
-        fprintf(file, "\n\tli $v0, %d   # set $v0 to indicate we want to read input\n", readCmd);
-        fprintf(file, "\tsyscall      # execute the syscall instruction to read the input\n");
+        fprintf(file, "\n\tli $v0, 5   # set $v0 to indicate we want to read input\n");
+        fprintf(file, "\tsyscall       # execute the syscall instruction to read the input\n");
         fprintf(file, "\tsw $v0, %s   # store the input\n", node->_name);
+    }
+    else // FLOATING
+    {
+        fprintf(file, "\n\tli $v0, 6   # set $v0 to indicate we want to read input\n");
+        fprintf(file, "\tsyscall       # execute the syscall instruction to read the input\n");
+        fprintf(file, "\ts.s $f0, %s  # store the input\n", node->_name);
     }
 }
 
@@ -136,11 +139,13 @@ void MipsOut(FILE* file, const Val* val)
 {
     assert((file != NULL) && (val != NULL) && (val->_type < TYPE_COUNT));
 
+    //                      INTEGER=0, FLOATING=1, STR=2
     static const int OutTable[] = { 1, 2, 4 };
+    static const char* CmdTable[] = { "lw $a0", "l.s $f12", "lw $a0" };
 
     fprintf(file, "\n\tli $v0, %d    # system call for printing \n" \
-                  "\tlw $a0, %s      # set argument print \n"       \
-                  "\tsyscall         # execute system call\n", OutTable[val->_type], val->_sval);
+                  "\t%s, %s      # set argument print \n"       \
+                  "\tsyscall         # execute system call\n", OutTable[val->_type], CmdTable[val->_type], val->_sval);
 
 }
 
@@ -183,7 +188,6 @@ void MipsAssign(FILE* file, const Node* node, const char* name)
     {
 
     }
-
 }
 
 const char* MipsLogOp(FILE* file, LogOp logOp, const char* reg1, const char* reg2)
@@ -192,7 +196,6 @@ const char* MipsLogOp(FILE* file, LogOp logOp, const char* reg1, const char* reg
     
     static const char* LogOpTable[] = { "and", "or", "nor" };
     const char* op = LogOpTable[logOp];
-
     const char* result = TmpRegs[0];
 
     fprintf(file, "%s %s, %s, %s", op, result, reg1, reg2);
