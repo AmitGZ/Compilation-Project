@@ -257,7 +257,7 @@ term            :   term MULOP factor {
                 |   factor  {
                               if ($1._type == STR)
                               {
-                                MipsLoad(mips, &($1), '0'); 
+                                //MipsLoad(mips, &($1), '0'); 
                                 $$ = $1;
                               }
                               else

@@ -11,13 +11,16 @@ d:	.word 0
 
 main:
 
-	li $v0, 5   # set $v0 to indicate we want to read input
-	syscall       # execute the syscall instruction to read the input
-	sw $v0, a   # store the input
+	# read input
+	li $v0, 5  
+	syscall    
+	sw $v0, a 
 
-	li $v0, 6   # set $v0 to indicate we want to read input
-	syscall       # execute the syscall instruction to read the input
-	s.s $f0, b  # store the input
+	# read input
+	li $v0, 6  
+	syscall      
+	s.s $f0, b  
+
 	.data
 input_prompt: .asciiz "the result is "
 	.text
@@ -25,21 +28,24 @@ input_prompt: .asciiz "the result is "
 	# store pointer to string in $s0
 	la $s0, input_prompt
 
+	# assigning value
 	sw $s0, d
-	la $t0, d
 
-	li $v0, 4    # system call for printing 
-	lw $a0, d      # set argument print 
-	syscall         # execute system call
+	# printing  
+	li $v0, 4   
+	lw $a0, d       
+	syscall      
 
-	li $v0, 1    # system call for printing 
-	lw $a0, a      # set argument print 
-	syscall         # execute system call
+	# printing  
+	li $v0, 1   
+	lw $a0, a       
+	syscall      
 
-	li $v0, 2    # system call for printing 
-	l.s $f12, b      # set argument print 
-	syscall         # execute system call
+	# printing  
+	li $v0, 2   
+	l.s $f12, b       
+	syscall      
 
-	# exit the program                   
-	li $v0, 10                   
+	# exit the program
+	li $v0, 10
 	syscall
