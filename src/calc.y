@@ -151,7 +151,6 @@ stmt            :   assignment_stmt {}
                                                     {
                                                       yyerror(strcat("ID does not exist: ", $1));
                                                     }
-
                                                   }
                 |   control_stmt {}
                 |   in_stmt {}
@@ -172,7 +171,18 @@ in_stmt         :   IN O_PARENTHESES ID C_PARENTHESES SEMICOLON {
                                                                 }
                 ;
 
-assignment_stmt :   ID ASSIGNOP expression SEMICOLON {  }
+assignment_stmt :   ID ASSIGNOP expression SEMICOLON { 
+                                                        Node* node = GetFromTable(table, $1);
+                                                        Val* val = &($3);
+                                                        if (node != NULL)
+                                                        {
+                                                          MipsAssign(mips, node, val);
+                                                        }
+                                                        else
+                                                        {
+                                                          // Throw exception
+                                                        }
+                                                      }
                 ;
 
 control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN stmt ELSE stmt {}
@@ -192,6 +202,7 @@ cases           :   CASE NUM COLON stmtlist BREAK SEMICOLON cases {}
                 ;
 
 step            :   ID ASSIGNOP ID ADDOP NUM{ 
+                                              // copy from below
                                             }
 	              |   ID ASSIGNOP ID MULOP NUM{ 
                                               Node* node0 = GetFromTable(table, $1);
@@ -202,15 +213,15 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                               {
                                                 Val val0 = { node0->_type, node0->_name, false };
                                                 Val val1 = { node1->_type, node1->_name, false };
-                                                MipsLoad(mips, &val0, 0);
                                                 MipsLoad(mips, &val1, 1);
+                                                MipsLoad(mips, &val0, 0);
                                                 Val res;
                                                 MipsMathOp(mips, $4, &res, &val0, &val1);
                                                 MipsAssign(mips, node0, &res);
                                               }
                                               else
                                               {
-                                                // Throw exception
+                                                yyerror("ID not found");
                                               }
                                             }
                 ;
@@ -228,8 +239,8 @@ boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES { MipsLog
                                                   Val* res = &($$);
                                                   Val* val0 = &($1);
                                                   Val* val1 = &($3);
-                                                  MipsLoad(mips, val0, 0);
                                                   MipsLoad(mips, val1, 1);
+                                                  MipsLoad(mips, val0, 0);
                                                   MipsRelOp(mips, $2, res, val0, val1);
                                                 }
                 ;  
@@ -238,8 +249,8 @@ expression      :   expression ADDOP term {
                                             Val* res = &($$);
                                             Val* val0 = &($1);
                                             Val* val1 = &($3);
-                                            MipsLoad(mips, val0, 0);
                                             MipsLoad(mips, val1, 1);
+                                            MipsLoad(mips, val0, 0);
                                             MipsMathOp(mips, $2, res, val0, val1);
                                           }
                 |   term { $$ = $1; }
@@ -250,8 +261,8 @@ term            :   term MULOP factor {
                                         Val* res = &($$);
                                         Val* val0 = &($1);
                                         Val* val1 = &($3);
-                                        MipsLoad(mips, val0, 0);
                                         MipsLoad(mips, val1, 1);
+                                        MipsLoad(mips, val0, 0);
                                         MipsMathOp(mips, $2, res, val0, val1);
                                       }
                 |   factor  { $$ = $1; }

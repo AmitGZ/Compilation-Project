@@ -21,12 +21,57 @@ main:
 	syscall      
 	s.s $f0, b  
 
-	l.s $f0, c
+	# read input
+	li $v0, 6  
+	syscall      
+	s.s $f0, c  
+
+	# read input
+	li $v0, 6  
+	syscall      
+	s.s $f0, e  
+
+	l.s $f1, b
+
+	lw $t0, a
+
+	# Move integer value to floating-point register
+	mtc1 $t0, $f0
+	cvt.s.w $f0, $f0
+
+	# mathop two floats
+	add.s $f0, $f0, $f1
+
+	l.s $f1, c
+
+	mov.s $f0, $f0
+
+	# mathop two floats
+	mul.s $f0, $f0, $f1
 
 	l.s $f1, e
 
-	# multiply two floats
-	mul.s $f0, $f0, $f1
+	mov.s $f0, $f0
+
+	# mathop two floats
+	div.s $f0, $f0, $f1
+
+	l.s $f1, c
+
+	l.s $f0, b
+
+	# mathop two floats
+	sub.s $f0, $f0, $f1
+
+	mov.s $f1, $f0
+
+	mov.s $f0, $f0
+
+	# mathop two floats
+	sub.s $f0, $f0, $f1
+
+	# assigning float value
+	s.s $f0, b
 
 	.data
 str0: .asciiz "the result is "
@@ -35,7 +80,7 @@ str0: .asciiz "the result is "
 	# store pointer to string in $s0
 	la $s0, str0
 
-	# assigning value
+	# assigning string pointer
 	sw $s0, d
 
 	# printing  
@@ -43,12 +88,18 @@ str0: .asciiz "the result is "
 	lw $a0, d       
 	syscall      
 
-	lw $t0, a
-
 	l.s $f1, b
 
+	lw $t0, a
+
+	# Move integer value to floating-point register
+	mtc1 $t0, $f0
+	cvt.s.w $f0, $f0
+
 	# compare two floats
-	slt.s $f0, $t0, $f1
+	c.lt.s $f0, $f1
+	movt $t0, $zero, 1
+	movf $t0, $zero, 0
 
 	# printing  
 	li $v0, 1   

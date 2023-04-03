@@ -168,15 +168,28 @@ void MipsMathOp(FILE* file, MathOp mathOp, Val* res, const Val* val0, const Val*
 
     if (res->_type == FLOATING)
     {
+        if (val0->_type == INTEGER)
+        {
+            fprintf(file, "\n\t# Move integer value to floating-point register\n"\
+                          "\tmtc1 %s, $f0\n"\
+                          "\tcvt.s.w $f0, $f0\n" , val0->_sval);
+        }
+        else if (val1->_type == INTEGER)
+        {
+            fprintf(file, "\n\t# Move integer value to floating-point register\n"\
+                          "\tmtc1 %s, $f1\n"\
+                          "\tcvt.s.w $f1, $f1\n", val1->_sval);
+        }
+
         res->_sval = FloatRegs[0];
-        fprintf(file, "\n\t# multiply two floats\n"\
-                      "\t%s.s %s, %s, %s\n", op, res->_sval, val0->_sval, val1->_sval);
+        fprintf(file, "\n\t# mathop two floats\n"\
+                      "\t%s.s %s, $f0, $f1\n", op, res->_sval);
     }
     else // INTEGER
     {
         res->_sval = TmpRegs[0];
-        fprintf(file, "\n\t# multiply two ints\n"\
-                      "\t%s %s, %s, %s\n", op, res->_sval, val0->_sval, val1->_sval);
+        fprintf(file, "\n\t# mathop two ints\n"\
+                      "\t%s %s, $f0, $f1\n", op, res->_sval);
     }
 }
 
@@ -194,19 +207,46 @@ void MipsRelOp(FILE* file, RelOp relOp, Val* res, const Val* val0, const Val* va
     res->_type = ((val0->_type == FLOATING) || (val1->_type == FLOATING)) ? FLOATING : INTEGER;
     const char* op;
 
+    res->_sval = TmpRegs[0];
+    
     if (res->_type == FLOATING)
-    {
-        static const char* FloatRelOpTable[] = { "seq", "sne", "slt", "sgt", "sle", "sge" };
+    {        
+        if (val0->_type == INTEGER)
+        {
+            fprintf(file, "\n\t# Move integer value to floating-point register\n"\
+                          "\tmtc1 %s, $f0\n"\
+                          "\tcvt.s.w $f0, $f0\n", val0->_sval);
+        }
+        else if (val1->_type == INTEGER)
+        {
+            fprintf(file, "\n\t# Move integer value to floating-point register\n"\
+                          "\tmtc1 %s, $f1\n"\
+                          "\tcvt.s.w $f1, $f1\n", val1->_sval);
+        }
+                                                    /*  sne          sgt          sge  */
+        static const char* FloatRelOpTable[] = { "eq", "!eq", "lt", "!le", "le", "!lt" };
         op = FloatRelOpTable[relOp];
-        res->_sval = FloatRegs[0];
-        fprintf(file, "\n\t# compare two floats\n"\
-                      "\t%s.s %s, %s, %s\n", op, res->_sval, val0->_sval, val1->_sval);
+        if (op[0] == '!')
+        {
+            // Negate operation 
+            fprintf(file, "\n\t# compare two floats and negate\n"\
+                          "\tc.%s.s $f0, $f1\n"\
+                          "\tmovt %s, $zero, 0\n"\
+                          "\tmovf %s, $zero, 1\n", &op[0], res->_sval, res->_sval);
+        }
+        else
+        {
+            // Normal operation is available
+            fprintf(file, "\n\t# compare two floats\n"\
+                          "\tc.%s.s $f0, $f1\n"\
+                          "\tmovt %s, $zero, 1\n"\
+                          "\tmovf %s, $zero, 0\n", op, res->_sval, res->_sval);
+        }
     }
     else // INTEGER
     {
         static const char* IntRelOpTable[] = { "seq", "sne", "slt", "sgt", "sle", "sge" };
         const char* op = IntRelOpTable[relOp];
-        res->_sval = TmpRegs[0];
         fprintf(file, "\n\t# compare two ints\n"\
                       "\t%s %s, %s, %s\n", op, res->_sval, val0->_sval, val1->_sval);
     }
@@ -222,20 +262,21 @@ void MipsAssign(FILE* file, const Node* node, const Val* val)
         return;
     }
 
-    fprintf(file, "\n\t# assigning value\n"
-                  "\tsw %s, %s\n", val->_sval, node->_name);
 
     if (node->_type == STR)
     {
-
+        fprintf(file, "\n\t# assigning string pointer\n"
+                      "\tsw %s, %s\n", val->_sval, node->_name);
     }
     else if (node->_type == INTEGER)
     {
-
+        fprintf(file, "\n\t# assigning integer value\n"
+                      "\tsw %s, %s\n", val->_sval, node->_name);
     }
     else // FLOATING
     {
-
+        fprintf(file, "\n\t# assigning float value\n"
+                      "\ts.s %s, %s\n", val->_sval, node->_name);
     }
 }
 
@@ -312,11 +353,13 @@ void MipsLoad(FILE* file, Val* val, int reg)
             float f = strtof(val->_sval, NULL); // Converting string to float
             int* x = (int*)&(f);                // reinterpret_cast to int
             fprintf(file, "\n\tli $t%d, 0x%x\n", reg, (*x));
-            fprintf(file, "\tmtc1 %s, $f%d\n", val->_sval, reg);
+            fprintf(file, "\tmtc1 %s, $f%d\n"\
+                          "\tcvt.s.w $f%d, $f%d\n", val->_sval, reg, reg, reg);
         }
         else
         {
-            fprintf(file, "\n\tl.s $f%d, %s\n", reg, val->_sval);
+            const char* command = val->_sval[0] == '$' ? "mov.s" : "l.s";
+            fprintf(file, "\n\t%s $f%d, %s\n",command, reg, val->_sval);
         }
         val->_sval = FloatRegs[reg];
     }
