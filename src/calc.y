@@ -215,8 +215,8 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                               {
                                                 Val val0 = { node0->_type, node0->_name, false };
                                                 Val val1 = { node1->_type, node1->_name, false };
-                                                MipsLoad(mips, &val1);
                                                 MipsLoad(mips, &val0);
+                                                MipsLoad(mips, &val1);
                                                 Val res;
                                                 MipsMathOp(mips, $4, &res, &val0, &val1);
                                                 MipsAssign(mips, node0, &res);
@@ -241,8 +241,8 @@ boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES { MipsLog
                                                   Val* res = &($$);
                                                   Val* val0 = &($1);
                                                   Val* val1 = &($3);
-                                                  MipsLoad(mips, val1);
                                                   MipsLoad(mips, val0);
+                                                  MipsLoad(mips, val1);
                                                   MipsRelOp(mips, $2, res, val0, val1);
                                                 }
                 ;  
@@ -251,8 +251,8 @@ expression      :   expression ADDOP term {
                                             Val* res = &($$);
                                             Val* val0 = &($1);
                                             Val* val1 = &($3);
-                                            MipsLoad(mips, val1);
                                             MipsLoad(mips, val0);
+                                            MipsLoad(mips, val1);
                                             MipsMathOp(mips, $2, res, val0, val1);
                                           }
                 |   term { $$ = $1; }
@@ -263,8 +263,8 @@ term            :   term MULOP factor {
                                         Val* res = &($$);
                                         Val* val0 = &($1);
                                         Val* val1 = &($3);
-                                        MipsLoad(mips, val1);
                                         MipsLoad(mips, val0);
+                                        MipsLoad(mips, val1);
                                         MipsMathOp(mips, $2, res, val0, val1);
                                       }
                 |   factor  { $$ = $1; }
