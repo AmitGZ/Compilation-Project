@@ -99,7 +99,7 @@ void MipsExit(FILE* file);
  * @param val 
  * @param reg 
  */
-void MipsLoad(FILE* file, Val* val, int reg);
+void MipsLoad(FILE* file, Val* val);
 
 /**
  * @brief 

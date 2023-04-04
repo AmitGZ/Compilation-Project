@@ -13,6 +13,8 @@ extern int yylex();
 extern int yyparse();
 extern size_t errorCount;
 
+extern int regTrackerT;
+extern int regTrackerF;
 FILE* mips;
 Type currentType;
 Bucket table[TABLE_SIZE];
@@ -88,10 +90,10 @@ program         :   PROGRAM ID START declerations stmtlist END{ MipsExit(mips); 
                 ;
 
 declerations    :   DECL { MipsData(mips); } declarlist cdecl { 
-                                                                            fprintf(mips, "\n\t.text\
-                                                                                           \n\t.globl main\
-                                                                                           \n\nmain:\n"); /* Start main scope */ 
-                                                                          }
+                                                                fprintf(mips, "\n\t.text\
+                                                                               \n\t.globl main\
+                                                                               \n\nmain:\n"); /* Start main scope */ 
+                                                              }
                 | {}
                 ;
  
@@ -144,7 +146,7 @@ stmt            :   assignment_stmt {}
                                                     if (node != NULL)
                                                     {
                                                       Val* val = &($3);
-                                                      MipsLoad(mips, val, 0); 
+                                                      MipsLoad(mips, val); 
                                                       MipsAssign(mips, node, val);
                                                     }
                                                     else
@@ -160,7 +162,7 @@ stmt            :   assignment_stmt {}
 
 out_stmt        :   OUT O_PARENTHESES expression C_PARENTHESES SEMICOLON { MipsOut(mips, &($3)); }
                 |   OUT O_PARENTHESES SENTENCE C_PARENTHESES SEMICOLON{ 
-                                                                        MipsLoad(mips, &($3), 0); 
+                                                                        MipsLoad(mips, &($3)); 
                                                                         MipsOut(mips, &($3)); 
                                                                       }
                 ;
@@ -213,8 +215,8 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                               {
                                                 Val val0 = { node0->_type, node0->_name, false };
                                                 Val val1 = { node1->_type, node1->_name, false };
-                                                MipsLoad(mips, &val1, 1);
-                                                MipsLoad(mips, &val0, 0);
+                                                MipsLoad(mips, &val1);
+                                                MipsLoad(mips, &val0);
                                                 Val res;
                                                 MipsMathOp(mips, $4, &res, &val0, &val1);
                                                 MipsAssign(mips, node0, &res);
@@ -239,8 +241,8 @@ boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES { MipsLog
                                                   Val* res = &($$);
                                                   Val* val0 = &($1);
                                                   Val* val1 = &($3);
-                                                  MipsLoad(mips, val1, 1);
-                                                  MipsLoad(mips, val0, 0);
+                                                  MipsLoad(mips, val1);
+                                                  MipsLoad(mips, val0);
                                                   MipsRelOp(mips, $2, res, val0, val1);
                                                 }
                 ;  
@@ -249,8 +251,8 @@ expression      :   expression ADDOP term {
                                             Val* res = &($$);
                                             Val* val0 = &($1);
                                             Val* val1 = &($3);
-                                            MipsLoad(mips, val1, 1);
-                                            MipsLoad(mips, val0, 0);
+                                            MipsLoad(mips, val1);
+                                            MipsLoad(mips, val0);
                                             MipsMathOp(mips, $2, res, val0, val1);
                                           }
                 |   term { $$ = $1; }
@@ -261,8 +263,8 @@ term            :   term MULOP factor {
                                         Val* res = &($$);
                                         Val* val0 = &($1);
                                         Val* val1 = &($3);
-                                        MipsLoad(mips, val1, 1);
-                                        MipsLoad(mips, val0, 0);
+                                        MipsLoad(mips, val1);
+                                        MipsLoad(mips, val0);
                                         MipsMathOp(mips, $2, res, val0, val1);
                                       }
                 |   factor  { $$ = $1; }
