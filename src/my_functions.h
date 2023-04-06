@@ -66,48 +66,39 @@ void FreeTable(Bucket* table);
 
 /**
  * @brief Ask the user for input
- * @param file name
  * @param node write input value to node
  */
-void MipsIn(FILE* file, const Node* node);
+void MipsIn(const Node* node);
 
-void MipsMathOp(FILE* file, MathOp mulOp, Reg* res, Reg* reg0, Reg* reg1);
+void MipsMathOp(MathOp mulOp, Reg* res, Reg* reg0, Reg* reg1);
 
-void MipsRelOp(FILE* file, RelOp relOp, Reg* res, Reg* reg0, Reg* reg1);
+void MipsRelOp(RelOp relOp, Reg* res, Reg* reg0, Reg* reg1);
 
-void MipsLogOp(FILE* file, LogOp logOp, Reg* res, Reg* reg0, Reg* reg1);
+void MipsLogOp(LogOp logOp, Reg* res, Reg* reg0, Reg* reg1);
 
-void MipsDecl(FILE* file, Type t, const char* id, const char* val);
+void MipsDecl(Type t, const char* id, const char* val);
 
-/**
- * @brief Terminates the program
- * @param file 
- */
-void MipsExit(FILE* file);
+void MipsExit();
 
 /**
  * @brief 
  * 
- * @param file 
  * @param node 
  * @param name
  */
-void MipsAssign(FILE* file, const Node* node, Reg* reg);
+void MipsAssign(const Node* node, Reg* reg);
 
 /**
  * @brief 
  * 
- * @param file 
  * @param node 
  */
-void MipsOut(FILE* file, const Reg* reg);
+void MipsOut(const Reg* reg);
 
 /**
  * @brief 
- * 
- * @param file 
  */
-void MipsData(FILE* file);
+void MipsData();
 
 /**
  * @brief throws error
@@ -115,11 +106,13 @@ void MipsData(FILE* file);
  */
 void yyerror(const char* s);
 
-void MipsLoadV(FILE* file, Reg* reg);
+void MipsLoadV(Reg* reg);
 
-void MipsLoadI(FILE* file, Reg* reg);
+void MipsLoadI(Reg* reg);
 
-void MipsCast(FILE* file, Reg* reg, Type t);
+void MipsCast(Reg* reg, Type t);
+
+void MipsMain();
 
 const char* GetRegT();
 

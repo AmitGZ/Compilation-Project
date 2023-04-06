@@ -5,18 +5,14 @@
 5.     string: ID(d);
 6.     
 7.     ID(b) =  5;
-8.     in(ID(c));
-9.     COMMENT
-10.     COMMENT
-11.     COMMENT
-12.     ID(b) = (ID(b) -ID(c)) ;
-13.     ID(b) = (ID(b) -ID(c)) ;
-14.     ID(b) = (ID(b) -ID(c)) ;
-15.     ID(b) = (ID(b) -ID(c)) ;
-16.     ID(b) = (ID(b) -ID(c)) ;
-17.     ID(b) = (ID(b) -ID(c)) ;
-18.     ID(d)="the result is ";
-19.     out(ID(d));
-20.     if (ID(a) <ID(b)) then out(ID(a));
-21. 	else   out(ID(b));
-22. end
+8.     in(ID(a));
+9.     in(ID(c));
+10.     in(ID(e));
+11.     in(ID(f));
+12.     ID(b) = (ID(b) -ID(a));
+13.     ID(b) = (ID(b) -ID(a));
+14.     ID(d)="the result is ";
+15.     out(ID(d));
+16.     if (ID(a) <ID(b) && ID(b) <ID(c)) then out(ID(a));
+17. 	else   out(ID(b));
+18. end

@@ -1,7 +1,6 @@
 %{
 // TODO
 // Move hash to separate files
-// set mips file as extern
 
 // Questions
 // Can we use .cpp?
@@ -17,8 +16,6 @@ extern int yylex();
 extern int yyparse();
 extern size_t errorCount;
 
-extern size_t regTrackerT;
-extern size_t regTrackerF;
 FILE* mips;
 Type currentType;
 Bucket table[TABLE_SIZE];
@@ -90,14 +87,10 @@ Bucket table[TABLE_SIZE];
 %type <_val> boolexpr
 
 %%
-program         :   PROGRAM ID START declerations stmtlist END{ MipsExit(mips); }
+program         :   PROGRAM ID START declerations stmtlist END{ MipsExit(); }
                 ;
 
-declerations    :   DECL { MipsData(mips); } declarlist cdecl { 
-                                                                fprintf(mips, "\n\t.text\
-                                                                               \n\t.globl main\
-                                                                               \n\nmain:\n"); /* Start main scope */ 
-                                                              }
+declerations    :   DECL { MipsData(); } declarlist cdecl { MipsMain(); }
                 | {}
                 ;
  
@@ -109,11 +102,11 @@ decl            :   type { currentType = $1 } COLON list SEMICOLON
 
 list            :   ID COMMA list {
                                     InsertToTable(table, $1, currentType, false);
-                                    MipsDecl(mips, currentType, $1, "0");
+                                    MipsDecl(currentType, $1, "0"); // Initialize with 0
                                   }
                 |   ID  {
                           InsertToTable(table, $1, currentType, false);
-                          MipsDecl(mips, currentType, $1, "0");
+                          MipsDecl(currentType, $1, "0"); // Initialize with 0
                         }
                 ;
 
@@ -125,12 +118,13 @@ type            :   INT { $$ = INTEGER }
 /* the value of id should not be changed during the program*/
 cdecl           :   FINAL type ID ASSIGNOP NUM SEMICOLON cdecl{
                                                                 Type my_type = $2;
-                                                                Reg my_val = $5;  
+                                                                Reg my_reg = $5;
+                                                                const char* id = $3;
 
-                                                                if(IsAssignValid(my_type, my_val._type))
+                                                                if(IsAssignValid(my_type, my_reg._type))
                                                                 {
-                                                                  InsertToTable(table, $3, my_type, true);
-                                                                  //MipsDecl(mips, my_type, my_val., my_val._sval);
+                                                                  InsertToTable(table, id, my_type, true);
+                                                                  MipsDecl(my_type, id, my_reg._sval);
                                                                 }
                                                                 else
                                                                 {
@@ -150,8 +144,8 @@ stmt            :   assignment_stmt {}
                                                     if (node != NULL)
                                                     {
                                                       Reg* val = &($3);
-                                                      MipsLoadI(mips, val); 
-                                                      MipsAssign(mips, node, val);
+                                                      MipsLoadI(val); 
+                                                      MipsAssign(node, val);
                                                     }
                                                     else
                                                     {
@@ -164,16 +158,16 @@ stmt            :   assignment_stmt {}
                 |   stmt_block {}
                 ;
 
-out_stmt        :   OUT O_PARENTHESES expression C_PARENTHESES SEMICOLON { MipsOut(mips, &($3)); }
+out_stmt        :   OUT O_PARENTHESES expression C_PARENTHESES SEMICOLON { MipsOut(&($3)); }
                 |   OUT O_PARENTHESES SENTENCE C_PARENTHESES SEMICOLON{ 
-                                                                        MipsLoadI(mips, &($3)); 
-                                                                        MipsOut(mips, &($3)); 
+                                                                        MipsLoadI(&($3)); 
+                                                                        MipsOut(&($3)); 
                                                                       }
                 ;
 
 in_stmt         :   IN O_PARENTHESES ID C_PARENTHESES SEMICOLON { 
                                                                   Node* node = GetFromTable(table, $3);
-                                                                  MipsIn(mips, node); 
+                                                                  MipsIn(node); 
                                                                 }
                 ;
 
@@ -182,7 +176,7 @@ assignment_stmt :   ID ASSIGNOP expression SEMICOLON {
                                                         Reg* val = &($3);
                                                         if (node != NULL)
                                                         {
-                                                          MipsAssign(mips, node, val);
+                                                          MipsAssign(node, val);
                                                         }
                                                         else
                                                         {
@@ -218,10 +212,10 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                               if ((node0 != NULL) && (node1 != NULL))
                                               {
                                                 Reg val1 = { node1->_type, node1->_name };
-                                                MipsLoadV(mips, &val1);
+                                                MipsLoadV(&val1);
                                                 Reg res;
-                                                MipsMathOp(mips, $4, &res, val0, &val1);
-                                                MipsAssign(mips, node0, &res);
+                                                MipsMathOp($4, &res, val0, &val1);
+                                                MipsAssign(node0, &res);
                                               }
                                               else
                                               {
@@ -230,51 +224,37 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                             }
                 ;
 
-boolexpr        :   boolexpr OROP boolterm  { MipsLogOp(mips, OR, &($$), &($1), &($3)); }
+boolexpr        :   boolexpr OROP boolterm  { MipsLogOp(OR, &($$), &($1), &($3)); }
                 |   boolterm { $$ = $1; }
                 ;
 
-boolterm        :   boolterm ANDOP boolfactor { MipsLogOp(mips, AND, &($$), &($1), &($3)); }
+boolterm        :   boolterm ANDOP boolfactor { MipsLogOp(AND, &($$), &($1), &($3)); }
                 |   boolfactor { $$ = $1; }
                 ;
         
-boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES { /*MipsLogOp(mips, AND, &($$), &($3), &(ZeroReg));*/}
-                |   expression RELOP expression {
-                                                  Reg* res = &($$);
-                                                  Reg* val0 = &($1);
-                                                  Reg* val1 = &($3);
-                                                  MipsRelOp(mips, $2, res, val0, val1);
-                                                }
+boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES{ 
+                                                                        Reg zeroReg = { INTEGER, ZeroReg };
+                                                                        MipsLogOp(AND, &($$), &($3), &(zeroReg));
+                                                                      }
+                |   expression RELOP expression { MipsRelOp($2, &($$), &($1), &($3)); }
                 ;  
 
-expression      :   expression ADDOP term { 
-                                            Reg* res = &($$);
-                                            Reg* val0 = &($1);
-                                            Reg* val1 = &($3);
-                                            MipsMathOp(mips, $2, res, val0, val1);
-                                          }
+expression      :   expression ADDOP term { MipsMathOp($2, &($$), &($1), &($3)); }
                 |   term { $$ = $1; }
                 ;
 
-term            :   term MULOP factor { 
-                                        Reg* res = &($$);
-                                        Reg* val0 = &($1);
-                                        Reg* val1 = &($3);
-                                        MipsMathOp(mips, $2, res, val0, val1);
-                                      }
+term            :   term MULOP factor { MipsMathOp($2, &($$), &($1), &($3)); }
                 |   factor  { $$ = $1; }
                 ;
 
-factor          :   O_PARENTHESES expression C_PARENTHESES{
-                                                            $$ = $2; 
-                                                          }
+factor          :   O_PARENTHESES expression C_PARENTHESES{ $$ = $2; }
                 |   ID{ 
                         Node* node = GetFromTable(table, $1);
                         if (node != NULL)
                         {
                           $$._type = node->_type;
                           $$._sval = node->_name;
-                          MipsLoadV(mips, &($$));
+                          MipsLoadV(&($$));
                         }
                         else
                         {
@@ -283,7 +263,7 @@ factor          :   O_PARENTHESES expression C_PARENTHESES{
                       }
                 |   NUM { 
                           $$ = $1;
-                          MipsLoadI(mips, &($$));
+                          MipsLoadI(&($$));
                         }
                 ;
 
@@ -295,8 +275,11 @@ int main(int argc, char** argv)
 	extern FILE* yyin;
 	extern FILE* yyout;
   yyin = fopen(argv[1], "r");
+  assert(yyin != NULL);
   yyout = fopen(argv[2], "w");
+  assert(yyout != NULL);
   mips = fopen(argv[3], "w");
+  assert(mips != NULL);
 
 	do
 	{

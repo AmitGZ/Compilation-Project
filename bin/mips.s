@@ -7,8 +7,8 @@ b:	.float 0
 a:	.word 0
 d:	.word 0
 
-	.text                                                                               
-	.globl main                                                                               
+	.text                   
+	.globl main                   
 
 main:
 
@@ -22,13 +22,32 @@ main:
 	s.s $f0, b
 
 	# read input
+	li $v0, 5  
+	syscall    
+	sw $v0, a 
+
+	# read input
 	li $v0, 6    
 	syscall      
 	s.s $f0, c  
 
+	# read input
+	li $v0, 6    
+	syscall      
+	s.s $f0, e  
+
+	# read input
+	li $v0, 6    
+	syscall      
+	s.s $f0, f  
+
 	l.s $f0, b
 
-	l.s $f1, c
+	lw $t0, a
+
+	# Move integer value to floating-point register
+	mtc1 $t0, $f1
+	cvt.s.w $f1, $f1
 
 	# mathop two floats
 	sub.s $f0, $f0, $f1
@@ -38,47 +57,11 @@ main:
 
 	l.s $f0, b
 
-	l.s $f1, c
+	lw $t0, a
 
-	# mathop two floats
-	sub.s $f0, $f0, $f1
-
-	# assigning float value
-	s.s $f0, b
-
-	l.s $f0, b
-
-	l.s $f1, c
-
-	# mathop two floats
-	sub.s $f0, $f0, $f1
-
-	# assigning float value
-	s.s $f0, b
-
-	l.s $f0, b
-
-	l.s $f1, c
-
-	# mathop two floats
-	sub.s $f0, $f0, $f1
-
-	# assigning float value
-	s.s $f0, b
-
-	l.s $f0, b
-
-	l.s $f1, c
-
-	# mathop two floats
-	sub.s $f0, $f0, $f1
-
-	# assigning float value
-	s.s $f0, b
-
-	l.s $f0, b
-
-	l.s $f1, c
+	# Move integer value to floating-point register
+	mtc1 $t0, $f1
+	cvt.s.w $f1, $f1
 
 	# mathop two floats
 	sub.s $f0, $f0, $f1
@@ -113,14 +96,23 @@ str0: .asciiz "the result is "
 
 	# compare two floats and negate
 	c.lt.s $f1, $f0
+	movt $t0, $zero, 1
+	movf $t0, $zero, 0
+
+	l.s $f0, b
+
+	l.s $f1, c
+
+	# compare two floats and negate
+	c.lt.s $f0, $f1
 	movt $t1, $zero, 1
 	movf $t1, $zero, 0
-
-	lw $t1, a
+	and $t0, $t0, $t1
+	lw $t2, a
 
 	# printing 
 	li $v0, 1   
-	move $a0, $t1       
+	move $a0, $t2       
 	syscall      
 
 	l.s $f0, b

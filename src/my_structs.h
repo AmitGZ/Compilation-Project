@@ -15,4 +15,4 @@ typedef struct
 static const char* TmpRegs[] =    { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7" };
 static const char* FloatRegs[] =  { "$f0", "$f1", "$f2", "$f3", "$f4", "$f5", "$f6", "$f7" };
 static const char* SaveRegs[] =   { "$s0", "$s1", "$s2", "$s3", "$s4", "$s5", "$s6", "$s7" };
-static const Reg ZeroReg = { INTEGER, "$zero" };
+static const char* ZeroReg = "$zero";

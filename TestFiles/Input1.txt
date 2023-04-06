@@ -9,10 +9,10 @@ decl real : b,c,e,f;
     in(c);
     in(e);
     in(f);
-    b = (b-a) ;
-    b = (b-a) ;
+    b = (b-a);
+    b = (b-a);
     d="the result is ";
     out(d);
-    if (a<b) then out(a);
+    if (a<b && b<c) then out(a);
 	else   out(b);
 end
