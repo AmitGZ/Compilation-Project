@@ -1,6 +1,8 @@
 #include "my_functions.h"
 
 extern size_t errorCount;
+static size_t RegTrackerF = 0U;
+static size_t RegTrackerT = 0U;
 
 int Hash(const char* key)
 {
@@ -98,15 +100,7 @@ void MipsDecl(FILE* file, Type t, const char* id, const char* val)
 {
     assert((file != NULL) && (t < TYPE_COUNT) && (id != NULL) && (val != NULL));
 
-    char* tStr;
-    if ((t == STR) || (t == INTEGER))
-    {
-        tStr = "word";
-    }
-    else
-    {
-        tStr = "float";
-    }
+    const char* tStr = (t == FLOATING) ? "float" : "word";
     fprintf(file, "%s:\t.%s %s\n", id, tStr, val);
 }
 
@@ -117,7 +111,7 @@ void MipsIn(FILE* file, const Node* node)
     fprintf(file, "\n\t# read input\n");
     if (node->_type == STR)
     {
-        fprintf(file, "\tli $v0, 8    \n"\
+        fprintf(file, "\tli $v0, 8      \n"\
                       "\tla $a0, buffer \n"\
                       "\tli $a1, %d,    \n"\
                       "\tsyscall        \n", BUFFER_SIZE);
@@ -130,173 +124,180 @@ void MipsIn(FILE* file, const Node* node)
     }
     else // FLOATING
     {
-        fprintf(file, "\tli $v0, 6  \n"\
+        fprintf(file, "\tli $v0, 6    \n"\
                       "\tsyscall      \n"\
                       "\ts.s $f0, %s  \n", node->_name);
     }
 }
 
-void MipsOut(FILE* file, const Val* val)
+void MipsOut(FILE* file, const Reg* val)
 {
     assert((file != NULL) && (val != NULL) && (val->_type < TYPE_COUNT));
 
-    //                      INTEGER=0, FLOATING=1, STR=2
-    static const int OutTable[] = { 1, 2, 4 };
-    static const char* CmdTable[] = { "lw $a0", "l.s $f12", "lw $a0" };
+    static const int OutTable[] = { 1, 2, 4 }; // INTEGER=0, FLOATING=1, STR=2
+    static const char* CmdTable[] = { "move $a0", "mov.s $f12", "move $a0" };
 
-    fprintf(file, "\n\t# printing  \n"\
+    fprintf(file, "\n\t# printing \n"\
                   "\tli $v0, %d   \n"\
                   "\t%s, %s       \n"\
                   "\tsyscall      \n", OutTable[val->_type], CmdTable[val->_type], val->_sval);
 
 }
 
-void MipsMathOp(FILE* file, MathOp mathOp, Val* res, const Val* val0, const Val* val1)
+void MipsMathOp(FILE* file, MathOp mathOp, Reg* res, Reg* reg0, Reg* reg1)
 {
-    assert((file != NULL) && (mathOp < MATH_OP_COUNT) && (res != NULL) && (val0 != NULL) && (val1 != NULL));
+    assert((file != NULL) && (mathOp < MATH_OP_COUNT) && (res != NULL) && (reg0 != NULL) && (reg1 != NULL));
 
-    if ((val0->_type == STR) || (val1->_type == STR))
+    if ((reg0->_type == STR) || (reg1->_type == STR))
     {
         yyerror("can't perform arithmetic operations on string");
         return;
     }
 
-    res->_isImmediate = false;
-    res->_type = ((val0->_type == FLOATING) || (val1->_type == FLOATING)) ? FLOATING : INTEGER;
+    res->_type = ((reg0->_type == FLOATING) || (reg1->_type == FLOATING)) ? FLOATING : INTEGER;
     static const char* MathOpTable[] = { "add", "sub", "mul", "div" };
     const char* op = MathOpTable[mathOp];
 
     if (res->_type == FLOATING)
-    {
-        if (val0->_type == INTEGER)
+    {        
+        if (reg0->_type != FLOATING)
         {
-            fprintf(file, "\n\t# Move integer value to floating-point register\n"\
-                          "\tmtc1 %s, $f0\n"\
-                          "\tcvt.s.w $f0, $f0\n" , val0->_sval);
+            MipsCast(file, reg0, FLOATING);
+            res->_sval = reg1->_sval;
         }
-        else if (val1->_type == INTEGER)
+        else if (reg1->_type != FLOATING)
         {
-            fprintf(file, "\n\t# Move integer value to floating-point register\n"\
-                          "\tmtc1 %s, $f1\n"\
-                          "\tcvt.s.w $f1, $f1\n", val1->_sval);
+            MipsCast(file, reg1, FLOATING);
+            res->_sval = reg0->_sval;
         }
-
-        res->_sval = FloatRegs[0];
+        else
+        {
+            res->_sval = reg0->_sval;
+        }
+        
         fprintf(file, "\n\t# mathop two floats\n"\
-                      "\t%s.s %s, $f0, $f1\n", op, res->_sval);
+                        "\t%s.s %s, %s, %s\n", op, res->_sval, reg0->_sval, reg1->_sval);
+        FreeRegF();
     }
     else // INTEGER
     {
-        res->_sval = TmpRegs[0];
+        res->_sval = GetRegT();
         fprintf(file, "\n\t# mathop two ints\n"\
-                      "\t%s %s, $f0, $f1\n", op, res->_sval);
+                      "\t%s %s, %s, %s\n", op, res->_sval, reg0->_sval, reg1->_sval);
+        FreeRegT();
     }
 }
 
-void MipsRelOp(FILE* file, RelOp relOp, Val* res, const Val* val0, const Val* val1)
+void MipsRelOp(FILE* file, RelOp relOp, Reg* res, Reg* reg0, Reg* reg1)
 {
-    assert((file != NULL) && (relOp < REL_OP_COUNT) && (res != NULL) && (val0 != NULL) && (val1 != NULL));
+    assert((file != NULL) && (relOp < REL_OP_COUNT) && (res != NULL) && (reg0 != NULL) && (reg1 != NULL));
 
-    if ((val0->_type == STR) || (val1->_type == STR))
+    if ((reg0->_type == STR) || (reg1->_type == STR))
     {
         yyerror("can't perform arithmetic operations on string");
         return;
     }
 
-    res->_isImmediate = false;
-    res->_type = ((val0->_type == FLOATING) || (val1->_type == FLOATING)) ? FLOATING : INTEGER;
+    res->_type = ((reg0->_type == FLOATING) || (reg1->_type == FLOATING)) ? FLOATING : INTEGER;
     const char* op;
-
-    res->_sval = TmpRegs[0];
     
     if (res->_type == FLOATING)
     {        
-        if (val0->_type == INTEGER)
+        res->_sval = GetRegT();
+        if (reg0->_type != reg1->_type)
         {
-            fprintf(file, "\n\t# Move integer value to floating-point register\n"\
-                          "\tmtc1 %s, $f0\n"\
-                          "\tcvt.s.w $f0, $f0\n", val0->_sval);
+            MipsCast(file, reg0, FLOATING);
+            MipsCast(file, reg1, FLOATING);
         }
-        else if (val1->_type == INTEGER)
-        {
-            fprintf(file, "\n\t# Move integer value to floating-point register\n"\
-                          "\tmtc1 %s, $f1\n"\
-                          "\tcvt.s.w $f1, $f1\n", val1->_sval);
-        }
-                                                    /*  sne          sgt          sge  */
+
+        /*                                              sne          sgt          sge  */
         static const char* FloatRelOpTable[] = { "eq", "!eq", "lt", "!le", "le", "!lt" };
         op = FloatRelOpTable[relOp];
         if (op[0] == '!')
         {
             // Negate operation 
             fprintf(file, "\n\t# compare two floats and negate\n"\
-                          "\tc.%s.s $f0, $f1\n"\
+                          "\tc.%s.s %s, %s\n"\
                           "\tmovt %s, $zero, 0\n"\
-                          "\tmovf %s, $zero, 1\n", &op[0], res->_sval, res->_sval);
+                          "\tmovf %s, $zero, 1\n", &op[0], reg0->_sval, reg1->_sval, res->_sval, res->_sval);
         }
         else
         {
             // Normal operation is available
-            fprintf(file, "\n\t# compare two floats\n"\
-                          "\tc.%s.s $f0, $f1\n"\
+            fprintf(file, "\n\t# compare two floats and negate\n"\
+                          "\tc.%s.s %s, %s\n"\
                           "\tmovt %s, $zero, 1\n"\
-                          "\tmovf %s, $zero, 0\n", op, res->_sval, res->_sval);
+                          "\tmovf %s, $zero, 0\n", &op[0], reg0->_sval, reg1->_sval, res->_sval, res->_sval);
         }
+        FreeRegF();
+        FreeRegF();
     }
     else // INTEGER
     {
+        res->_sval = reg0->_sval;
         static const char* IntRelOpTable[] = { "seq", "sne", "slt", "sgt", "sle", "sge" };
         const char* op = IntRelOpTable[relOp];
         fprintf(file, "\n\t# compare two ints\n"\
-                      "\t%s %s, %s, %s\n", op, res->_sval, val0->_sval, val1->_sval);
+                      "\t%s %s, %s, %s\n", op, res->_sval, reg0->_sval, reg1->_sval);
+        FreeRegT();
     }
 }
 
-void MipsAssign(FILE* file, const Node* node, const Val* val)
+void MipsAssign(FILE* file, const Node* node, Reg* reg)
 {
-    assert((file != NULL) && (node != NULL) && (node->_type < TYPE_COUNT) && (val != NULL) && (val->_type < TYPE_COUNT));
+    assert((file != NULL) && (node != NULL) && (node->_type < TYPE_COUNT) && (reg != NULL) && (reg->_type < TYPE_COUNT));
 
-    if (!IsAssignValid(node->_type, val->_type))
+    if (!IsAssignValid(node->_type, reg->_type))
     {
         yyerror("Assignment invalid");
         return;
     }
 
+    if (node->_type != reg->_type)
+    {
+        MipsCast(file, reg, node->_type);
+    }
 
-    if (node->_type == STR)
+    switch(node->_type)
     {
-        fprintf(file, "\n\t# assigning string pointer\n"
-                      "\tsw %s, %s\n", val->_sval, node->_name);
-    }
-    else if (node->_type == INTEGER)
-    {
-        fprintf(file, "\n\t# assigning integer value\n"
-                      "\tsw %s, %s\n", val->_sval, node->_name);
-    }
-    else // FLOATING
-    {
-        fprintf(file, "\n\t# assigning float value\n"
-                      "\ts.s %s, %s\n", val->_sval, node->_name);
+        case STR:
+            fprintf(file, "\n\t# assigning string pointer\n"
+                          "\tsw %s, %s\n", reg->_sval, node->_name);
+            break;
+        
+        case INTEGER:
+            fprintf(file, "\n\t# assigning integer value\n"
+                          "\tsw %s, %s\n", reg->_sval, node->_name);
+            break;
+
+        default: // FLOATING
+            fprintf(file, "\n\t# assigning float value\n"
+                          "\ts.s %s, %s\n", reg->_sval, node->_name);
+            break;
     }
 }
 
-void MipsLogOp(FILE* file, LogOp logOp, Val* res, const Val* val0, const Val* val1)
+void MipsLogOp(FILE* file, LogOp logOp, Reg* res, Reg* reg0, Reg* reg1)
 {
-    assert((file != NULL) && (logOp < LOG_OP_COUNT) && (res != NULL) && (val0 != NULL) && (val1 != NULL));
+    assert((file != NULL) && (logOp < LOG_OP_COUNT) && (res != NULL) && (reg0 != NULL) && (reg1 != NULL));
 
-    if ((val0->_type == STR) || (val1->_type == STR))
+    if ((reg0->_type == STR) || (reg1->_type == STR))
     {
         yyerror("can't perform arithmetic operations on string");
         return;
     }
 
-    res->_isImmediate = false;
-    res->_type = ((val0->_type == FLOATING) || (val1->_type == FLOATING)) ? FLOATING : INTEGER;
+    if (reg0->_type != reg1->_type)
+    {
+        MipsCast(file, reg0, FLOATING);
+        MipsCast(file, reg1, FLOATING);
+    }
+
+    res->_type = ((reg0->_type == FLOATING) || (reg1->_type == FLOATING)) ? FLOATING : INTEGER;
     static const char* LogOpTable[] = { "and", "or", "nor" };
     const char* op = LogOpTable[logOp];
 
-    fprintf(file, "%s %s, %s, %s", op, res->_sval, val0->_sval, val1->_sval);
-
+    fprintf(file, "%s %s, %s, %s", op, res->_sval, reg0->_sval, reg1->_sval);
 }
 
 void MipsExit(FILE* file)
@@ -308,59 +309,111 @@ void MipsExit(FILE* file)
                   "\tsyscall\n");
 }
 
-void MipsLoad(FILE* file, Val* val, int reg)
+void MipsLoadV(FILE* file, Reg* reg)
 {
-    assert((file != NULL) && (val != NULL) && (val->_type < TYPE_COUNT) && (val->_sval != NULL));
+    assert((file != NULL) && (reg != NULL) && (reg->_type < TYPE_COUNT) && (reg->_sval != NULL));
+    const char* var = reg->_sval;
 
-    if (val->_type == STR)
+    switch(reg->_type)
     {
-        if (val->_isImmediate)
-        {
-            static size_t stringCount = 0U;
-            const char* str = "str";
+        case STR:
+            reg->_sval = GetRegT();
+            fprintf(file, "\n\tla %s, %s\n", reg->_sval, var);
+            break;
+        
+        case INTEGER:
+            reg->_sval = GetRegT();
+            fprintf(file, "\n\tlw %s, %s\n", reg->_sval, var);
+            break;
+            
+        default: // FLOATING
+            reg->_sval = GetRegF();
+            fprintf(file, "\n\tl.s %s, %s\n", reg->_sval, var);
+            break;
+    }
+}
 
+void MipsLoadI(FILE* file, Reg* reg)
+{
+    assert((file != NULL) && (reg != NULL) && (reg->_type < TYPE_COUNT) && (reg->_sval != NULL));
+    static size_t stringCount = 0U;
+    const char* str = "str";
+    const char* val = reg->_sval;
+    
+    switch(reg->_type)
+    {
+        case STR:
+            reg->_sval = GetRegT();
             fprintf(file, "\n\t.data\n"\
                           "%s%zu: .asciiz %s\n"\
-	                      "\t.text\n", str, stringCount, val->_sval);
+	                      "\t.text\n", str, stringCount, val);
 
-            fprintf(file, "\n\t# store pointer to string in $s%d\n"\
-                          "\tla $s%d, %s%zu\n", reg, reg, str, stringCount);
+            fprintf(file, "\n\t# store pointer to string in $t\n"\
+                          "\tla %s, %s%zu\n", reg->_sval, str, stringCount);
 
             ++stringCount;
-            val->_sval = SaveRegs[reg];
-        }
-        else
-        {
-            fprintf(file, "\n\tla $t%d, %s\n", reg, val->_sval);
-        }
+            break;
+        
+        case INTEGER:
+            reg->_sval = GetRegT();
+            fprintf(file, "\n\tli %s, %s\n", reg->_sval, val);
+            break;
+
+        default: // FLOATING
+            reg->_sval = GetRegF();
+            float f = strtof(val, NULL); // Converting string to float
+            int* x = (int*)&(f);         // reinterpret_cast to int
+            fprintf(file, "\n\tli $t0, 0x%x\n", (*x));
+            fprintf(file, "\tmtc1 $t0, %s\n", reg->_sval);
+            break;
     }
-    else if (val->_type == INTEGER)
+}
+
+void MipsCast(FILE* file, Reg* reg, Type t)
+{
+    assert((file != NULL) && (reg->_type < TYPE_COUNT) && (t < TYPE_COUNT));
+
+    if (reg->_type == t)
+        return;
+
+    const char* val;
+    if (t == FLOATING)
     {
-        if (val->_isImmediate)
-        {
-            fprintf(file, "\n\tli $t%d, %s\n", reg, val->_sval);
-        }
-        else
-        {
-            fprintf(file, "\n\tlw $t%d, %s\n", reg, val->_sval);
-        }
-        val->_sval = TmpRegs[reg];
+        val = reg->_sval;
+        reg->_sval = GetRegF();
+        fprintf(file, "\n\t# Move integer value to floating-point register\n"\
+                      "\tmtc1 %s, %s\n"\
+                      "\tcvt.s.w %s, %s\n", val, reg->_sval, reg->_sval, reg->_sval);
+        FreeRegT();
     }
-    else // FLOATING
-    {
-        if (val->_isImmediate)
-        {
-            float f = strtof(val->_sval, NULL); // Converting string to float
-            int* x = (int*)&(f);                // reinterpret_cast to int
-            fprintf(file, "\n\tli $t%d, 0x%x\n", reg, (*x));
-            fprintf(file, "\tmtc1 %s, $f%d\n"\
-                          "\tcvt.s.w $f%d, $f%d\n", val->_sval, reg, reg, reg);
-        }
-        else
-        {
-            const char* command = val->_sval[0] == '$' ? "mov.s" : "l.s";
-            fprintf(file, "\n\t%s $f%d, %s\n",command, reg, val->_sval);
-        }
-        val->_sval = FloatRegs[reg];
-    }
+}
+
+const char* GetRegT()
+{
+    assert(RegTrackerT < 8U);
+    return TmpRegs[RegTrackerT++];
+}
+
+const char* GetRegF()
+{
+    assert(RegTrackerF < 8U);
+    return FloatRegs[RegTrackerF++];
+}
+
+void FreeRegT()
+{
+    assert(RegTrackerT != 0U);
+    --RegTrackerT;
+}
+
+void FreeRegF()
+{
+    assert(RegTrackerF != 0U);
+    --RegTrackerF;
+}
+
+void FreeAllRegs()
+{
+    RegTrackerF = 0U;
+    RegTrackerT = 0U;
 }

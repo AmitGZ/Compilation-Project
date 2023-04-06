@@ -1,14 +1,12 @@
 program  Min  /* Finding minimum between two numbers */
 start
-decl real : b,c,e;
+decl real : b,c;
     int: a;
     string: d;
     
-    in(a);
-    in(b);
+    b = 5;
     in(c);
-    in(e);
-    b = (a + b) * c / e - (b - c);
+    b = b * c;
     d="the result is ";
     out(d);
     if (a<b) then out(a);

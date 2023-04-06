@@ -71,19 +71,12 @@ void FreeTable(Bucket* table);
  */
 void MipsIn(FILE* file, const Node* node);
 
-void MipsMathOp(FILE* file, MathOp mulOp, Val* res, const Val* val1, const Val* val2);
+void MipsMathOp(FILE* file, MathOp mulOp, Reg* res, Reg* reg0, Reg* reg1);
 
-void MipsRelOp(FILE* file, RelOp relOp, Val* res, const Val* val1, const Val* val2);
+void MipsRelOp(FILE* file, RelOp relOp, Reg* res, Reg* reg0, Reg* reg1);
 
-void MipsLogOp(FILE* file, LogOp logOp, Val* res, const Val* val0, const Val* val1);
+void MipsLogOp(FILE* file, LogOp logOp, Reg* res, Reg* reg0, Reg* reg1);
 
-/**
- * @brief 
- * @param file 
- * @param t 
- * @param id 
- * @param val 
- */
 void MipsDecl(FILE* file, Type t, const char* id, const char* val);
 
 /**
@@ -96,19 +89,10 @@ void MipsExit(FILE* file);
  * @brief 
  * 
  * @param file 
- * @param val 
- * @param reg 
- */
-void MipsLoad(FILE* file, Val* val);
-
-/**
- * @brief 
- * 
- * @param file 
  * @param node 
  * @param name
  */
-void MipsAssign(FILE* file, const Node* node, const Val* val);
+void MipsAssign(FILE* file, const Node* node, Reg* reg);
 
 /**
  * @brief 
@@ -116,7 +100,7 @@ void MipsAssign(FILE* file, const Node* node, const Val* val);
  * @param file 
  * @param node 
  */
-void MipsOut(FILE* file, const Val* val);
+void MipsOut(FILE* file, const Reg* reg);
 
 /**
  * @brief 
@@ -130,3 +114,19 @@ void MipsData(FILE* file);
  * @param s error description
  */
 void yyerror(const char* s);
+
+void MipsLoadV(FILE* file, Reg* reg);
+
+void MipsLoadI(FILE* file, Reg* reg);
+
+void MipsCast(FILE* file, Reg* reg, Type t);
+
+const char* GetRegT();
+
+const char* GetRegF();
+
+void FreeRegF();
+
+void FreeRegT();
+
+void FreeAllRegs();
