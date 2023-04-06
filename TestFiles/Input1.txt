@@ -4,15 +4,10 @@ decl real : b,c,e,f;
     int: a;
     string: d;
     
-    b = 5;
     in(a);
-    in(c);
-    in(e);
-    in(f);
-    b = (b-a);
-    b = (b-a);
+    in(b);
     d="the result is ";
     out(d);
-    if (a<b && b<c) then out(a);
+    if (b < a) then out(a);
 	else   out(b);
 end

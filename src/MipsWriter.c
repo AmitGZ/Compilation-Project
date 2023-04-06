@@ -4,6 +4,8 @@ extern size_t errorCount;       /**< Description */
 extern FILE* mips;              /**< Description */
 static size_t RegTrackerF = 0U; /**< Description */
 static size_t RegTrackerT = 0U; /**< Description */
+static size_t IfIndex = 0U;
+static size_t WhileIndex = 0U;
 
 bool IsAssignValid(Type type1, Type type2) 
 {
@@ -315,38 +317,40 @@ void MipsCast(Reg* reg, Type t)
     }
 }
 
-void MipsIf(int part)
+void MipsIf(Reg* reg, uint32_t part)
 {
-    if(part == 1)
-        fprintf(mips,"\n\n\tbeq $t0,$0, else\n");
-    else if(part == 2)
+    assert((part < 3U) && (reg != NULL));
+
+    if(part == 0U)
     {
-        fprintf(mips,"\n\tj continue");
-        fprintf(mips,"\n\telse:");
+        fprintf(mips,"\n\tbeq %s, $zero, else%zu\n", reg->_sval, IfIndex);
     }
-    else if(part == 3)
-        fprintf(mips,"\n\tcontinue:\n");
+    else if(part == 1U)
+    {
+        fprintf(mips,"\n\tj continue%zu", IfIndex);
+        fprintf(mips,"\nelse%zu:", IfIndex);
+    }
     else
     {
-        // error
+        fprintf(mips,"\ncontinue%zu:\n", IfIndex);
+        ++IfIndex;
     }
 }
 
-void MipsWhile(int part)
+void MipsWhile(Reg* reg, bool start)
 {
-    if(part == 1)
+    assert(reg != NULL);
+
+    if(start)
     {
-        fprintf(mips,"\n\tLoop:");
-        fprintf(mips,"\n\tBeq $t0,0,endloop");
-    }
-    else if(part == 2)
-    {
-        fprintf(mips,"\n\tj loop");
-        fprintf(mips,"\n\tendloop:\n");
+        fprintf(mips,"\nloop%zu:", WhileIndex);
+        fprintf(mips,"\n\tBeq %s, 0, endloop%zu", reg->_sval, WhileIndex);
     }
     else
     {
-        // error
+        fprintf(mips,"\n\tj loop%zu", WhileIndex);
+        fprintf(mips,"\nendloop%zu:\n", WhileIndex);
+        ++WhileIndex;
     }
 }
 

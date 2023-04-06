@@ -12,15 +12,6 @@ d:	.word 0
 
 main:
 
-	li $t0, 5
-
-	# Move integer value to floating-point register
-	mtc1 $t0, $f0
-	cvt.s.w $f0, $f0
-
-	# assigning float value
-	s.s $f0, b
-
 	# read input
 	li $v0, 5  
 	syscall    
@@ -29,45 +20,7 @@ main:
 	# read input
 	li $v0, 6    
 	syscall      
-	s.s $f0, c  
-
-	# read input
-	li $v0, 6    
-	syscall      
-	s.s $f0, e  
-
-	# read input
-	li $v0, 6    
-	syscall      
-	s.s $f0, f  
-
-	l.s $f0, b
-
-	lw $t0, a
-
-	# Move integer value to floating-point register
-	mtc1 $t0, $f1
-	cvt.s.w $f1, $f1
-
-	# mathop two floats
-	sub.s $f0, $f0, $f1
-
-	# assigning float value
-	s.s $f0, b
-
-	l.s $f0, b
-
-	lw $t0, a
-
-	# Move integer value to floating-point register
-	mtc1 $t0, $f1
-	cvt.s.w $f1, $f1
-
-	# mathop two floats
-	sub.s $f0, $f0, $f1
-
-	# assigning float value
-	s.s $f0, b
+	s.s $f0, b  
 
 	.data
 str0: .asciiz "the result is "
@@ -86,40 +39,30 @@ str0: .asciiz "the result is "
 	move $a0, $t0       
 	syscall      
 
-	lw $t0, a
-
 	l.s $f0, b
+
+	lw $t0, a
 
 	# Move integer value to floating-point register
 	mtc1 $t0, $f1
 	cvt.s.w $f1, $f1
 
 	# compare two floats and negate
-	c.lt.s $f1, $f0
+	c.lt.s $f0, $f1
 	movt $t0, $zero, 1
 	movf $t0, $zero, 0
 
-	l.s $f0, b
+	beq $t0, $zero, else0
 
-	l.s $f1, c
-
-	# compare two floats and negate
-	c.lt.s $f0, $f1
-	movt $t1, $zero, 1
-	movf $t1, $zero, 0
-	and $t0, $t0, $t1
-
-	beq $t0,$0, else
-
-	lw $t2, a
+	lw $t1, a
 
 	# printing 
 	li $v0, 1   
-	move $a0, $t2       
+	move $a0, $t1       
 	syscall      
 
-	j continue
-	else:
+	j continue0
+else0:
 	l.s $f0, b
 
 	# printing 
@@ -127,7 +70,7 @@ str0: .asciiz "the result is "
 	mov.s $f12, $f0       
 	syscall      
 
-	continue:
+continue0:
 
 	# exit the program
 	li $v0, 10

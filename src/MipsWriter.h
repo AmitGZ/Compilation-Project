@@ -51,8 +51,12 @@ void MipsCast(Reg* reg, Type t);
 
 void MipsMain();
 
-const char* GetReg();
+const char* GetReg(Type t);
 
-void FreeReg();
+void FreeReg(Type t);
 
 void FreeAllRegs();
+
+void MipsWhile(Reg* reg, bool start);
+
+void MipsIf(Reg* reg, uint32_t part);

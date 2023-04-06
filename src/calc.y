@@ -183,18 +183,8 @@ assignment_stmt :   ID ASSIGNOP expression SEMICOLON {
                                                       }
                 ;
 
-control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN {
-                      MipsIf(1);
-                    } stmt ELSE {
-                      MipsIf(2);
-                    } stmt {
-                      MipsIf(3);
-                    }
-		            |   WHILE O_PARENTHESES boolexpr C_PARENTHESES {
-                      MipsWhile(1);
-                    } stmt_block {
-                      MipsWhile(2);
-                    }
+control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3), 0U); } stmt ELSE { MipsIf(&($3), 1); } stmt { MipsIf(&($3), 2); }
+		            |   WHILE O_PARENTHESES boolexpr C_PARENTHESES{ MipsWhile(&($3), true); } stmt_block { MipsWhile(&($3), false); }
                 |   FOREACH ID ASSIGNOP NUM TILL NUM WITH step stmt {}
                 |   FOREACH ID ASSIGNOP NUM TILL ID WITH step stmt {}
                 |   switch {}
@@ -210,7 +200,22 @@ cases           :   CASE NUM COLON stmtlist BREAK SEMICOLON cases {}
                 ;
 
 step            :   ID ASSIGNOP ID ADDOP NUM{ 
-                                              // copy from below
+                                              Node* node0 = GetFromTable(table, $1);
+                                              Node* node1 = GetFromTable(table, $3);
+                                              Reg* val0 = &($5);
+                                              MathOp mathOp = $4;
+                                              if ((node0 != NULL) && (node1 != NULL))
+                                              {
+                                                Reg val1 = { node1->_type, node1->_name };
+                                                MipsLoadV(&val1);
+                                                Reg res;
+                                                MipsMathOp($4, &res, val0, &val1);
+                                                MipsAssign(node0, &res);
+                                              }
+                                              else
+                                              {
+                                                yyerror("ID not found");
+                                              }
                                             }
 	              |   ID ASSIGNOP ID MULOP NUM{ 
                                               Node* node0 = GetFromTable(table, $1);
