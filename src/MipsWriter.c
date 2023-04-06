@@ -143,7 +143,7 @@ void MipsRelOp(RelOp relOp, Reg* res, Reg* reg0, Reg* reg1)
             fprintf(mips, "\n\t# compare two floats and negate\n"\
                           "\tc.%s.s %s, %s\n"\
                           "\tmovt %s, $zero, 0\n"\
-                          "\tmovf %s, $zero, 1\n", &op[0], reg0->_sval, reg1->_sval, res->_sval, res->_sval);
+                          "\tmovf %s, $zero, 1\n", &op[1], reg0->_sval, reg1->_sval, res->_sval, res->_sval);
         }
         else
         {
@@ -151,7 +151,7 @@ void MipsRelOp(RelOp relOp, Reg* res, Reg* reg0, Reg* reg1)
             fprintf(mips, "\n\t# compare two floats and negate\n"\
                           "\tc.%s.s %s, %s\n"\
                           "\tmovt %s, $zero, 1\n"\
-                          "\tmovf %s, $zero, 0\n", &op[0], reg0->_sval, reg1->_sval, res->_sval, res->_sval);
+                          "\tmovf %s, $zero, 0\n", op, reg0->_sval, reg1->_sval, res->_sval, res->_sval);
         }
         FreeReg(FLOATING);
         FreeReg(FLOATING);
@@ -337,19 +337,23 @@ void MipsIf(Reg* reg, uint32_t part)
     }
 }
 
-void MipsWhile(Reg* reg, bool start)
+void MipsWhile(Reg* reg, uint32_t part)
 {
-    assert(reg != NULL);
+    assert(part < 3U);
 
-    if(start)
+    if(part == 0U)
     {
-        fprintf(mips,"\nloop%zu:", WhileIndex);
-        fprintf(mips,"\n\tBeq %s, 0, endloop%zu", reg->_sval, WhileIndex);
+        fprintf(mips,"\nwhile%zu:", WhileIndex);
     }
-    else
+    else if(part == 1U)
     {
-        fprintf(mips,"\n\tj loop%zu", WhileIndex);
-        fprintf(mips,"\nendloop%zu:\n", WhileIndex);
+        assert(reg != NULL);
+        fprintf(mips,"\n\tBeq %s, 0, endwhile%zu", reg->_sval, WhileIndex);
+    }
+    else 
+    {
+        fprintf(mips,"\n\tj while%zu", WhileIndex);
+        fprintf(mips,"\nendwhile%zu:\n", WhileIndex);
         ++WhileIndex;
     }
 }

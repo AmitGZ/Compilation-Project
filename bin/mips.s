@@ -13,14 +13,14 @@ d:	.word 0
 main:
 
 	# read input
-	li $v0, 5  
-	syscall    
-	sw $v0, a 
+	li $v0, 6    
+	syscall      
+	s.s $f0, b  
 
 	# read input
 	li $v0, 6    
 	syscall      
-	s.s $f0, b  
+	s.s $f0, c  
 
 	.data
 str0: .asciiz "the result is "
@@ -32,20 +32,28 @@ str0: .asciiz "the result is "
 	# assigning string pointer
 	sw $t0, d
 
-	la $t0, d
+while0:
+	l.s $f0, b
 
-	# printing 
-	li $v0, 4   
-	move $a0, $t0       
+	l.s $f1, c
+
+	# compare two floats and negate
+	c.le.s $f0, $f1
+	movt $t0, $zero, 0
+	movf $t0, $zero, 1
+
+	Beq $t0, 0, endwhile0
+	# read input
+	li $v0, 6    
 	syscall      
+	s.s $f0, b  
+
+	j while0
+endwhile0:
 
 	l.s $f0, b
 
-	lw $t0, a
-
-	# Move integer value to floating-point register
-	mtc1 $t0, $f1
-	cvt.s.w $f1, $f1
+	l.s $f1, c
 
 	# compare two floats and negate
 	c.lt.s $f0, $f1

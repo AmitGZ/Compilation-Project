@@ -4,10 +4,11 @@ decl real : b,c,e,f;
     int: a;
     string: d;
     
-    in(a);
     in(b);
+    in(c);
     d="the result is ";
-    out(d);
-    if (b < a) then out(a);
+    while(b > c) { in(b);}
+
+    if (b<c) then out(a);
 	else   out(b);
 end
