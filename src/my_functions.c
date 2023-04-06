@@ -348,7 +348,7 @@ void MipsLoadI(FILE* file, Reg* reg)
                           "%s%zu: .asciiz %s\n"\
 	                      "\t.text\n", str, stringCount, val);
 
-            fprintf(file, "\n\t# store pointer to string in $t\n"\
+            fprintf(file, "\n\t# store pointer to string\n"\
                           "\tla %s, %s%zu\n", reg->_sval, str, stringCount);
 
             ++stringCount;

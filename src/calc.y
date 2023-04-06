@@ -140,7 +140,7 @@ cdecl           :   FINAL type ID ASSIGNOP NUM SEMICOLON cdecl{
                 | {}
                 ; 
 
-stmtlist        :  stmtlist stmt {}
+stmtlist        :  stmtlist stmt { FreeAllRegs(); }
                 | {}
                 ;
 
@@ -267,7 +267,6 @@ term            :   term MULOP factor {
 
 factor          :   O_PARENTHESES expression C_PARENTHESES{
                                                             $$ = $2; 
-                                                            MipsLoadI(mips, &($2));
                                                           }
                 |   ID{ 
                         Node* node = GetFromTable(table, $1);
