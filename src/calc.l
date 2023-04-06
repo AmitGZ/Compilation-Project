@@ -3,6 +3,7 @@
 %{
 #include "my_structs.h"
 #include "calc.tab.h"
+#include <string.h>
 
 // Global variables
 size_t errorCount = 0U;

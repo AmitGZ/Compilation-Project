@@ -8,6 +8,7 @@
 #include "my_structs.h"
 #include "Hash.h"
 #include "MipsWriter.h"
+#include <string.h>
 
 extern int yylex();
 extern int yyparse();
@@ -183,19 +184,16 @@ assignment_stmt :   ID ASSIGNOP expression SEMICOLON {
                 ;
 
 control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN {
-                    printf("beq $t0,$0, else")
+                      MipsIf(1);
                     } stmt ELSE {
-                      printf("j continue\n"
-                      printf("else:")
+                      MipsIf(2);
                     } stmt {
-                      printf("continue:")
+                      MipsIf(3);
                     }
 		            |   WHILE O_PARENTHESES boolexpr C_PARENTHESES {
-                    printf("Loop:\n")
-                    printf("Beq $t0,0,endloop")
+                      MipsWhile(1);
                     } stmt_block {
-                      printf("J loop\n")
-                      printf("endloop:")
+                      MipsWhile(2);
                     }
                 |   FOREACH ID ASSIGNOP NUM TILL NUM WITH step stmt {}
                 |   FOREACH ID ASSIGNOP NUM TILL ID WITH step stmt {}

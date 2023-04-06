@@ -315,6 +315,41 @@ void MipsCast(Reg* reg, Type t)
     }
 }
 
+void MipsIf(int part)
+{
+    if(part == 1)
+        fprintf(mips,"\n\n\tbeq $t0,$0, else\n");
+    else if(part == 2)
+    {
+        fprintf(mips,"\n\tj continue");
+        fprintf(mips,"\n\telse:");
+    }
+    else if(part == 3)
+        fprintf(mips,"\n\tcontinue:\n");
+    else
+    {
+        // error
+    }
+}
+
+void MipsWhile(int part)
+{
+    if(part == 1)
+    {
+        fprintf(mips,"\n\tLoop:");
+        fprintf(mips,"\n\tBeq $t0,0,endloop");
+    }
+    else if(part == 2)
+    {
+        fprintf(mips,"\n\tj loop");
+        fprintf(mips,"\n\tendloop:\n");
+    }
+    else
+    {
+        // error
+    }
+}
+
 const char* GetReg(Type t)
 {
     assert(t < TYPE_COUNT);

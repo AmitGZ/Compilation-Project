@@ -108,6 +108,9 @@ str0: .asciiz "the result is "
 	movt $t1, $zero, 1
 	movf $t1, $zero, 0
 	and $t0, $t0, $t1
+
+	beq $t0,$0, else
+
 	lw $t2, a
 
 	# printing 
@@ -115,12 +118,16 @@ str0: .asciiz "the result is "
 	move $a0, $t2       
 	syscall      
 
+	j continue
+	else:
 	l.s $f0, b
 
 	# printing 
 	li $v0, 2   
 	mov.s $f12, $f0       
 	syscall      
+
+	continue:
 
 	# exit the program
 	li $v0, 10
