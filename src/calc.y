@@ -182,8 +182,21 @@ assignment_stmt :   ID ASSIGNOP expression SEMICOLON {
                                                       }
                 ;
 
-control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN stmt ELSE stmt {}
-		            |   WHILE O_PARENTHESES boolexpr C_PARENTHESES stmt_block {}
+control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN {
+                    printf("beq $t0,$0, else")
+                    } stmt ELSE {
+                      printf("j continue\n"
+                      printf("else:")
+                    } stmt {
+                      printf("continue:")
+                    }
+		            |   WHILE O_PARENTHESES boolexpr C_PARENTHESES {
+                    printf("Loop:\n")
+                    printf("Beq $t0,0,endloop")
+                    } stmt_block {
+                      printf("J loop\n")
+                      printf("endloop:")
+                    }
                 |   FOREACH ID ASSIGNOP NUM TILL NUM WITH step stmt {}
                 |   FOREACH ID ASSIGNOP NUM TILL ID WITH step stmt {}
                 |   switch {}
