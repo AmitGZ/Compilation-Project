@@ -1,93 +1,15 @@
-#include "my_functions.h"
+#include "MipsWriter.h"
 
-extern size_t errorCount;
-extern FILE* mips;
-static size_t RegTrackerF = 0U;
-static size_t RegTrackerT = 0U;
-
-int Hash(const char* key)
-{
-    assert(key != NULL);
-
-    int sum = 0;
-    for (int i = 0; i < strlen(key); i++) 
-    {
-        sum += key[i];
-    }
-    return sum % TABLE_SIZE;
-}
-
-Node* GetFromTable(const Bucket* table, const char* name)
-{
-    assert((table != NULL) && (name != NULL));
-
-    int index = Hash(name);
-    Node* current = table[index]._head;
-    while (current != NULL) 
-    {
-        if (strcmp(current->_name, name) == 0U) 
-        {
-            return current;
-        }
-        current = current->_next;
-    }
-    return NULL; // Key not found
-}
-
-void InsertToTable(Bucket* table, const char* id, Type t, bool isConst)
-{
-    assert((table != NULL) && (id != NULL) && (t < TYPE_COUNT));
-
-    Node* tmp = GetFromTable(table, id);
-    if (GetFromTable(table, id) != NULL)
-    {
-        yyerror(strcat("Redeclaration of variable: ", id)); // Variable name already exists
-        return;
-    }
-    int index = Hash(id);
-    Node *new_node = (Node*) malloc(sizeof(Node));
-    new_node->_name = id;
-    new_node->_isConst = isConst;
-    new_node->_type = t;
-    new_node->_next = table[index]._head;
-    table[index]._head = new_node;
-}
-
-void FreeBucket(Bucket* bucket) 
-{
-    assert(bucket != NULL);
-
-    Node *current = bucket->_head;
-    while (current != NULL)
-    {
-        Node* temp = current;
-        current = current->_next;
-        free(temp);
-    }
-    bucket->_head = NULL;
-}
-
-void FreeTable(Bucket* table) 
-{
-    assert(table != NULL);
-
-    for (int i = 0; i < TABLE_SIZE; i++) 
-    {
-        FreeBucket(&table[i]);
-    }
-}
+extern size_t errorCount;       /**< Description */
+extern FILE* mips;              /**< Description */
+static size_t RegTrackerF = 0U; /**< Description */
+static size_t RegTrackerT = 0U; /**< Description */
 
 bool IsAssignValid(Type type1, Type type2) 
 {
     assert((type1 < TYPE_COUNT) && (type2 < TYPE_COUNT));
 
     return (type1 == type2) || (type1 == FLOATING); 
-}
-
-void yyerror(const char* s)
-{
-    errorCount++;
-	fprintf(stderr, "Parse error: %s\n", s);
 }
 
 void MipsData()
@@ -177,14 +99,14 @@ void MipsMathOp(MathOp mathOp, Reg* res, Reg* reg0, Reg* reg1)
         
         fprintf(mips, "\n\t# mathop two floats\n"\
                         "\t%s.s %s, %s, %s\n", op, res->_sval, reg0->_sval, reg1->_sval);
-        FreeRegF();
+        FreeReg(FLOATING);
     }
     else // INTEGER
     {
-        res->_sval = GetRegT();
+        res->_sval = GetReg(INTEGER);
         fprintf(mips, "\n\t# mathop two ints\n"\
                       "\t%s %s, %s, %s\n", op, res->_sval, reg0->_sval, reg1->_sval);
-        FreeRegT();
+        FreeReg(INTEGER);
     }
 }
 
@@ -208,7 +130,7 @@ void MipsRelOp(RelOp relOp, Reg* res, Reg* reg0, Reg* reg1)
             MipsCast(reg0, FLOATING);
             MipsCast(reg1, FLOATING);
         }
-        res->_sval = GetRegT();
+        res->_sval = GetReg(INTEGER);
 
         /*                                              sne          sgt          sge  */
         static const char* FloatRelOpTable[] = { "eq", "!eq", "lt", "!le", "le", "!lt" };
@@ -229,8 +151,8 @@ void MipsRelOp(RelOp relOp, Reg* res, Reg* reg0, Reg* reg1)
                           "\tmovt %s, $zero, 1\n"\
                           "\tmovf %s, $zero, 0\n", &op[0], reg0->_sval, reg1->_sval, res->_sval, res->_sval);
         }
-        FreeRegF();
-        FreeRegF();
+        FreeReg(FLOATING);
+        FreeReg(FLOATING);
     }
     else // INTEGER
     {
@@ -239,7 +161,7 @@ void MipsRelOp(RelOp relOp, Reg* res, Reg* reg0, Reg* reg1)
         const char* op = IntRelOpTable[relOp];
         fprintf(mips, "\n\t# compare two ints\n"\
                       "\t%s %s, %s, %s\n", op, res->_sval, reg0->_sval, reg1->_sval);
-        FreeRegT();
+        FreeReg(INTEGER);
     }
 }
 
@@ -322,17 +244,17 @@ void MipsLoadV(Reg* reg)
     switch(reg->_type)
     {
         case STR:
-            reg->_sval = GetRegT();
+            reg->_sval = GetReg(INTEGER);
             fprintf(mips, "\n\tla %s, %s\n", reg->_sval, var);
             break;
         
         case INTEGER:
-            reg->_sval = GetRegT();
+            reg->_sval = GetReg(INTEGER);
             fprintf(mips, "\n\tlw %s, %s\n", reg->_sval, var);
             break;
             
         default: // FLOATING
-            reg->_sval = GetRegF();
+            reg->_sval = GetReg(FLOATING);
             fprintf(mips, "\n\tl.s %s, %s\n", reg->_sval, var);
             break;
     }
@@ -348,7 +270,7 @@ void MipsLoadI(Reg* reg)
     switch(reg->_type)
     {
         case STR:
-            reg->_sval = GetRegT();
+            reg->_sval = GetReg(INTEGER);
             fprintf(mips, "\n\t.data\n"\
                           "%s%zu: .asciiz %s\n"\
 	                      "\t.text\n", str, stringCount, val);
@@ -360,12 +282,12 @@ void MipsLoadI(Reg* reg)
             break;
         
         case INTEGER:
-            reg->_sval = GetRegT();
+            reg->_sval = GetReg(INTEGER);
             fprintf(mips, "\n\tli %s, %s\n", reg->_sval, val);
             break;
 
         default: // FLOATING
-            reg->_sval = GetRegF();
+            reg->_sval = GetReg(FLOATING);
             float f = strtof(val, NULL); // Converting string to float
             int* x = (int*)&(f);         // reinterpret_cast to int
             fprintf(mips, "\n\tli $t0, 0x%x\n", (*x));
@@ -385,36 +307,50 @@ void MipsCast(Reg* reg, Type t)
     if (t == FLOATING)
     {
         val = reg->_sval;
-        reg->_sval = GetRegF();
+        reg->_sval = GetReg(FLOATING);
         fprintf(mips, "\n\t# Move integer value to floating-point register\n"\
                       "\tmtc1 %s, %s\n"\
                       "\tcvt.s.w %s, %s\n", val, reg->_sval, reg->_sval, reg->_sval);
-        FreeRegT();
+        FreeReg(INTEGER);
     }
 }
 
-const char* GetRegT()
+const char* GetReg(Type t)
 {
-    assert(RegTrackerT < 8U);
-    return TmpRegs[RegTrackerT++];
+    assert(t < TYPE_COUNT);
+
+    if (t == INTEGER)
+    {
+        assert(RegTrackerT < 8U);
+        return TmpRegs[RegTrackerT++];
+    }
+    if (t == FLOATING)
+    {
+        assert(RegTrackerF < 8U);
+        return FloatRegs[RegTrackerF++];
+    }
+    else // STRING
+    {
+        assert(RegTrackerT < 8U);
+        return TmpRegs[RegTrackerT++];
+    }
+    
 }
 
-const char* GetRegF()
+void FreeReg(Type t)
 {
-    assert(RegTrackerF < 8U);
-    return FloatRegs[RegTrackerF++];
-}
+    assert(t < TYPE_COUNT);
 
-void FreeRegT()
-{
-    assert(RegTrackerT != 0U);
-    --RegTrackerT;
-}
-
-void FreeRegF()
-{
-    assert(RegTrackerF != 0U);
-    --RegTrackerF;
+    if (t == INTEGER)
+    {
+        assert(RegTrackerT != 0U);
+        --RegTrackerT;
+    }
+    if (t == FLOATING)
+    {
+        assert(RegTrackerF != 0U);
+        --RegTrackerF;
+    }
 }
 
 void FreeAllRegs()

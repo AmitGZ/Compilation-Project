@@ -1,16 +1,13 @@
 %{
 // TODO
-// Move hash to separate files
 
 // Questions
 // Can we use .cpp?
 // Can we use TABLE_SIZE for hash table?
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
 #include "my_structs.h"
-#include "my_functions.h"
+#include "Hash.h"
+#include "MipsWriter.h"
 
 extern int yylex();
 extern int yyparse();

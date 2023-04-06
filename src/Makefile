@@ -7,7 +7,7 @@ lex.yy.c: calc.l calc.tab.h
 	flex calc.l
 
 calc: lex.yy.c calc.tab.c calc.tab.h
-	gcc -o ../bin/calc calc.tab.c lex.yy.c my_functions.c
+	gcc -o ../bin/calc calc.tab.c lex.yy.c MipsWriter.c Hash.c
 
 clean:
 	rm ../bin/calc calc.tab.c lex.yy.c calc.tab.h ../bin/mips.s
