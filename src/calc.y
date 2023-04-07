@@ -198,7 +198,6 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                       {
                                                         yyerror("ID not found");
                                                       }
-
                                                       // Declaring while and checking statement
                                                       MipsWhile(NULL, 0U);
                                                       Reg indexReg = { node->_type, node->_name };
@@ -208,8 +207,14 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                       Reg result;
                                                       MipsRelOp(LT, &result, &indexReg, endVal);
                                                       MipsWhile(&result, 1U);
-                                                    } WITH step stmt { MipsWhile(NULL, 2U); }
-                |   FOREACH ID ASSIGNOP NUM TILL ID WITH step stmt {}
+                                                      // j stmt0
+                                                      // increament:
+                                                    } WITH step{/*j while0
+                                                                * stmt0:
+                                                                */} stmt {/*
+                                                                          * j increament0
+                                                                          */}
+                |   FOREACH ID ASSIGNOP NUM TILL ID WITH step stmt {/*Same as the previous,Replace LoadI in LoadV*/}
                 |   switch {}
 
 stmt_block      :   O_BRACKET stmtlist C_BRACKET {}
