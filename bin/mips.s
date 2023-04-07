@@ -4,6 +4,7 @@ f:	.float 0
 e:	.float 0
 c:	.float 0
 b:	.float 0
+i:	.word 0
 y:	.word 0
 a:	.word 0
 d:	.word 0
@@ -14,47 +15,52 @@ d:	.word 0
 main:
 
 	# read input
-	li $v0, 6    
-	syscall      
-	s.s $f0, b  
+	li $v0, 5  
+	syscall    
+	sw $v0, a 
 
-	# read input
-	li $v0, 6    
-	syscall      
-	s.s $f0, c  
 
-	.data
-str0: .asciiz "the result is "
-	.text
+	// int i = 0
+	li $t0, 0
 
-	# store pointer to string
-	la $t0, str0
-
-	# assigning string pointer
-	sw $t0, d
-
+	# assigning integer value
+	sw $t0, i
+	// 
 while0:
+	// i < n
+	lw $t1, i
 
-	l.s $f0, b
+	li $t2, 19
 
-	l.s $f1, c
+	# compare two ints
+	slt $t1, $t1, $t2
+	beq $t1, $zero, endwhile0
+	// 
 
-	# true register
-	li $t1, 1
+	j stmt
 
-	# compare two floats and negate
-	c.le.s $f0, $f1
-	movt $t0, $zero
-	movf $t0, $t1
+increment:
+	// i++
+	li $t3, 1
 
-	beq $t0, $zero, endwhile0
+	lw $t4, i
 
-	# read input
-	li $v0, 6    
-	syscall      
-	s.s $f0, b  
-
+	# mathop two ints
+	add $t3, $t3, $t4
+	# assigning integer value
+	sw $t3, i
+	//
 	j while0
+
+stmt:
+	lw $t4, i
+
+	# printing 
+	li $v0, 1   
+	move $a0, $t4       
+	syscall    
+	j  increment
+
 
 endwhile0:
 

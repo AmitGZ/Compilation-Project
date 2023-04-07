@@ -105,7 +105,7 @@ void MipsMathOp(MathOp mathOp, Reg* res, Reg* reg0, Reg* reg1)
     }
     else // INTEGER
     {
-        res->_sval = GetReg(INTEGER);
+        res->_sval = reg0->_sval;
         fprintf(mips, "\n\t# mathop two ints\n"\
                       "\t%s %s, %s, %s\n", op, res->_sval, reg0->_sval, reg1->_sval);
         FreeReg(INTEGER);
@@ -168,7 +168,6 @@ void MipsRelOp(RelOp relOp, Reg* res, Reg* reg0, Reg* reg1)
         const char* op = IntRelOpTable[relOp];
         fprintf(mips, "\n\t# compare two ints\n"\
                       "\t%s %s, %s, %s\n", op, res->_sval, reg0->_sval, reg1->_sval);
-        FreeReg(INTEGER);
     }
 }
 

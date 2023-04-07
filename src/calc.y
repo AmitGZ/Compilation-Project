@@ -185,7 +185,30 @@ assignment_stmt :   ID ASSIGNOP expression SEMICOLON {
 
 control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3), 0U); } stmt ELSE { MipsIf(&($3), 1U); } stmt { MipsIf(&($3), 2U); }
 		            |   WHILE { MipsWhile(NULL, 0U); } O_PARENTHESES boolexpr C_PARENTHESES { MipsWhile(&($4), 1U); } stmt_block { MipsWhile(&($4), 2U); }
-                |   FOREACH ID ASSIGNOP NUM TILL NUM WITH step stmt {}
+                |   FOREACH ID ASSIGNOP NUM TILL NUM{ 
+                                                      // Loading startval and assigning to i
+                                                      Reg* startVal = &($4);
+                                                      MipsLoadI(startVal);
+                                                      Node* node = GetFromTable(table, $2);
+                                                      if (node != NULL)
+                                                      {
+                                                        MipsAssign(node, startVal);
+                                                      }
+                                                      else
+                                                      {
+                                                        yyerror("ID not found");
+                                                      }
+
+                                                      // Declaring while and checking statement
+                                                      MipsWhile(NULL, 0U);
+                                                      Reg indexReg = { node->_type, node->_name };
+                                                      MipsLoadV(&indexReg);
+                                                      Reg* endVal = &($6);
+                                                      MipsLoadI(endVal);
+                                                      Reg result;
+                                                      MipsRelOp(LT, &result, &indexReg, endVal);
+                                                      MipsWhile(&result, 1U);
+                                                    } WITH step stmt { MipsWhile(NULL, 2U); }
                 |   FOREACH ID ASSIGNOP NUM TILL ID WITH step stmt {}
                 |   switch {}
 
@@ -207,6 +230,7 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                               if ((node0 != NULL) && (node1 != NULL))
                                               {
                                                 Reg val1 = { node1->_type, node1->_name };
+                                                MipsLoadI(val0);
                                                 MipsLoadV(&val1);
                                                 Reg res;
                                                 MipsMathOp($4, &res, val0, &val1);
@@ -225,6 +249,7 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                               if ((node0 != NULL) && (node1 != NULL))
                                               {
                                                 Reg val1 = { node1->_type, node1->_name };
+                                                MipsLoadI(val0);
                                                 MipsLoadV(&val1);
                                                 Reg res;
                                                 MipsMathOp($4, &res, val0, &val1);
