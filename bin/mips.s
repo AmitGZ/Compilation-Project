@@ -4,6 +4,7 @@ f:	.float 0
 e:	.float 0
 c:	.float 0
 b:	.float 0
+y:	.word 0
 a:	.word 0
 d:	.word 0
 
@@ -33,52 +34,29 @@ str0: .asciiz "the result is "
 	sw $t0, d
 
 while0:
+
 	l.s $f0, b
 
 	l.s $f1, c
 
+	# true register
+	li $t1, 1
+
 	# compare two floats and negate
 	c.le.s $f0, $f1
-	movt $t0, $zero, 0
-	movf $t0, $zero, 1
+	movt $t0, $zero
+	movf $t0, $t1
 
-	Beq $t0, 0, endwhile0
+	beq $t0, $zero, endwhile0
+
 	# read input
 	li $v0, 6    
 	syscall      
 	s.s $f0, b  
 
 	j while0
+
 endwhile0:
-
-	l.s $f0, b
-
-	l.s $f1, c
-
-	# compare two floats and negate
-	c.lt.s $f0, $f1
-	movt $t0, $zero, 1
-	movf $t0, $zero, 0
-
-	beq $t0, $zero, else0
-
-	lw $t1, a
-
-	# printing 
-	li $v0, 1   
-	move $a0, $t1       
-	syscall      
-
-	j continue0
-else0:
-	l.s $f0, b
-
-	# printing 
-	li $v0, 2   
-	mov.s $f12, $f0       
-	syscall      
-
-continue0:
 
 	# exit the program
 	li $v0, 10

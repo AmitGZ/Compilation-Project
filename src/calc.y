@@ -184,7 +184,7 @@ assignment_stmt :   ID ASSIGNOP expression SEMICOLON {
                 ;
 
 control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3), 0U); } stmt ELSE { MipsIf(&($3), 1U); } stmt { MipsIf(&($3), 2U); }
-		            |   WHILE O_PARENTHESES { MipsWhile(NULL, 0U); } boolexpr C_PARENTHESES { MipsWhile(&($4), 1U); } stmt_block { MipsWhile(&($4), 2U); }
+		            |   WHILE { MipsWhile(NULL, 0U); } O_PARENTHESES boolexpr C_PARENTHESES { MipsWhile(&($4), 1U); } stmt_block { MipsWhile(&($4), 2U); }
                 |   FOREACH ID ASSIGNOP NUM TILL NUM WITH step stmt {}
                 |   FOREACH ID ASSIGNOP NUM TILL ID WITH step stmt {}
                 |   switch {}

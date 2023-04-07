@@ -137,22 +137,27 @@ void MipsRelOp(RelOp relOp, Reg* res, Reg* reg0, Reg* reg1)
         /*                                              sne          sgt          sge  */
         static const char* FloatRelOpTable[] = { "eq", "!eq", "lt", "!le", "le", "!lt" };
         op = FloatRelOpTable[relOp];
+        const char* trueReg = GetReg(INTEGER);
+        fprintf(mips, "\n\t# true register"\
+                      "\n\tli %s, 1\n", trueReg);
+
         if (op[0] == '!')
         {
             // Negate operation 
             fprintf(mips, "\n\t# compare two floats and negate\n"\
                           "\tc.%s.s %s, %s\n"\
-                          "\tmovt %s, $zero, 0\n"\
-                          "\tmovf %s, $zero, 1\n", &op[1], reg0->_sval, reg1->_sval, res->_sval, res->_sval);
+                          "\tmovt %s, $zero\n"\
+                          "\tmovf %s, %s\n", &op[1], reg0->_sval, reg1->_sval, res->_sval, res->_sval, trueReg);
         }
         else
         {
             // Normal operation is available
-            fprintf(mips, "\n\t# compare two floats and negate\n"\
+            fprintf(mips, "\n\t# compare two floats\n"\
                           "\tc.%s.s %s, %s\n"\
-                          "\tmovt %s, $zero, 1\n"\
-                          "\tmovf %s, $zero, 0\n", op, reg0->_sval, reg1->_sval, res->_sval, res->_sval);
+                          "\tmovt %s, %s\n"\
+                          "\tmovf %s, $zero\n", op, reg0->_sval, reg1->_sval, res->_sval, trueReg, res->_sval);
         }
+        FreeReg(INTEGER); // Free true reg
         FreeReg(FLOATING);
         FreeReg(FLOATING);
     }
@@ -327,8 +332,8 @@ void MipsIf(Reg* reg, uint32_t part)
     }
     else if(part == 1U)
     {
-        fprintf(mips,"\n\tj continue%zu", IfIndex);
-        fprintf(mips,"\nelse%zu:", IfIndex);
+        fprintf(mips,"\n\tj continue%zu\n", IfIndex);
+        fprintf(mips,"\nelse%zu:\n", IfIndex);
     }
     else
     {
@@ -343,16 +348,16 @@ void MipsWhile(Reg* reg, uint32_t part)
 
     if(part == 0U)
     {
-        fprintf(mips,"\nwhile%zu:", WhileIndex);
+        fprintf(mips,"\nwhile%zu:\n", WhileIndex);
     }
     else if(part == 1U)
     {
         assert(reg != NULL);
-        fprintf(mips,"\n\tBeq %s, 0, endwhile%zu", reg->_sval, WhileIndex);
+        fprintf(mips,"\n\tbeq %s, $zero, endwhile%zu\n", reg->_sval, WhileIndex);
     }
     else 
     {
-        fprintf(mips,"\n\tj while%zu", WhileIndex);
+        fprintf(mips,"\n\tj while%zu\n", WhileIndex);
         fprintf(mips,"\nendwhile%zu:\n", WhileIndex);
         ++WhileIndex;
     }

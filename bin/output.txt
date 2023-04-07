@@ -1,14 +1,11 @@
 1. program  ID(Min)  COMMENT
 2. start
 3. decl real : ID(b),ID(c),ID(e),ID(f);
-4.     int: ID(a);
+4.     int: ID(a), ID(y);
 5.     string: ID(d);
 6.     
 7.     in(ID(b));
 8.     in(ID(c));
 9.     ID(d)="the result is ";
 10.     while(ID(b)  > ID(c)) { in(ID(b));}
-11. 
-12.     if (ID(b) <ID(c)) then out(ID(a));
-13. 	else   out(ID(b));
-14. end
+11. end
