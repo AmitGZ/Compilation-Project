@@ -1,5 +1,8 @@
 %{
 // TODO
+// String assignments
+// LoadI change name?
+// use $f instead of $t?
 
 // Questions
 // Can we use .cpp?
@@ -184,7 +187,7 @@ assignment_stmt :   ID ASSIGNOP expression SEMICOLON {
                 ;
 
 control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3), 0U); } stmt ELSE { MipsIf(&($3), 1U); } stmt { MipsIf(&($3), 2U); }
-		            |   WHILE { MipsWhile(NULL, 0U); } O_PARENTHESES boolexpr C_PARENTHESES { MipsWhile(&($4), 1U); } stmt_block { MipsWhile(&($4), 2U); }
+		            |   WHILE { MipsWhile(NULL, 0U); } O_PARENTHESES boolexpr C_PARENTHESES { MipsWhile(&($4), 1U); } stmt_block { MipsWhile(NULL, 2U); MipsWhile(NULL, 3U); }
                 |   FOREACH ID ASSIGNOP NUM TILL NUM{ 
                                                       // Loading startval and assigning to i
                                                       Reg* startVal = &($4);
@@ -207,13 +210,8 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                       Reg result;
                                                       MipsRelOp(LT, &result, &indexReg, endVal);
                                                       MipsWhile(&result, 1U);
-                                                      // j stmt0
-                                                      // increament:
-                                                    } WITH step{/*j while0
-                                                                * stmt0:
-                                                                */} stmt {/*
-                                                                          * j increament0
-                                                                          */}
+                                                      MipsForEach(0U);
+                                                    } WITH step { MipsForEach(1U); } stmt { MipsForEach(2U); MipsWhile(NULL, 3U); }
                 |   FOREACH ID ASSIGNOP NUM TILL ID WITH step stmt {/*Same as the previous,Replace LoadI in LoadV*/}
                 |   switch {}
 

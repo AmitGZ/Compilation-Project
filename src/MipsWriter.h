@@ -60,3 +60,5 @@ void FreeAllRegs();
 void MipsWhile(Reg* reg, uint32_t part);
 
 void MipsIf(Reg* reg, uint32_t part);
+
+void MipsForEach(uint32_t part);

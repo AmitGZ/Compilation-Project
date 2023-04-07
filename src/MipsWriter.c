@@ -6,6 +6,7 @@ static size_t RegTrackerF = 0U; /**< Description */
 static size_t RegTrackerT = 0U; /**< Description */
 static size_t IfIndex = 0U;
 static size_t WhileIndex = 0U;
+static size_t ForEachIndex = 0U;
 
 bool IsAssignValid(Type type1, Type type2) 
 {
@@ -341,22 +342,46 @@ void MipsIf(Reg* reg, uint32_t part)
     }
 }
 
-void MipsWhile(Reg* reg, uint32_t part)
+void MipsForEach(uint32_t part)
 {
     assert(part < 3U);
 
     if(part == 0U)
     {
-        fprintf(mips,"\nwhile%zu:\n", WhileIndex);
+        fprintf(mips,"\n\tj for_each_stmt%zu\n"\
+                     "\nfor_each_increment%zu:\n", ForEachIndex, ForEachIndex);
     }
     else if(part == 1U)
+    {
+        fprintf(mips,"\n\tj while%zu\n"\
+                     "\nfor_each_stmt%zu:\n", WhileIndex, ForEachIndex);
+    }
+    else
+    {
+        fprintf(mips,"\n\tj for_each_increment%zu\n", ForEachIndex);
+        ++ForEachIndex;
+    }
+}
+
+void MipsWhile(Reg* reg, uint32_t part)
+{
+    assert(part < 4U);
+
+    if (part == 0U)
+    {
+        fprintf(mips,"\nwhile%zu:\n", WhileIndex);
+    }
+    else if (part == 1U)
     {
         assert(reg != NULL);
         fprintf(mips,"\n\tbeq %s, $zero, endwhile%zu\n", reg->_sval, WhileIndex);
     }
-    else 
+    else if (part == 2U)
     {
         fprintf(mips,"\n\tj while%zu\n", WhileIndex);
+    }
+    else
+    {
         fprintf(mips,"\nendwhile%zu:\n", WhileIndex);
         ++WhileIndex;
     }
