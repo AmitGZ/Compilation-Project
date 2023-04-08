@@ -8,6 +8,7 @@
 // MipsCast finish all types
 // Parse error line and column?
 // Check if we can fix switch lw every case
+// Logical operations not tested
 
 // Tested:
 // String assignments

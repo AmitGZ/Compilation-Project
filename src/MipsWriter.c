@@ -1,16 +1,17 @@
 #include "MipsWriter.h"
 
-extern size_t errorCount;        /**< Description */
-extern FILE* mips;               /**< Description */
+extern size_t errorCount;        /**< Stores the total number of errors throughout the compilation process */
+extern FILE* mips;               /**< Reference to mips .s file */
 
-static size_t RegTrackerF  = 0U; /**< Description */
-static size_t RegTrackerT  = 0U; /**< Description */
-static size_t IfIndex      = 0U; /**< Description */
-static size_t WhileIndex   = 0U; /**< Description */
-static size_t ForEachIndex = 0U; /**< Description */
-static size_t SwitchIndex  = 0U; /**< Description */
-static size_t CaseIndex    = 0U; /**< Description */
-static const Node* SwitchNode = NULL;  /**< Description */
+static size_t RegTrackerFloat    = 0U; /**< Floating register tracker, keeps track of the registers in use */
+static size_t RegTrackerInteger  = 0U; /**< Int register tracker, keeps track of the registers in use */
+static size_t IfIndex            = 0U; /**< If indexer      (used to avoid label duplicates) */
+static size_t WhileIndex         = 0U; /**< While indexer   (used to avoid label duplicates) */
+static size_t ForEachIndex       = 0U; /**< ForEach indexer (used to avoid label duplicates) */
+static size_t SwitchIndex        = 0U; /**< Switch indexer  (used to avoid label duplicates) */
+static size_t CaseIndex          = 0U; /**< Case indexer    (used to avoid label duplicates) */
+
+static const Node* SwitchNode = NULL;  /**< Switch Node, once switch is opened stores the node pointer */
 
 bool IsAssignValid(Type type1, Type type2) 
 {
@@ -439,18 +440,18 @@ const char* GetReg(Type t)
 
     if (t == INTEGER)
     {
-        assert(RegTrackerT < TmpRegCount);
-        return IntTmpRegs[RegTrackerT++];
+        assert(RegTrackerInteger < TmpRegCount);
+        return IntTmpRegs[RegTrackerInteger++];
     }
     if (t == FLOATING)
     {
-        assert(RegTrackerF < TmpRegCount);
-        return FloatTmpRegs[RegTrackerF++];
+        assert(RegTrackerFloat < TmpRegCount);
+        return FloatTmpRegs[RegTrackerFloat++];
     }
     else // STRING
     {
-        assert(RegTrackerT < TmpRegCount);
-        return IntTmpRegs[RegTrackerT++];
+        assert(RegTrackerInteger < TmpRegCount);
+        return IntTmpRegs[RegTrackerInteger++];
     }
     
 }
@@ -461,18 +462,18 @@ void FreeReg(Type t)
 
     if (t == INTEGER)
     {
-        assert(RegTrackerT != 0U);
-        --RegTrackerT;
+        assert(RegTrackerInteger != 0U);
+        --RegTrackerInteger;
     }
     if (t == FLOATING)
     {
-        assert(RegTrackerF != 0U);
-        --RegTrackerF;
+        assert(RegTrackerFloat != 0U);
+        --RegTrackerFloat;
     }
 }
 
 void FreeAllRegs()
 {
-    RegTrackerF = 0U;
-    RegTrackerT = 0U;
+    RegTrackerFloat = 0U;
+    RegTrackerInteger = 0U;
 }
