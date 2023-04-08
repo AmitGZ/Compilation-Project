@@ -10,8 +10,7 @@ static size_t WhileIndex   = 0U; /**< Description */
 static size_t ForEachIndex = 0U; /**< Description */
 static size_t SwitchIndex  = 0U; /**< Description */
 static size_t CaseIndex    = 0U; /**< Description */
-static Node* SwitchNode = NULL;  /**< Description */
-
+static const Node* SwitchNode = NULL;  /**< Description */
 
 bool IsAssignValid(Type type1, Type type2) 
 {
@@ -26,12 +25,12 @@ void MipsData()
                   "buffer: .space %d   # allocate %d bytes for the input buffer\n", BUFFER_SIZE, BUFFER_SIZE);
 }  
 
-void MipsDecl(Type t, const char* id, const char* val)
+void MipsDecl(Type t, const char* id, const char* sval)
 {
-    assert((t < TYPE_COUNT) && (id != NULL) && (val != NULL));
+    assert((t < TYPE_COUNT) && (id != NULL) && (sval != NULL));
 
     const char* tStr = (t == FLOATING) ? "float" : "word";
-    fprintf(mips, "%s:\t.%s %s\n", id, tStr, val);
+    fprintf(mips, "%s:\t.%s %s\n", id, tStr, sval);
 }
 
 void MipsIn(const Node* node)
@@ -62,7 +61,7 @@ void MipsIn(const Node* node)
 
 void MipsOut(const Reg* reg)
 {
-    assert((reg != NULL) && (reg->_type < TYPE_COUNT));
+    assert((reg != NULL) && (reg->_type < TYPE_COUNT) && (reg->_name != NULL));
 
     static const int OutTable[] = { 1, 2, 4 }; // INTEGER=0, FLOATING=1, STR=2
     static const char* CmdTable[] = { "move $a0", "mov.s $f12", "move $a0" };
@@ -181,36 +180,36 @@ Reg MipsRelOp(RelOp relOp, Reg reg0, Reg reg1)
     return res;
 }
 
-void MipsAssign(const Node* node, Reg* reg)
+void MipsAssign(const Node* node, Reg reg)
 {
-    assert((node != NULL) && (node->_type < TYPE_COUNT) && (reg != NULL) && (reg->_type < TYPE_COUNT));
+    assert((node != NULL) && (node->_type < TYPE_COUNT) && (reg._type < TYPE_COUNT));
 
-    if (!IsAssignValid(node->_type, reg->_type))
+    if (!IsAssignValid(node->_type, reg._type))
     {
         yyerror("Assignment invalid");
         return;
     }
 
-    if (node->_type != reg->_type)
+    if (node->_type != reg._type)
     {
-        MipsCast(reg, node->_type);
+        reg = MipsCast(&reg, node->_type);
     }
 
     switch(node->_type)
     {
         case STR:
             fprintf(mips, "\n\t# assigning string pointer\n"
-                          "\tsw %s, %s\n", reg->_name, node->_name);
+                          "\tsw %s, %s\n", reg._name, node->_name);
             break;
         
         case INTEGER:
             fprintf(mips, "\n\t# assigning integer value\n"
-                          "\tsw %s, %s\n", reg->_name, node->_name);
+                          "\tsw %s, %s\n", reg._name, node->_name);
             break;
 
         default: // FLOATING
             fprintf(mips, "\n\t# assigning float value\n"
-                          "\ts.s %s, %s\n", reg->_name, node->_name);
+                          "\ts.s %s, %s\n", reg._name, node->_name);
             break;
     }
 }
@@ -346,7 +345,7 @@ Reg MipsCast(const Reg* reg, Type t)
     return returnReg;
 }
 
-void MipsIf(Reg* reg, uint32_t part)
+void MipsIf(const Reg* reg, uint32_t part)
 {
     assert((part < 3U) && (reg != NULL));
 
@@ -372,52 +371,80 @@ void MipsForEach(uint32_t part)
 
     if(part == 0U)
     {
-        fprintf(mips,"\n\tj for_each_stmt%zu\n"\
-                     "\nfor_each_increment%zu:\n", ForEachIndex, ForEachIndex);
+        fprintf(mips,"\n\tj for_each_stmt_%zu\n"\
+                     "\nfor_each_increment_%zu:\n", ForEachIndex, ForEachIndex);
     }
     else if(part == 1U)
     {
-        fprintf(mips,"\n\tj while%zu\n"\
-                     "\nfor_each_stmt%zu:\n", WhileIndex, ForEachIndex);
+        fprintf(mips,"\n\tj while_%zu\n"\
+                     "\nfor_each_stmt_%zu:\n", WhileIndex, ForEachIndex);
     }
     else
     {
-        fprintf(mips,"\n\tj for_each_increment%zu\n", ForEachIndex);
+        fprintf(mips,"\n\tj for_each_increment_%zu\n", ForEachIndex);
         ++ForEachIndex;
     }
 }
 
-void MipsWhile(Reg* reg, uint32_t part)
+void MipsWhile(const Reg* reg, uint32_t part)
 {
     assert(part < 4U);
 
     if (part == 0U)
     {
-        fprintf(mips,"\nwhile%zu:\n", WhileIndex);
+        fprintf(mips,"\nwhile_%zu:\n", WhileIndex);
     }
     else if (part == 1U)
     {
         assert(reg != NULL);
-        fprintf(mips,"\n\tbeq %s, $zero, endwhile%zu\n", reg->_name, WhileIndex);
+        fprintf(mips,"\n\tbeq %s, $zero, endwhile_%zu\n", reg->_name, WhileIndex);
     }
     else if (part == 2U)
     {
-        fprintf(mips,"\n\tj while%zu\n", WhileIndex);
+        fprintf(mips,"\n\tj while_%zu\n", WhileIndex);
     }
     else
     {
-        fprintf(mips,"\nendwhile%zu:\n", WhileIndex);
+        fprintf(mips,"\nendwhile_%zu:\n", WhileIndex);
         ++WhileIndex;
     }
 }
 
-void MipsSwitch(Node* node)
+void MipsSwitch(const Node* node, bool start)
 {
-    if (node == NULL)
+    if (start)
     {
-        yyerror("id not found");
+        if (node == NULL)
+        {
+            yyerror("id not found");
+        }
+        fprintf(mips, "# start switch %zu", SwitchIndex);
+        SwitchNode = node;
     }
-    SwitchNode = node;
+    else
+    {
+        fprintf(mips, "\nend_switch_%zu:\n", SwitchIndex);
+        ++SwitchIndex;
+    }
+}
+
+void MipsCase(Val* val, bool start)
+{
+    if (start)
+    {
+        assert(val != NULL);
+        fprintf(mips, "\ncase_%zu_%zu:\n", SwitchIndex, CaseIndex);
+        Reg reg0 = MipsLoadV(SwitchNode);
+        Reg reg1 = MipsLoadI(val);
+        Reg result = MipsRelOp(EQ, reg0, reg1);
+        fprintf(mips, "\n\tbeq %s, $zero, end_case_%zu_%zu\n", result._name, SwitchIndex, CaseIndex);
+    }
+    else
+    {
+        fprintf(mips, "\n\tj end_switch_%zu\n", SwitchIndex);
+        fprintf(mips, "end_case_%zu_%zu:\n", SwitchIndex, CaseIndex);
+        ++CaseIndex;
+    }
 }
 
 const char* GetReg(Type t)

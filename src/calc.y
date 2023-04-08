@@ -8,8 +8,10 @@
 // README
 // Assigning float to int?
 // Receive const reg
-// File format calc.l
-// MipsCast finish all
+// File output format calc.l
+// MipsCast finish all types
+// Parse error line and column?
+// Check if we can fix switch lw every case
 
 // Questions
 // Can we use .cpp?
@@ -154,7 +156,7 @@ stmt            :   assignment_stmt {}
                                                     {
                                                       Val* val = &($3);
                                                       Reg reg = MipsLoadI(val); 
-                                                      MipsAssign(node, &reg);
+                                                      MipsAssign(node, reg);
                                                     }
                                                     else
                                                     {
@@ -182,10 +184,9 @@ in_stmt         :   IN O_PARENTHESES ID C_PARENTHESES SEMICOLON {
 
 assignment_stmt :   ID ASSIGNOP expression SEMICOLON { 
                                                         Node* node = GetFromTable(table, $1);
-                                                        Reg* reg = &($3);
                                                         if (node != NULL)
                                                         {
-                                                          MipsAssign(node, reg);
+                                                          MipsAssign(node, $3);
                                                         }
                                                         else
                                                         {
@@ -200,7 +201,7 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                       // Loading startval and assigning to i
                                                       Reg startReg = MipsLoadI(&($4));
                                                       Node* node = GetFromTable(table, $2);
-                                                      if (node != NULL) { MipsAssign(node, &startReg); } else { yyerror("ID not found"); }
+                                                      if (node != NULL) { MipsAssign(node, startReg); } else { yyerror("ID not found"); }
                                                       
                                                       // Declaring while and checking statement
                                                       MipsWhile(NULL, 0U);
@@ -214,7 +215,7 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                       // Loading startval and assigning to i
                                                       Reg startReg = MipsLoadI(&($4));
                                                       Node* node = GetFromTable(table, $2);
-                                                      if (node != NULL) { MipsAssign(node, &startReg); } else { yyerror("ID not found"); }
+                                                      if (node != NULL) { MipsAssign(node, startReg); } else { yyerror("ID not found"); }
                                                       
                                                       // Declaring while and checking statement
                                                       MipsWhile(NULL, 0U);
@@ -229,16 +230,26 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                       }
                                                       else { yyerror("ID not found"); }
                                                     } WITH step { MipsForEach(1U); } stmt { MipsForEach(2U); MipsWhile(NULL, 3U); }
-                |   switch {}
+                |   _switch {  }
 
 stmt_block      :   O_BRACKET stmtlist C_BRACKET {}
                 ;
 
-switch          :   SWITCH O_PARENTHESES ID C_PARENTHESES { Node* node = GetFromTable(table, $3); MipsSwitch(node); } O_BRACKET cases C_BRACKET
+_switch         :   SWITCH O_PARENTHESES ID C_PARENTHESES { 
+                                                            Node* node = GetFromTable(table, $3); 
+                                                            if (node != NULL)
+                                                            {
+                                                              MipsSwitch(node, true); 
+                                                            }
+                                                            else
+                                                            {
+                                                              yyerror("ID not found");
+                                                            }
+                                                          } O_BRACKET cases C_BRACKET { MipsSwitch(NULL, false); }
                 ;
 
-cases           :   CASE NUM COLON stmtlist BREAK SEMICOLON cases {}
-                |   DEFAULT COLON stmtlist {}
+cases           :   CASE NUM COLON{ MipsCase(&($2), true); } stmtlist BREAK SEMICOLON { MipsCase(NULL, false); } cases
+                |   DEFAULT COLON { fprintf(mips, "\n# default:\n") } stmtlist {}
                 ;
 
 step            :   ID ASSIGNOP ID ADDOP NUM{ 
@@ -251,7 +262,7 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                                 Reg numReg = MipsLoadI(val);
                                                 Reg varReg = MipsLoadV(node1);
                                                 Reg resReg = MipsMathOp($4, numReg, varReg);
-                                                MipsAssign(node0, &resReg);
+                                                MipsAssign(node0, resReg);
                                               }
                                               else
                                               {
@@ -268,7 +279,7 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                                 Reg numReg = MipsLoadI(val);
                                                 Reg varReg = MipsLoadV(node1);
                                                 Reg resReg = MipsMathOp($4, numReg, varReg);
-                                                MipsAssign(node0, &resReg);
+                                                MipsAssign(node0, resReg);
                                               }
                                               else
                                               {

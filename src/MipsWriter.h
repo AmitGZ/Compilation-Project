@@ -19,7 +19,7 @@ Reg MipsRelOp(RelOp relOp, Reg reg0, Reg reg1);
 
 Reg MipsLogOp(LogOp logOp, Reg reg0, Reg reg1);
 
-void MipsDecl(Type t, const char* id, const char* val);
+void MipsDecl(Type t, const char* id, const char* sval);
 
 void MipsExit();
 
@@ -29,7 +29,7 @@ void MipsExit();
  * @param node 
  * @param name
  */
-void MipsAssign(const Node* node, Reg* reg);
+void MipsAssign(const Node* node, Reg reg);
 
 /**
  * @brief 
@@ -57,10 +57,12 @@ void FreeReg(Type t);
 
 void FreeAllRegs();
 
-void MipsWhile(Reg* reg, uint32_t part);
+void MipsWhile(const Reg* reg, uint32_t part);
 
-void MipsIf(Reg* reg, uint32_t part);
+void MipsIf(const Reg* reg, uint32_t part);
 
 void MipsForEach(uint32_t part);
 
-void MipsSwitch(Node* node);
+void MipsSwitch(const Node* node, bool start);
+
+void MipsCase(Val* val, bool start);

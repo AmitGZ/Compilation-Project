@@ -3,6 +3,30 @@
 3. decl real : ID(b),ID(c),ID(e),ID(f);
 4.     int: ID(a), ID(y), ID(i);
 5.     in(ID(a));
-6.     foreach ID(i)= 0 till ID(a) with ID(i)=ID(i) + 1 
-7.         out(ID(i));
-8. end
+6.     switch(ID(a))
+7.     {
+8.         case  1:
+9.             ID(a) =  21;
+10.             break;
+11.         case  2:
+12.             ID(a) =  22;
+13.             break;
+14.         default:
+15.             ID(a) =  23;
+16.     }
+17. 
+18.     in (ID(y));
+19.     switch(ID(y))
+20.     {
+21.         case  1:
+22.             ID(y) =  31;
+23.             break;
+24.         case  2:
+25.             ID(y) =  32;
+26.             break;
+27.         default:
+28.             ID(y) =  33;
+29.     }
+30.     out(ID(a));
+31.     out(ID(y));
+32. end
