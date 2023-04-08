@@ -5,5 +5,5 @@ MIPS Compiler using lexical analyzer and Bison
 ```bash
 $ cd src
 $ make all
-$ make compile file=input.txt
+$ make compile file=input1.txt
 ```
