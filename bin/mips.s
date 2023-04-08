@@ -13,121 +13,25 @@ a:	.word 0
 
 main:
 
-	# read input
-	li $v0, 5  
-	syscall    
-	sw $v0, a 
-# start switch 0
-case_0_0:
+	.data
+str0: .asciiz "assignment test  55"
+	.text
 
-	lw $t0, a
+	# store pointer to string
+	la $t0, str0
 
-	li $t1, 1
-
-	# compare two ints
-	seq $t0, $t0, $t1
-
-	beq $t0, $zero, end_case_0_0
-
-	li $t2, 21
-
-	# assigning integer value
-	sw $t2, a
-
-	j end_switch_0
-end_case_0_0:
-
-case_0_1:
-
-	lw $t0, a
-
-	li $t1, 2
-
-	# compare two ints
-	seq $t0, $t0, $t1
-
-	beq $t0, $zero, end_case_0_1
-
-	li $t2, 22
-
-	# assigning integer value
-	sw $t2, a
-
-	j end_switch_0
-end_case_0_1:
-
-# default:
-
-	li $t0, 23
-
-	# assigning integer value
+	# assigning string pointer
 	sw $t0, a
 
-end_switch_0:
-
-	# read input
-	li $v0, 5  
-	syscall    
-	sw $v0, y 
-# start switch 1
-case_1_2:
-
-	lw $t0, y
-
-	li $t1, 1
-
-	# compare two ints
-	seq $t0, $t0, $t1
-
-	beq $t0, $zero, end_case_1_2
-
-	li $t2, 31
-
-	# assigning integer value
-	sw $t2, y
-
-	j end_switch_1
-end_case_1_2:
-
-case_1_3:
-
-	lw $t0, y
-
-	li $t1, 2
-
-	# compare two ints
-	seq $t0, $t0, $t1
-
-	beq $t0, $zero, end_case_1_3
-
-	li $t2, 32
-
-	# assigning integer value
-	sw $t2, y
-
-	j end_switch_1
-end_case_1_3:
-
-# default:
-
-	li $t0, 33
-
-	# assigning integer value
-	sw $t0, y
-
-end_switch_1:
-
 	lw $t0, a
 
-	# printing 
-	li $v0, 1   
-	move $a0, $t0       
-	syscall      
+	# assigning string pointer
+	sw $t0, y
 
 	lw $t0, y
 
 	# printing 
-	li $v0, 1   
+	li $v0, 4   
 	move $a0, $t0       
 	syscall      
 

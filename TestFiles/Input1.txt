@@ -1,32 +1,9 @@
 program  Min  /* Finding minimum between two numbers */
 start
 decl real : b,c,e,f;
-    int: a, y, i;
-    in(a);
-    switch(a)
-    {
-        case 1:
-            a = 21;
-            break;
-        case 2:
-            a = 22;
-            break;
-        default:
-            a = 23;
-    }
+    string: a, y, i;
+    a= "assignment test  55";
+    y = a;
 
-    in (y);
-    switch(y)
-    {
-        case 1:
-            y = 31;
-            break;
-        case 2:
-            y = 32;
-            break;
-        default:
-            y = 33;
-    }
-    out(a);
     out(y);
 end

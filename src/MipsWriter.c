@@ -42,8 +42,9 @@ void MipsIn(const Node* node)
     {
         fprintf(mips, "\tli $v0, 8      \n"\
                       "\tla $a0, buffer \n"\
-                      "\tli $a1, %d,    \n"\
-                      "\tsyscall        \n", BUFFER_SIZE);
+                      "\tli $a1, %d     \n"\
+                      "\tsw $a0, %s     \n"\
+                      "\tsyscall        \n", BUFFER_SIZE, node->_name);
     }
     else if (node->_type == INTEGER)
     {
@@ -254,35 +255,20 @@ void MipsMain()
                    \n\nmain:\n");
 }
 
-Reg MipsLoadV(const Node* node)
+Reg MipsLoadVar(const Node* node)
 {
     assert((node != NULL) && (node->_type < TYPE_COUNT) && (node->_name != NULL));
-    Reg reg;
+    
+    Type t = node->_type;
+    Reg reg = { t, GetReg(t) };
+    
+    const char* loadInstruction = t == FLOATING ? "l.s" : "lw";
+    fprintf(mips, "\n\t%s %s, %s\n", loadInstruction, reg._name, node->_name);
 
-    switch(node->_type)
-    {
-        case STR:
-            reg._type = STR;
-            reg._name = GetReg(STR);
-            fprintf(mips, "\n\tla %s, %s\n", reg._name, node->_name);
-            break;
-        
-        case INTEGER:
-            reg._type = INTEGER;
-            reg._name = GetReg(INTEGER);
-            fprintf(mips, "\n\tlw %s, %s\n", reg._name, node->_name);
-            break;
-            
-        default: // FLOATING
-            reg._type = FLOATING;
-            reg._name = GetReg(FLOATING);
-            fprintf(mips, "\n\tl.s %s, %s\n", reg._name, node->_name);
-            break;
-    }
     return reg;
 }
 
-Reg MipsLoadI(const Val* val)
+Reg MipsLoadImmediate(const Val* val)
 {
     assert((val != NULL) && (val->_type < TYPE_COUNT) && (val->_sval != NULL));
     static size_t stringCount = 0U;
@@ -434,8 +420,8 @@ void MipsCase(Val* val, bool start)
     {
         assert(val != NULL);
         fprintf(mips, "\ncase_%zu_%zu:\n", SwitchIndex, CaseIndex);
-        Reg reg0 = MipsLoadV(SwitchNode);
-        Reg reg1 = MipsLoadI(val);
+        Reg reg0 = MipsLoadVar(SwitchNode);
+        Reg reg1 = MipsLoadImmediate(val);
         Reg result = MipsRelOp(EQ, reg0, reg1);
         fprintf(mips, "\n\tbeq %s, $zero, end_case_%zu_%zu\n", result._name, SwitchIndex, CaseIndex);
     }
@@ -453,18 +439,18 @@ const char* GetReg(Type t)
 
     if (t == INTEGER)
     {
-        assert(RegTrackerT < 8U);
-        return TmpRegs[RegTrackerT++];
+        assert(RegTrackerT < TmpRegCount);
+        return IntTmpRegs[RegTrackerT++];
     }
     if (t == FLOATING)
     {
-        assert(RegTrackerF < 8U);
-        return FloatRegs[RegTrackerF++];
+        assert(RegTrackerF < TmpRegCount);
+        return FloatTmpRegs[RegTrackerF++];
     }
     else // STRING
     {
-        assert(RegTrackerT < 8U);
-        return TmpRegs[RegTrackerT++];
+        assert(RegTrackerT < TmpRegCount);
+        return IntTmpRegs[RegTrackerT++];
     }
     
 }

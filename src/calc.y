@@ -2,16 +2,15 @@
 // TODO
 // Const declaration
 // Const forbid assignment
-// String assignments
-// LoadI change name?
-// use $f instead of $t?
 // README
 // Assigning float to int?
-// Receive const reg
 // File output format calc.l
 // MipsCast finish all types
 // Parse error line and column?
 // Check if we can fix switch lw every case
+
+// Tested:
+// String assignments
 
 // Questions
 // Can we use .cpp?
@@ -155,7 +154,7 @@ stmt            :   assignment_stmt {}
                                                     if (node != NULL)
                                                     {
                                                       Val* val = &($3);
-                                                      Reg reg = MipsLoadI(val); 
+                                                      Reg reg = MipsLoadImmediate(val); 
                                                       MipsAssign(node, reg);
                                                     }
                                                     else
@@ -171,7 +170,7 @@ stmt            :   assignment_stmt {}
 
 out_stmt        :   OUT O_PARENTHESES expression C_PARENTHESES SEMICOLON { MipsOut(&($3)); }
                 |   OUT O_PARENTHESES SENTENCE C_PARENTHESES SEMICOLON{ 
-                                                                        Reg reg = MipsLoadI(&($3)); 
+                                                                        Reg reg = MipsLoadImmediate(&($3)); 
                                                                         MipsOut(&reg); 
                                                                       }
                 ;
@@ -199,31 +198,31 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
 		            |   WHILE { MipsWhile(NULL, 0U); } O_PARENTHESES boolexpr C_PARENTHESES { MipsWhile(&($4), 1U); } stmt_block { MipsWhile(NULL, 2U); MipsWhile(NULL, 3U); }
                 |   FOREACH ID ASSIGNOP NUM TILL NUM{ 
                                                       // Loading startval and assigning to i
-                                                      Reg startReg = MipsLoadI(&($4));
+                                                      Reg startReg = MipsLoadImmediate(&($4));
                                                       Node* node = GetFromTable(table, $2);
                                                       if (node != NULL) { MipsAssign(node, startReg); } else { yyerror("ID not found"); }
                                                       
                                                       // Declaring while and checking statement
                                                       MipsWhile(NULL, 0U);
-                                                      Reg indexReg = MipsLoadV(node);
-                                                      Reg endReg = MipsLoadI(&($6));
+                                                      Reg indexReg = MipsLoadVar(node);
+                                                      Reg endReg = MipsLoadImmediate(&($6));
                                                       Reg resultReg = MipsRelOp(LT, indexReg, endReg);
                                                       MipsWhile(&resultReg, 1U);
                                                       MipsForEach(0U);
                                                     } WITH step { MipsForEach(1U); } stmt { MipsForEach(2U); MipsWhile(NULL, 3U); }
                 |   FOREACH ID ASSIGNOP NUM TILL ID{
                                                       // Loading startval and assigning to i
-                                                      Reg startReg = MipsLoadI(&($4));
+                                                      Reg startReg = MipsLoadImmediate(&($4));
                                                       Node* node = GetFromTable(table, $2);
                                                       if (node != NULL) { MipsAssign(node, startReg); } else { yyerror("ID not found"); }
                                                       
                                                       // Declaring while and checking statement
                                                       MipsWhile(NULL, 0U);
-                                                      Reg indexReg = MipsLoadV(node);
+                                                      Reg indexReg = MipsLoadVar(node);
                                                       Node* endNode = GetFromTable(table, $6);
                                                       if (endNode != NULL) 
                                                       { 
-                                                        Reg endReg = MipsLoadV(endNode);
+                                                        Reg endReg = MipsLoadVar(endNode);
                                                         Reg resultReg = MipsRelOp(LT, indexReg, endReg);
                                                         MipsWhile(&resultReg, 1U);
                                                         MipsForEach(0U);
@@ -259,8 +258,8 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                               MathOp mathOp = $4;
                                               if ((node0 != NULL) && (node1 != NULL))
                                               {
-                                                Reg numReg = MipsLoadI(val);
-                                                Reg varReg = MipsLoadV(node1);
+                                                Reg numReg = MipsLoadImmediate(val);
+                                                Reg varReg = MipsLoadVar(node1);
                                                 Reg resReg = MipsMathOp($4, numReg, varReg);
                                                 MipsAssign(node0, resReg);
                                               }
@@ -276,8 +275,8 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                               MathOp mathOp = $4;
                                               if ((node0 != NULL) && (node1 != NULL))
                                               {
-                                                Reg numReg = MipsLoadI(val);
-                                                Reg varReg = MipsLoadV(node1);
+                                                Reg numReg = MipsLoadImmediate(val);
+                                                Reg varReg = MipsLoadVar(node1);
                                                 Reg resReg = MipsMathOp($4, numReg, varReg);
                                                 MipsAssign(node0, resReg);
                                               }
@@ -313,14 +312,14 @@ factor          :   O_PARENTHESES expression C_PARENTHESES{ $$ = $2; }
                         Node* node = GetFromTable(table, $1);
                         if (node != NULL)
                         {
-                          $$ = MipsLoadV(node);
+                          $$ = MipsLoadVar(node);
                         }
                         else
                         {
                           yyerror(strcat("ID does not exist: ", $1));
                         }
                       }
-                |   NUM { $$ = MipsLoadI(&($1)); }
+                |   NUM { $$ = MipsLoadImmediate(&($1)); }
                 ;
 
 %%

@@ -43,9 +43,9 @@ void MipsOut(const Reg* reg);
  */
 void MipsData();
 
-Reg MipsLoadV(const Node* node);
+Reg MipsLoadVar(const Node* node);
 
-Reg MipsLoadI(const Val* val);
+Reg MipsLoadImmediate(const Val* val);
 
 Reg MipsCast(const Reg* reg, Type t);
 

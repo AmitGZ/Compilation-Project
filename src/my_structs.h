@@ -1,4 +1,5 @@
 #pragma once
+#include <stdio.h>
 #include <stdbool.h>
 
 typedef enum { INTEGER, FLOATING, STR, TYPE_COUNT } Type;
@@ -18,7 +19,7 @@ typedef struct
     const char* _sval;         /**< Description */
 } Val;
 
-static const char* TmpRegs[] =    { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7" };
-static const char* FloatRegs[] =  { "$f0", "$f1", "$f2", "$f3", "$f4", "$f5", "$f6", "$f7" };
-static const char* SaveRegs[] =   { "$s0", "$s1", "$s2", "$s3", "$s4", "$s5", "$s6", "$s7" };
+static const size_t TmpRegCount = 10U;
+static const char* IntTmpRegs[] =    { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6",  "$t7",  "$t8",  "$t9"  };
+static const char* FloatTmpRegs[] =  { "$f4", "$f5", "$f6", "$f7", "$f8", "$f9", "$f10", "$f16", "$f17", "$f18" };
 static const Reg ZeroReg = { INTEGER, "$zero" };
