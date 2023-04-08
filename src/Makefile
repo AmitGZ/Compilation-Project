@@ -13,4 +13,4 @@ clean:
 	rm ../bin/calc calc.tab.c lex.yy.c calc.tab.h ../bin/mips.s
 
 compile:
-	../bin/calc "../TestFiles/input1.txt" "../bin/output.txt" "../bin/mips.s"
+	../bin/calc "../TestFiles/$(file)" "../bin/output.txt" "../bin/mips.s"
