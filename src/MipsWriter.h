@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
-#include "my_structs.h"
+#include "MyStructs.h"
 #include "Hash.h"
 
 /**

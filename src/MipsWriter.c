@@ -191,9 +191,9 @@ void MipsAssign(const Node* node, Reg reg)
 {
     assert((node != NULL) && (node->_type < TYPE_COUNT) && (reg._type < TYPE_COUNT));
 
-    if (!IsAssignValid(node->_type, reg._type) || node->_isConst)
+    if (node->_isConst || !IsAssignValid(node->_type, reg._type))
     {
-        yyerror("Assignment invalid ");
+        yyerror("Invalid assignment ");
         return;
     }
 
@@ -202,23 +202,10 @@ void MipsAssign(const Node* node, Reg reg)
         reg = MipsCast(&reg, node->_type);
     }
 
-    switch(node->_type)
-    {
-        case STR:
-            fprintf(mips, "\n\t# assigning string pointer\n"
-                          "\tsw %s, %s\n", reg._name, node->_name);
-            break;
-        
-        case INTEGER:
-            fprintf(mips, "\n\t# assigning integer value\n"
-                          "\tsw %s, %s\n", reg._name, node->_name);
-            break;
+    const char* assignInstruction = node->_type == FLOATING ? "s.s" : "sw";
+    fprintf(mips, "\n\t# assigning value\n"
+                    "\t%s %s, %s\n", assignInstruction, reg._name, node->_name);
 
-        default: // FLOATING
-            fprintf(mips, "\n\t# assigning float value\n"
-                          "\ts.s %s, %s\n", reg._name, node->_name);
-            break;
-    }
 }
 
 Reg MipsLogOp(LogOp logOp, Reg reg0, Reg reg1)

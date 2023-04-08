@@ -6,7 +6,6 @@
 // Assigning float to int?
 // File output format for lexer?
 // MipsCast finish all types
-// Parse error line and column?
 // Check if we can fix switch lw every case
 // Logical operations (NOR) not tested
 
@@ -17,7 +16,7 @@
 // Can we use .cpp?
 // Can we use TABLE_SIZE for hash table?
 
-#include "my_structs.h"
+#include "MyStructs.h"
 #include "Hash.h"
 #include "MipsWriter.h"
 #include <string.h>

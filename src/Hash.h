@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
-#include "my_structs.h"
+#include "MyStructs.h"
 
 extern int yylineno;            /**< Parse error line index*/
 extern size_t errorCount;       /**< Total error count */
