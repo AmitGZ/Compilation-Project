@@ -10,6 +10,7 @@ static size_t WhileIndex         = 0U; /**< While indexer   (used to avoid label
 static size_t ForEachIndex       = 0U; /**< ForEach indexer (used to avoid label duplicates) */
 static size_t SwitchIndex        = 0U; /**< Switch indexer  (used to avoid label duplicates) */
 static size_t CaseIndex          = 0U; /**< Case indexer    (used to avoid label duplicates) */
+static size_t BufferIndex        = 0U; /**< Buffer indexer  (used to avoid label duplicates) */
 
 static const Node* SwitchNode = NULL;  /**< Switch Node, once switch is opened stores the node pointer */
 
@@ -22,10 +23,9 @@ bool IsAssignValid(Type type1, Type type2)
 
 void MipsData()
 {
-    fprintf(mips, "\t.data\n" \
-                  "buffer: .space %d   # allocate %d bytes for the input buffer\n", BUFFER_SIZE, BUFFER_SIZE);
+    fprintf(mips, "\t.data\n");
 }  
-
+    
 void MipsDecl(Type t, const char* id, const char* sval)
 {
     assert((t < TYPE_COUNT) && (id != NULL) && (sval != NULL));
@@ -41,11 +41,16 @@ void MipsIn(const Node* node)
     fprintf(mips, "\n\t# read input\n");
     if (node->_type == STR)
     {
-        fprintf(mips, "\tli $v0, 8      \n"\
-                      "\tla $a0, buffer \n"\
-                      "\tli $a1, %d     \n"\
-                      "\tsw $a0, %s     \n"\
-                      "\tsyscall        \n", BUFFER_SIZE, node->_name);
+        fprintf(mips, "\n\t.data\n"\
+                          "buffer%zu: .space %d # allocate buffer to read input\n"\
+	                      "\t.text\n", BufferIndex, BUFFER_SIZE);
+        
+        fprintf(mips, "\tli $v0, 8         \n"\
+                      "\tla $a0, buffer%zu \n"\
+                      "\tli $a1, %d        \n"\
+                      "\tsw $a0, %s        \n"\
+                      "\tsyscall           \n", BufferIndex, BUFFER_SIZE, node->_name);
+        ++BufferIndex;
     }
     else if (node->_type == INTEGER)
     {

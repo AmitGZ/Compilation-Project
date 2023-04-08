@@ -1,5 +1,4 @@
 	.data
-buffer: .space 256   # allocate 256 bytes for the input buffer
 f:	.float 0
 e:	.float 0
 c:	.float 0
@@ -13,20 +12,69 @@ a:	.word 0
 
 main:
 
+	# read input
+
 	.data
-str0: .asciiz "assignment test  55"
+buffer0: .space 256 # allocate buffer to read input
+	.text
+	li $v0, 8         
+	la $a0, buffer0 
+	li $a1, 256        
+	sw $a0, a        
+	syscall           
+
+	# read input
+
+	.data
+buffer1: .space 256 # allocate buffer to read input
+	.text
+	li $v0, 8         
+	la $a0, buffer1 
+	li $a1, 256        
+	sw $a0, y        
+	syscall           
+
+	# read input
+
+	.data
+buffer2: .space 256 # allocate buffer to read input
+	.text
+	li $v0, 8         
+	la $a0, buffer2 
+	li $a1, 256        
+	sw $a0, i        
+	syscall           
+
+	.data
+str0: .asciiz "test"
 	.text
 
 	# store pointer to string
 	la $t0, str0
 
 	# assigning string pointer
-	sw $t0, a
+	sw $t0, y
 
 	lw $t0, a
 
-	# assigning string pointer
-	sw $t0, y
+	# printing 
+	li $v0, 4   
+	move $a0, $t0       
+	syscall      
+
+	lw $t0, y
+
+	# printing 
+	li $v0, 4   
+	move $a0, $t0       
+	syscall      
+
+	lw $t0, i
+
+	# printing 
+	li $v0, 4   
+	move $a0, $t0       
+	syscall      
 
 	lw $t0, y
 

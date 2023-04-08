@@ -2,8 +2,13 @@ program  Min  /* Finding minimum between two numbers */
 start
 decl real : b,c,e,f;
     string: a, y, i;
-    a= "assignment test  55";
-    y = a;
+    in(a);
+    in(y);
+    in(i);
+    y="test";
+    out(a);
+    out(y);
+    out(i);
 
     out(y);
 end
