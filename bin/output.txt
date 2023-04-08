@@ -2,13 +2,11 @@
 2. start
 3. decl real : ID(b),ID(c),ID(e),ID(f);
 4.     string: ID(a), ID(y), ID(i);
-5.     in(ID(a));
-6.     in(ID(y));
-7.     in(ID(i));
-8.     ID(y)="test";
-9.     out(ID(a));
-10.     out(ID(y));
-11.     out(ID(i));
-12. 
-13.     out(ID(y));
-14. end
+5. final real ID(amit) = NUM(5.8);
+6. 
+7.     ID(amit) = NUM(5.2);
+8.     ID(b) = ID(amit)*NUM(4.0);
+9.     out(ID(amit));
+10.     out(ID(b));
+11. 
+12. end

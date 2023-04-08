@@ -4,11 +4,11 @@
 // Const forbid assignment
 // README
 // Assigning float to int?
-// File output format calc.l
+// File output format for lexer?
 // MipsCast finish all types
 // Parse error line and column?
 // Check if we can fix switch lw every case
-// Logical operations not tested
+// Logical operations (NOR) not tested
 
 // Tested:
 // String assignments
@@ -22,6 +22,7 @@
 #include "MipsWriter.h"
 #include <string.h>
 
+extern int yylineno;
 extern int yylex();
 extern int yyparse();
 extern size_t errorCount;
@@ -347,7 +348,7 @@ int main(int argc, char** argv)
   fclose(yyin);
   fclose(yyout);
 
-  printf("error Count: %zu\n", errorCount);
+  printf("Total Error Count: %zu\n", errorCount);
   if(errorCount > 0U)
   {
     remove(argv[3]); // Removing compiled file in case of error

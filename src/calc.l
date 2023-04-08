@@ -1,5 +1,5 @@
 %option noyywrap
-
+%option yylineno
 %{
 #include "my_structs.h"
 #include "calc.tab.h"

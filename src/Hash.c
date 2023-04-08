@@ -1,5 +1,4 @@
 #include "Hash.h"
-extern size_t errorCount;       /**< Description */
 
 int Hash(const char* key)
 {
@@ -73,8 +72,8 @@ void FreeTable(Bucket* table)
     }
 }
 
-void yyerror(const char* s)
+void yyerror(const char* str)
 {
     errorCount++;
-	fprintf(stderr, "Parse error: %s\n", s);
+	fprintf(stderr, "Error | Line: %d,\t%s\n", yylineno, str);
 }

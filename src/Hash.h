@@ -6,6 +6,9 @@
 #include <assert.h>
 #include "my_structs.h"
 
+extern int yylineno;            /**< Parse error line index*/
+extern size_t errorCount;       /**< Total error count */
+
 #define TABLE_SIZE 100
 #define BUFFER_SIZE 256
 
@@ -67,7 +70,7 @@ void FreeTable(Bucket* table);
 
 /**
  * @brief throws error
- * @param s error description
+ * @param str error description
  */
-void yyerror(const char* s);
+void yyerror(const char* str);
 

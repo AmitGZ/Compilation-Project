@@ -2,13 +2,11 @@ program  Min  /* Finding minimum between two numbers */
 start
 decl real : b,c,e,f;
     string: a, y, i;
-    in(a);
-    in(y);
-    in(i);
-    y="test";
-    out(a);
-    out(y);
-    out(i);
+final real amit = 5.8;
 
-    out(y);
+    amit = 5.2;
+    b = amit*4.0;
+    out(amit);
+    out(b);
+
 end

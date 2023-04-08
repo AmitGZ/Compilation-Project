@@ -191,9 +191,9 @@ void MipsAssign(const Node* node, Reg reg)
 {
     assert((node != NULL) && (node->_type < TYPE_COUNT) && (reg._type < TYPE_COUNT));
 
-    if (!IsAssignValid(node->_type, reg._type))
+    if (!IsAssignValid(node->_type, reg._type) || node->_isConst)
     {
-        yyerror("Assignment invalid");
+        yyerror("Assignment invalid ");
         return;
     }
 
