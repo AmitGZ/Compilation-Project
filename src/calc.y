@@ -7,6 +7,9 @@
 // use $f instead of $t?
 // README
 // Assigning float to int?
+// Receive const reg
+// File format calc.l
+// MipsCast finish all
 
 // Questions
 // Can we use .cpp?
@@ -203,7 +206,7 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                       MipsWhile(NULL, 0U);
                                                       Reg indexReg = MipsLoadV(node);
                                                       Reg endReg = MipsLoadI(&($6));
-                                                      Reg resultReg = MipsRelOp(LT, &indexReg, &endReg);
+                                                      Reg resultReg = MipsRelOp(LT, indexReg, endReg);
                                                       MipsWhile(&resultReg, 1U);
                                                       MipsForEach(0U);
                                                     } WITH step { MipsForEach(1U); } stmt { MipsForEach(2U); MipsWhile(NULL, 3U); }
@@ -220,7 +223,7 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                       if (endNode != NULL) 
                                                       { 
                                                         Reg endReg = MipsLoadV(endNode);
-                                                        Reg resultReg = MipsRelOp(LT, &indexReg, &endReg);
+                                                        Reg resultReg = MipsRelOp(LT, indexReg, endReg);
                                                         MipsWhile(&resultReg, 1U);
                                                         MipsForEach(0U);
                                                       }
@@ -247,7 +250,7 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                               {
                                                 Reg numReg = MipsLoadI(val);
                                                 Reg varReg = MipsLoadV(node1);
-                                                Reg resReg = MipsMathOp($4, &numReg, &varReg);
+                                                Reg resReg = MipsMathOp($4, numReg, varReg);
                                                 MipsAssign(node0, &resReg);
                                               }
                                               else
@@ -264,7 +267,7 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                               {
                                                 Reg numReg = MipsLoadI(val);
                                                 Reg varReg = MipsLoadV(node1);
-                                                Reg resReg = MipsMathOp($4, &numReg, &varReg);
+                                                Reg resReg = MipsMathOp($4, numReg, varReg);
                                                 MipsAssign(node0, &resReg);
                                               }
                                               else
@@ -274,26 +277,23 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                             }
                 ;
 
-boolexpr        :   boolexpr OROP boolterm  { $$ = MipsLogOp(OR, &($1), &($3)); }
+boolexpr        :   boolexpr OROP boolterm  { $$ = MipsLogOp(OR, $1, $3); }
                 |   boolterm { $$ = $1; }
                 ;
 
-boolterm        :   boolterm ANDOP boolfactor { $$ = MipsLogOp(AND, &($1), &($3)); }
+boolterm        :   boolterm ANDOP boolfactor { $$ = MipsLogOp(AND, $1, $3); }
                 |   boolfactor { $$ = $1; }
                 ;
         
-boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES{ 
-                                                                        Reg zeroReg = { INTEGER, ZeroReg };
-                                                                        $$ = MipsLogOp(AND, &($3), &(zeroReg));
-                                                                      }
-                |   expression RELOP expression { $$ = MipsRelOp($2, &($1), &($3)); }
+boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES{ $$ = MipsLogOp(AND, $3, ZeroReg); }
+                |   expression RELOP expression { $$ = MipsRelOp($2, $1, $3); }
                 ;  
 
-expression      :   expression ADDOP term { $$ = MipsMathOp($2, &($1), &($3)); }
+expression      :   expression ADDOP term { $$ = MipsMathOp($2, $1, $3); }
                 |   term { $$ = $1; }
                 ;
 
-term            :   term MULOP factor { $$ = MipsMathOp($2, &($1), &($3)); }
+term            :   term MULOP factor { $$ = MipsMathOp($2, $1, $3); }
                 |   factor  { $$ = $1; }
                 ;
 

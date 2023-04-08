@@ -74,72 +74,72 @@ void MipsOut(const Reg* reg)
 
 }
 
-Reg MipsMathOp(MathOp mathOp, Reg* reg0, Reg* reg1)
+Reg MipsMathOp(MathOp mathOp, Reg reg0, Reg reg1)
 {
-    assert((mathOp < MATH_OP_COUNT) && (reg0 != NULL) && (reg1 != NULL));
+    assert(mathOp < MATH_OP_COUNT);
     Reg res;
 
-    if ((reg0->_type == STR) || (reg1->_type == STR))
+    if ((reg0._type == STR) || (reg1._type == STR))
     {
         yyerror("can't perform arithmetic operations on string");
         return res;
     }
 
-    res._type = ((reg0->_type == FLOATING) || (reg1->_type == FLOATING)) ? FLOATING : INTEGER;
+    res._type = ((reg0._type == FLOATING) || (reg1._type == FLOATING)) ? FLOATING : INTEGER;
     static const char* MathOpTable[] = { "add", "sub", "mul", "div" };
     const char* op = MathOpTable[mathOp];
 
     if (res._type == FLOATING)
     {        
-        if (reg0->_type != FLOATING)
+        if (reg0._type != FLOATING)
         {
-            MipsCast(reg0, FLOATING);
-            res._name = reg1->_name;
+            reg0 = MipsCast(&reg0, FLOATING);
+            res._name = reg1._name;
         }
-        else if (reg1->_type != FLOATING)
+        else if (reg1._type != FLOATING)
         {
-            MipsCast(reg1, FLOATING);
-            res._name = reg0->_name;
+            reg1 = MipsCast(&reg1, FLOATING);
+            res._name = reg0._name;
         }
         else
         {
-            res._name = reg0->_name;
+            res._name = reg0._name;
         }
         
         fprintf(mips, "\n\t# mathop two floats\n"\
-                        "\t%s.s %s, %s, %s\n", op, res._name, reg0->_name, reg1->_name);
+                        "\t%s.s %s, %s, %s\n", op, res._name, reg0._name, reg1._name);
         FreeReg(FLOATING);
     }
     else // INTEGER
     {
-        res._name = reg0->_name;
+        res._name = reg0._name;
         fprintf(mips, "\n\t# mathop two ints\n"\
-                      "\t%s %s, %s, %s\n", op, res._name, reg0->_name, reg1->_name);
+                      "\t%s %s, %s, %s\n", op, res._name, reg0._name, reg1._name);
         FreeReg(INTEGER);
     }
     return res;
 }
 
-Reg MipsRelOp(RelOp relOp, Reg* reg0, Reg* reg1)
+Reg MipsRelOp(RelOp relOp, Reg reg0, Reg reg1)
 {
-    assert((relOp < REL_OP_COUNT) && (reg0 != NULL) && (reg1 != NULL));
+    assert(relOp < REL_OP_COUNT);
     Reg res;
 
-    if ((reg0->_type == STR) || (reg1->_type == STR))
+    if ((reg0._type == STR) || (reg1._type == STR))
     {
         yyerror("can't perform arithmetic operations on string");
         return res;
     }
 
-    res._type = ((reg0->_type == FLOATING) || (reg1->_type == FLOATING)) ? FLOATING : INTEGER;
+    res._type = ((reg0._type == FLOATING) || (reg1._type == FLOATING)) ? FLOATING : INTEGER;
     const char* op;
     
     if (res._type == FLOATING)
     {        
-        if (reg0->_type != reg1->_type)
+        if (reg0._type != reg1._type)
         {
-            MipsCast(reg0, FLOATING);
-            MipsCast(reg1, FLOATING);
+            reg0 = MipsCast(&reg0, FLOATING);
+            reg1 = MipsCast(&reg1, FLOATING);
         }
         res._name = GetReg(INTEGER);
 
@@ -156,7 +156,7 @@ Reg MipsRelOp(RelOp relOp, Reg* reg0, Reg* reg1)
             fprintf(mips, "\n\t# compare two floats and negate\n"\
                           "\tc.%s.s %s, %s\n"\
                           "\tmovt %s, $zero\n"\
-                          "\tmovf %s, %s\n", &op[1], reg0->_name, reg1->_name, res._name, res._name, trueReg);
+                          "\tmovf %s, %s\n", &op[1], reg0._name, reg1._name, res._name, res._name, trueReg);
         }
         else
         {
@@ -164,7 +164,7 @@ Reg MipsRelOp(RelOp relOp, Reg* reg0, Reg* reg1)
             fprintf(mips, "\n\t# compare two floats\n"\
                           "\tc.%s.s %s, %s\n"\
                           "\tmovt %s, %s\n"\
-                          "\tmovf %s, $zero\n", op, reg0->_name, reg1->_name, res._name, trueReg, res._name);
+                          "\tmovf %s, $zero\n", op, reg0._name, reg1._name, res._name, trueReg, res._name);
         }
         FreeReg(INTEGER); // Free true reg
         FreeReg(FLOATING);
@@ -172,11 +172,11 @@ Reg MipsRelOp(RelOp relOp, Reg* reg0, Reg* reg1)
     }
     else // INTEGER
     {
-        res._name = reg0->_name;
+        res._name = reg0._name;
         static const char* IntRelOpTable[] = { "seq", "sne", "slt", "sgt", "sle", "sge" };
         const char* op = IntRelOpTable[relOp];
         fprintf(mips, "\n\t# compare two ints\n"\
-                      "\t%s %s, %s, %s\n", op, res._name, reg0->_name, reg1->_name);
+                      "\t%s %s, %s, %s\n", op, res._name, reg0._name, reg1._name);
     }
     return res;
 }
@@ -215,28 +215,28 @@ void MipsAssign(const Node* node, Reg* reg)
     }
 }
 
-Reg MipsLogOp(LogOp logOp, Reg* reg0, Reg* reg1)
+Reg MipsLogOp(LogOp logOp, Reg reg0, Reg reg1)
 {
-    assert((logOp < LOG_OP_COUNT) && (reg0 != NULL) && (reg1 != NULL));
+    assert(logOp < LOG_OP_COUNT);
     Reg res;
 
-    if ((reg0->_type == STR) || (reg1->_type == STR))
+    if ((reg0._type == STR) || (reg1._type == STR))
     {
         yyerror("can't perform arithmetic operations on string");
         return res;
     }
 
-    if (reg0->_type != reg1->_type)
+    if (reg0._type != reg1._type)
     {
-        MipsCast(reg0, FLOATING);
-        MipsCast(reg1, FLOATING);
+        reg0 = MipsCast(&reg0, FLOATING);
+        reg1 = MipsCast(&reg1, FLOATING);
     }
 
-    res._type = ((reg0->_type == FLOATING) || (reg1->_type == FLOATING)) ? FLOATING : INTEGER;
+    res._type = ((reg0._type == FLOATING) || (reg1._type == FLOATING)) ? FLOATING : INTEGER;
     static const char* LogOpTable[] = { "and", "or", "nor" };
     const char* op = LogOpTable[logOp];
 
-    fprintf(mips, "\t%s %s, %s, %s", op, res._name, reg0->_name, reg1->_name);
+    fprintf(mips, "\t%s %s, %s, %s", op, res._name, reg0._name, reg1._name);
     
     return res;
 }
@@ -326,23 +326,24 @@ Reg MipsLoadI(const Val* val)
     return reg;
 }
 
-void MipsCast(Reg* reg, Type t)
+Reg MipsCast(const Reg* reg, Type t)
 {
     assert((reg->_type < TYPE_COUNT) && (t < TYPE_COUNT));
 
     if (reg->_type == t)
-        return;
+        return *reg;
 
-    const char* val;
+    Reg returnReg;
     if (t == FLOATING)
     {
-        val = reg->_name;
-        reg->_name = GetReg(FLOATING);
+        returnReg._type = FLOATING;
+        returnReg._name = GetReg(FLOATING);
         fprintf(mips, "\n\t# Move integer value to floating-point register\n"\
                       "\tmtc1 %s, %s\n"\
-                      "\tcvt.s.w %s, %s\n", val, reg->_name, reg->_name, reg->_name);
+                      "\tcvt.s.w %s, %s\n", reg->_name, returnReg._name, returnReg._name, returnReg._name);
         FreeReg(INTEGER);
     }
+    return returnReg;
 }
 
 void MipsIf(Reg* reg, uint32_t part)
