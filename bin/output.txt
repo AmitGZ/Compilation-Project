@@ -2,10 +2,7 @@
 2. start
 3. decl real : ID(b),ID(c),ID(e),ID(f);
 4.     int: ID(a), ID(y), ID(i);
-5.     string: ID(d);
-6.     ID(d) = "abc";
-7.     in(ID(a));
-8.     foreach ID(i)= 0 till  19 with ID(i)=ID(i) + 1 
-9.         out(ID(i));
-10.     out(ID(d));
-11. end
+5.     in(ID(a));
+6.     foreach ID(i)= 0 till ID(a) with ID(i)=ID(i) + 1 
+7.         out(ID(i));
+8. end

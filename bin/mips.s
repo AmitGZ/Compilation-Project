@@ -7,22 +7,11 @@ b:	.float 0
 i:	.word 0
 y:	.word 0
 a:	.word 0
-d:	.word 0
 
 	.text                   
 	.globl main                   
 
 main:
-
-	.data
-str0: .asciiz "abc"
-	.text
-
-	# store pointer to string
-	la $t0, str0
-
-	# assigning string pointer
-	sw $t0, d
 
 	# read input
 	li $v0, 5  
@@ -38,7 +27,7 @@ while0:
 
 	lw $t1, i
 
-	li $t2, 19
+	lw $t2, a
 
 	# compare two ints
 	slt $t1, $t1, $t2
@@ -73,13 +62,6 @@ for_each_stmt0:
 	j for_each_increment0
 
 endwhile0:
-
-	la $t0, d
-
-	# printing 
-	li $v0, 4   
-	move $a0, $t0       
-	syscall      
 
 	# exit the program
 	li $v0, 10

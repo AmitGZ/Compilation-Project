@@ -13,11 +13,11 @@
  */
 void MipsIn(const Node* node);
 
-void MipsMathOp(MathOp mulOp, Reg* res, Reg* reg0, Reg* reg1);
+Reg MipsMathOp(MathOp mulOp, Reg* reg0, Reg* reg1);
 
-void MipsRelOp(RelOp relOp, Reg* res, Reg* reg0, Reg* reg1);
+Reg MipsRelOp(RelOp relOp, Reg* reg0, Reg* reg1);
 
-void MipsLogOp(LogOp logOp, Reg* res, Reg* reg0, Reg* reg1);
+Reg MipsLogOp(LogOp logOp, Reg* reg0, Reg* reg1);
 
 void MipsDecl(Type t, const char* id, const char* val);
 
@@ -43,9 +43,9 @@ void MipsOut(const Reg* reg);
  */
 void MipsData();
 
-void MipsLoadV(Reg* reg);
+Reg MipsLoadV(const Node* node);
 
-void MipsLoadI(Reg* reg);
+Reg MipsLoadI(const Val* val);
 
 void MipsCast(Reg* reg, Type t);
 
@@ -62,3 +62,5 @@ void MipsWhile(Reg* reg, uint32_t part);
 void MipsIf(Reg* reg, uint32_t part);
 
 void MipsForEach(uint32_t part);
+
+void MipsSwitch(Node* node);

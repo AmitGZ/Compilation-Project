@@ -2,10 +2,7 @@ program  Min  /* Finding minimum between two numbers */
 start
 decl real : b,c,e,f;
     int: a, y, i;
-    string: d;
-    d = "abc";
     in(a);
-    foreach i=0 till 19 with i=i+1 
+    foreach i=0 till a with i=i+1 
         out(i);
-    out(d);
 end

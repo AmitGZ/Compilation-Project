@@ -9,8 +9,14 @@ typedef enum { AND, OR, NOR, LOG_OP_COUNT } LogOp;
 typedef struct
 {
     Type        _type;        /**< Description */
-    const char* _sval;         /**< Description */
+    const char* _name;         /**< Description */
 } Reg;
+
+typedef struct
+{
+    Type        _type;         /**< Description */
+    const char* _sval;         /**< Description */
+} Val;
 
 static const char* TmpRegs[] =    { "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7" };
 static const char* FloatRegs[] =  { "$f0", "$f1", "$f2", "$f3", "$f4", "$f5", "$f6", "$f7" };
