@@ -1,8 +1,6 @@
 # Compilation-Project
 MIPS Compiler using lexical analyzer and Bison
 
-## overview
-
 ## Compiling
 ```bash
 $ cd src
