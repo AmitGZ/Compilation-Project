@@ -1,16 +1,16 @@
-all: calc
+all: cpm
 
-calc.tab.c calc.tab.h:	calc.y
-	bison -t -d calc.y
+cpm.tab.c cpm.tab.h:	cpm.y
+	bison -t -d cpm.y
 
-lex.yy.c: calc.l calc.tab.h
-	flex calc.l
+lex.yy.c: cpm.l cpm.tab.h
+	flex cpm.l
 
-calc: lex.yy.c calc.tab.c calc.tab.h
-	gcc -o ../bin/calc calc.tab.c lex.yy.c MipsWriter.c Hash.c
+cpm: lex.yy.c cpm.tab.c cpm.tab.h
+	gcc -o ../bin/cpm cpm.tab.c lex.yy.c MipsWriter.c Hash.c
 
 clean:
-	rm ../bin/calc calc.tab.c lex.yy.c calc.tab.h ../bin/mips.s
+	rm ../bin/cpm cpm.tab.c lex.yy.c cpm.tab.h ../bin/*.s ../bin/*.lst
 
 compile:
-	../bin/calc "../TestFiles/$(file)" "../bin/output.txt" "../bin/mips.s"
+	../bin/cpm "../bin/$(file)"

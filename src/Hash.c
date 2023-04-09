@@ -2,7 +2,7 @@
 
 int Hash(const char* key)
 {
-    assert(key != NULL);
+    MY_ASSERT(key != NULL, "Invalid Hash key", 0)
 
     int sum = 0;
     for (int i = 0; i < strlen(key); i++) 
@@ -14,7 +14,7 @@ int Hash(const char* key)
 
 Node* GetFromTable(const Bucket* table, const char* name)
 {
-    assert((table != NULL) && (name != NULL));
+    MY_ASSERT((table != NULL) && (name != NULL), "Invalid GetFromTable", NULL)
 
     int index = Hash(name);
     Node* current = table[index]._head;
@@ -31,7 +31,7 @@ Node* GetFromTable(const Bucket* table, const char* name)
 
 void InsertToTable(Bucket* table, const char* id, Type t, bool isConst)
 {
-    assert((table != NULL) && (id != NULL) && (t < TYPE_COUNT));
+    MY_ASSERT((table != NULL) && (id != NULL) && (t < TYPE_COUNT), "invalid InsertToTable",)
 
     Node* tmp = GetFromTable(table, id);
     if (GetFromTable(table, id) != NULL)
@@ -50,7 +50,7 @@ void InsertToTable(Bucket* table, const char* id, Type t, bool isConst)
 
 void FreeBucket(Bucket* bucket) 
 {
-    assert(bucket != NULL);
+    MY_ASSERT(bucket != NULL, "Invalid FreeBucket",)
 
     Node *current = bucket->_head;
     while (current != NULL)
@@ -64,7 +64,7 @@ void FreeBucket(Bucket* bucket)
 
 void FreeTable(Bucket* table) 
 {
-    assert(table != NULL);
+    MY_ASSERT(table != NULL, "Invalid FreeTable",)
 
     for (int i = 0; i < TABLE_SIZE; i++) 
     {

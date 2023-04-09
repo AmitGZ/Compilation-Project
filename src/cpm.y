@@ -8,6 +8,9 @@
 // MipsCast finish all types
 // Check if we can fix switch lw every case
 // Logical operations (NOR) not tested
+// Create error file
+// main in cpm.c or cpm.y?
+
 
 // Tested:
 // String assignments
@@ -20,6 +23,7 @@
 #include "Hash.h"
 #include "MipsWriter.h"
 #include <string.h>
+#include <assert.h>
 
 extern int yylineno;
 extern int yylex();
@@ -27,7 +31,7 @@ extern int yyparse();
 extern size_t errorCount;
 
 FILE* mips;
-Type currentType;
+Type CurrentType;
 Bucket table[TABLE_SIZE];
 
 %}
@@ -109,15 +113,15 @@ declarlist      :   declarlist decl {}
                 |   decl {}
                 ;
  
-decl            :   type { currentType = $1 } COLON list SEMICOLON
+decl            :   type { CurrentType = $1 } COLON list SEMICOLON
 
 list            :   ID COMMA list {
-                                    InsertToTable(table, $1, currentType, false);
-                                    MipsDecl(currentType, $1, "0"); // Initialize with 0
+                                    InsertToTable(table, $1, CurrentType, false);
+                                    MipsDecl(CurrentType, $1, "0"); // Initialize with 0
                                   }
                 |   ID  {
-                          InsertToTable(table, $1, currentType, false);
-                          MipsDecl(currentType, $1, "0"); // Initialize with 0
+                          InsertToTable(table, $1, CurrentType, false);
+                          MipsDecl(CurrentType, $1, "0"); // Initialize with 0
                         }
                 ;
 
@@ -201,32 +205,38 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                       // Loading startval and assigning to i
                                                       Reg startReg = MipsLoadImmediate(&($4));
                                                       Node* node = GetFromTable(table, $2);
-                                                      if (node != NULL) { MipsAssign(node, startReg); } else { yyerror("ID not found"); }
-                                                      
-                                                      // Declaring while and checking statement
-                                                      MipsWhile(NULL, 0U);
-                                                      Reg indexReg = MipsLoadVar(node);
-                                                      Reg endReg = MipsLoadImmediate(&($6));
-                                                      Reg resultReg = MipsRelOp(LT, indexReg, endReg);
-                                                      MipsWhile(&resultReg, 1U);
-                                                      MipsForEach(0U);
+                                                      if (node != NULL) 
+                                                      {
+                                                        MipsAssign(node, startReg);
+                                                        // Declaring while and checking statement
+                                                        MipsWhile(NULL, 0U);
+                                                        Reg indexReg = MipsLoadVar(node);
+                                                        Reg endReg = MipsLoadImmediate(&($6));
+                                                        Reg resultReg = MipsRelOp(LT, indexReg, endReg);
+                                                        MipsWhile(&resultReg, 1U);
+                                                        MipsForEach(0U);
+                                                      }
+                                                      else { yyerror("ID not found"); }
                                                     } WITH step { MipsForEach(1U); } stmt { MipsForEach(2U); MipsWhile(NULL, 3U); }
                 |   FOREACH ID ASSIGNOP NUM TILL ID{
                                                       // Loading startval and assigning to i
                                                       Reg startReg = MipsLoadImmediate(&($4));
                                                       Node* node = GetFromTable(table, $2);
-                                                      if (node != NULL) { MipsAssign(node, startReg); } else { yyerror("ID not found"); }
-                                                      
-                                                      // Declaring while and checking statement
-                                                      MipsWhile(NULL, 0U);
-                                                      Reg indexReg = MipsLoadVar(node);
-                                                      Node* endNode = GetFromTable(table, $6);
-                                                      if (endNode != NULL) 
-                                                      { 
-                                                        Reg endReg = MipsLoadVar(endNode);
-                                                        Reg resultReg = MipsRelOp(LT, indexReg, endReg);
-                                                        MipsWhile(&resultReg, 1U);
-                                                        MipsForEach(0U);
+                                                      if (node != NULL)
+                                                      {
+                                                        MipsAssign(node, startReg); 
+                                                        // Declaring while and checking statement
+                                                        MipsWhile(NULL, 0U);
+                                                        Reg indexReg = MipsLoadVar(node);
+                                                        Node* endNode = GetFromTable(table, $6);
+                                                        if (endNode != NULL) 
+                                                        { 
+                                                          Reg endReg = MipsLoadVar(endNode);
+                                                          Reg resultReg = MipsRelOp(LT, indexReg, endReg);
+                                                          MipsWhile(&resultReg, 1U);
+                                                          MipsForEach(0U);
+                                                        }
+                                                        else { yyerror("ID not found"); }
                                                       }
                                                       else { yyerror("ID not found"); }
                                                     } WITH step { MipsForEach(1U); } stmt { MipsForEach(2U); MipsWhile(NULL, 3U); }
@@ -317,7 +327,7 @@ factor          :   O_PARENTHESES expression C_PARENTHESES{ $$ = $2; }
                         }
                         else
                         {
-                          yyerror(strcat("ID does not exist: ", $1));
+                          yyerror("ID does not exist: ");
                         }
                       }
                 |   NUM { $$ = MipsLoadImmediate(&($1)); }
@@ -327,14 +337,25 @@ factor          :   O_PARENTHESES expression C_PARENTHESES{ $$ = $2; }
 
 int main(int argc, char** argv) 
 {
+  if (argc < 2)
+  {
+    printf("Not enough arguments argc = %d\n", argc);
+    return 1;
+  }
+
   // Openning files
 	extern FILE* yyin;
 	extern FILE* yyout;
-  yyin = fopen(argv[1], "r");
+
+  yyin = fopen(argv[1], "r"); // .cpl
   assert(yyin != NULL);
-  yyout = fopen(argv[2], "w");
+
+  strcpy(&argv[1][strlen(argv[1])-3], "lst");
+  yyout = fopen(argv[1], "w");
   assert(yyout != NULL);
-  mips = fopen(argv[3], "w");
+
+  strcpy(&argv[1][strlen(argv[1])-3], "s");
+  mips = fopen(argv[1], "w");
   assert(mips != NULL);
 
 	do
@@ -350,7 +371,7 @@ int main(int argc, char** argv)
   printf("Total Error Count: %zu\n", errorCount);
   if(errorCount > 0U)
   {
-    remove(argv[3]); // Removing compiled file in case of error
+    remove(argv[1]); // Removing compiled file in case of error
   }
 
   // Freeing

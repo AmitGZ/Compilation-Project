@@ -16,7 +16,7 @@ static const Node* SwitchNode = NULL;  /**< Switch Node, once switch is opened s
 
 bool IsAssignValid(Type type1, Type type2) 
 {
-    assert((type1 < TYPE_COUNT) && (type2 < TYPE_COUNT));
+    MY_ASSERT((type1 < TYPE_COUNT) && (type2 < TYPE_COUNT), "Invalid IsAssignValid", false)
 
     return (type1 == type2) || (type1 == FLOATING); 
 }
@@ -28,7 +28,7 @@ void MipsData()
     
 void MipsDecl(Type t, const char* id, const char* sval)
 {
-    assert((t < TYPE_COUNT) && (id != NULL) && (sval != NULL));
+    MY_ASSERT((t < TYPE_COUNT) && (id != NULL) && (sval != NULL), "Invalid MipsDecl",)
 
     const char* tStr = (t == FLOATING) ? "float" : "word";
     fprintf(mips, "%s:\t.%s %s\n", id, tStr, sval);
@@ -36,7 +36,7 @@ void MipsDecl(Type t, const char* id, const char* sval)
 
 void MipsIn(const Node* node)
 {
-    assert((node != NULL) && (node->_type < TYPE_COUNT));
+    MY_ASSERT((node != NULL) && (node->_type < TYPE_COUNT), "Invalid MipsIn",)
 
     fprintf(mips, "\n\t# read input\n");
     if (node->_type == STR)
@@ -68,7 +68,9 @@ void MipsIn(const Node* node)
 
 void MipsOut(const Reg* reg)
 {
-    assert((reg != NULL) && (reg->_type < TYPE_COUNT) && (reg->_name != NULL));
+    MY_ASSERT((reg != NULL) &&
+              (reg->_type < TYPE_COUNT) && 
+              (reg->_name != NULL), "Invalid MipsOut",)
 
     static const int OutTable[] = { 1, 2, 4 }; // INTEGER=0, FLOATING=1, STR=2
     static const char* CmdTable[] = { "move $a0", "mov.s $f12", "move $a0" };
@@ -77,13 +79,13 @@ void MipsOut(const Reg* reg)
                   "\tli $v0, %d   \n"\
                   "\t%s, %s       \n"\
                   "\tsyscall      \n", OutTable[reg->_type], CmdTable[reg->_type], reg->_name);
-
+//
 }
 
 Reg MipsMathOp(MathOp mathOp, Reg reg0, Reg reg1)
 {
-    assert(mathOp < MATH_OP_COUNT);
     Reg res;
+    MY_ASSERT(mathOp < MATH_OP_COUNT, "Invalid MipsMathOp", res)
 
     if ((reg0._type == STR) || (reg1._type == STR))
     {
@@ -99,12 +101,12 @@ Reg MipsMathOp(MathOp mathOp, Reg reg0, Reg reg1)
     {        
         if (reg0._type != FLOATING)
         {
-            reg0 = MipsCast(&reg0, FLOATING);
+            reg0 = MipsCast(reg0, FLOATING);
             res._name = reg1._name;
         }
         else if (reg1._type != FLOATING)
         {
-            reg1 = MipsCast(&reg1, FLOATING);
+            reg1 = MipsCast(reg1, FLOATING);
             res._name = reg0._name;
         }
         else
@@ -128,8 +130,8 @@ Reg MipsMathOp(MathOp mathOp, Reg reg0, Reg reg1)
 
 Reg MipsRelOp(RelOp relOp, Reg reg0, Reg reg1)
 {
-    assert(relOp < REL_OP_COUNT);
     Reg res;
+    MY_ASSERT(relOp < REL_OP_COUNT, "Invalid MipsRelOp", res)
 
     if ((reg0._type == STR) || (reg1._type == STR))
     {
@@ -144,8 +146,8 @@ Reg MipsRelOp(RelOp relOp, Reg reg0, Reg reg1)
     {        
         if (reg0._type != reg1._type)
         {
-            reg0 = MipsCast(&reg0, FLOATING);
-            reg1 = MipsCast(&reg1, FLOATING);
+            reg0 = MipsCast(reg0, FLOATING);
+            reg1 = MipsCast(reg1, FLOATING);
         }
         res._name = GetReg(INTEGER);
 
@@ -189,7 +191,9 @@ Reg MipsRelOp(RelOp relOp, Reg reg0, Reg reg1)
 
 void MipsAssign(const Node* node, Reg reg)
 {
-    assert((node != NULL) && (node->_type < TYPE_COUNT) && (reg._type < TYPE_COUNT));
+    MY_ASSERT((node != NULL) &&
+              (node->_type < TYPE_COUNT) &&
+              (reg._type < TYPE_COUNT), "Invalid MipsAssign",)
 
     if (node->_isConst || !IsAssignValid(node->_type, reg._type))
     {
@@ -199,7 +203,7 @@ void MipsAssign(const Node* node, Reg reg)
 
     if (node->_type != reg._type)
     {
-        reg = MipsCast(&reg, node->_type);
+        reg = MipsCast(reg, node->_type);
     }
 
     const char* assignInstruction = node->_type == FLOATING ? "s.s" : "sw";
@@ -210,8 +214,8 @@ void MipsAssign(const Node* node, Reg reg)
 
 Reg MipsLogOp(LogOp logOp, Reg reg0, Reg reg1)
 {
-    assert(logOp < LOG_OP_COUNT);
     Reg res;
+    MY_ASSERT(logOp < LOG_OP_COUNT, "Invalid MipsLogOp", res)
 
     if ((reg0._type == STR) || (reg1._type == STR))
     {
@@ -221,8 +225,8 @@ Reg MipsLogOp(LogOp logOp, Reg reg0, Reg reg1)
 
     if (reg0._type != reg1._type)
     {
-        reg0 = MipsCast(&reg0, FLOATING);
-        reg1 = MipsCast(&reg1, FLOATING);
+        reg0 = MipsCast(reg0, FLOATING);
+        reg1 = MipsCast(reg1, FLOATING);
     }
 
     res._type = ((reg0._type == FLOATING) || (reg1._type == FLOATING)) ? FLOATING : INTEGER;
@@ -250,10 +254,14 @@ void MipsMain()
 
 Reg MipsLoadVar(const Node* node)
 {
-    assert((node != NULL) && (node->_type < TYPE_COUNT) && (node->_name != NULL));
+    Reg reg;
+    MY_ASSERT((node != NULL) && 
+              (node->_type < TYPE_COUNT) &&
+              (node->_name != NULL), "Invalid MipsLoadVar", reg)
     
     Type t = node->_type;
-    Reg reg = { t, GetReg(t) };
+    reg._type = node->_type;
+    reg._name = GetReg(node->_type);
     
     const char* loadInstruction = t == FLOATING ? "l.s" : "lw";
     fprintf(mips, "\n\t%s %s, %s\n", loadInstruction, reg._name, node->_name);
@@ -263,53 +271,50 @@ Reg MipsLoadVar(const Node* node)
 
 Reg MipsLoadImmediate(const Val* val)
 {
-    assert((val != NULL) && (val->_type < TYPE_COUNT) && (val->_sval != NULL));
-    static size_t stringCount = 0U;
-    const char* str = "str";
     Reg reg;
-
-    switch(val->_type)
-    {
-        case STR:
-            reg._type = STR;
-            reg._name = GetReg(STR);
-            fprintf(mips, "\n\t.data\n"\
-                          "%s%zu: .asciiz %s\n"\
-	                      "\t.text\n", str, stringCount, val->_sval);
-
-            fprintf(mips, "\n\t# store pointer to string\n"\
-                          "\tla %s, %s%zu\n", reg._name, str, stringCount);
-
-            ++stringCount;
-            break;
+    MY_ASSERT((val != NULL) &&
+              (val->_type < TYPE_COUNT) &&
+              (val->_sval != NULL), "Invalid MipsLoadImmediate", reg)
         
-        case INTEGER:
-            reg._type = INTEGER;
-            reg._name = GetReg(INTEGER);
-            fprintf(mips, "\n\tli %s, %s\n", reg._name, val->_sval);
-            break;
+    static size_t StringCount = 0U;
+    const char* str = "str";
+    reg._type = val->_type;
+    reg._name = GetReg(val->_type);
 
-        default: // FLOATING
-            reg._type = FLOATING;
-            reg._name = GetReg(FLOATING);
-            float f = strtof(val->_sval, NULL);   // Converting string to float
-            int* x = (int*)&(f);                  // reinterpret_cast to int
-            const char* tmpReg = GetReg(INTEGER); // Getting tmp reg
-            
-            fprintf(mips, "\n\tli %s, 0x%x\n", tmpReg, (*x));
-            fprintf(mips, "\tmtc1 %s, %s\n", tmpReg, reg._name);
-            FreeReg(INTEGER);
-            break;
+    if (val->_type == STR)
+    {
+        fprintf(mips, "\n\t.data\n"\
+                        "%s%zu: .asciiz %s\n"\
+                        "\t.text\n", str, StringCount, val->_sval);
+
+        fprintf(mips, "\n\t# store pointer to string\n"\
+                        "\tla %s, %s%zu\n", reg._name, str, StringCount);
+
+        ++StringCount;
+    } 
+    else if (val->_type == INTEGER)
+    {
+        fprintf(mips, "\n\tli %s, %s\n", reg._name, val->_sval);
+    }
+    else // FLOATING
+    {
+        float f = strtof(val->_sval, NULL);   // Converting string to float
+        int* x = (int*)&(f);                  // reinterpret_cast to int
+        const char* tmpReg = GetReg(INTEGER); // Getting tmp reg
+        
+        fprintf(mips, "\n\tli %s, 0x%x\n", tmpReg, (*x));
+        fprintf(mips, "\tmtc1 %s, %s\n", tmpReg, reg._name);
+        FreeReg(INTEGER);
     }
     return reg;
 }
 
-Reg MipsCast(const Reg* reg, Type t)
+Reg MipsCast(Reg reg, Type t)
 {
-    assert((reg->_type < TYPE_COUNT) && (t < TYPE_COUNT));
+    MY_ASSERT((reg._type < TYPE_COUNT) && (t < TYPE_COUNT), "Invalid MipsCast", reg)
 
-    if (reg->_type == t)
-        return *reg;
+    if (reg._type == t)
+        return reg;
 
     Reg returnReg;
     if (t == FLOATING)
@@ -318,7 +323,7 @@ Reg MipsCast(const Reg* reg, Type t)
         returnReg._name = GetReg(FLOATING);
         fprintf(mips, "\n\t# Move integer value to floating-point register\n"\
                       "\tmtc1 %s, %s\n"\
-                      "\tcvt.s.w %s, %s\n", reg->_name, returnReg._name, returnReg._name, returnReg._name);
+                      "\tcvt.s.w %s, %s\n", reg._name, returnReg._name, returnReg._name, returnReg._name);
         FreeReg(INTEGER);
     }
     return returnReg;
@@ -326,7 +331,7 @@ Reg MipsCast(const Reg* reg, Type t)
 
 void MipsIf(const Reg* reg, uint32_t part)
 {
-    assert((part < 3U) && (reg != NULL));
+    MY_ASSERT((part < 3U) && (reg != NULL), "Invalid MipsIf",)
 
     if(part == 0U)
     {
@@ -346,7 +351,7 @@ void MipsIf(const Reg* reg, uint32_t part)
 
 void MipsForEach(uint32_t part)
 {
-    assert(part < 3U);
+    MY_ASSERT(part < 3U, "Invalid MipsForEach",)
 
     if(part == 0U)
     {
@@ -367,7 +372,7 @@ void MipsForEach(uint32_t part)
 
 void MipsWhile(const Reg* reg, uint32_t part)
 {
-    assert(part < 4U);
+    MY_ASSERT(part < 4U, "Invalid MipsWhile",)
 
     if (part == 0U)
     {
@@ -375,7 +380,7 @@ void MipsWhile(const Reg* reg, uint32_t part)
     }
     else if (part == 1U)
     {
-        assert(reg != NULL);
+        MY_ASSERT(reg != NULL, "Invalid MipsWhile",)
         fprintf(mips,"\n\tbeq %s, $zero, endwhile_%zu\n", reg->_name, WhileIndex);
     }
     else if (part == 2U)
@@ -411,7 +416,7 @@ void MipsCase(Val* val, bool start)
 {
     if (start)
     {
-        assert(val != NULL);
+        MY_ASSERT((val != NULL) && (SwitchNode != NULL), "Invalid MipsCase",)
         fprintf(mips, "\ncase_%zu_%zu:\n", SwitchIndex, CaseIndex);
         Reg reg0 = MipsLoadVar(SwitchNode);
         Reg reg1 = MipsLoadImmediate(val);
@@ -428,21 +433,21 @@ void MipsCase(Val* val, bool start)
 
 const char* GetReg(Type t)
 {
-    assert(t < TYPE_COUNT);
+    MY_ASSERT(t < TYPE_COUNT, "Invalid GetReg", "")
 
     if (t == INTEGER)
     {
-        assert(RegTrackerInteger < TmpRegCount);
+        MY_ASSERT(RegTrackerInteger < TmpRegCount, "Invalid GetReg INTEGER", "")
         return IntTmpRegs[RegTrackerInteger++];
     }
     if (t == FLOATING)
     {
-        assert(RegTrackerFloat < TmpRegCount);
+        MY_ASSERT(RegTrackerFloat < TmpRegCount, "Invalid GetReg FLOATING", "")
         return FloatTmpRegs[RegTrackerFloat++];
     }
     else // STRING
     {
-        assert(RegTrackerInteger < TmpRegCount);
+        MY_ASSERT(RegTrackerInteger < TmpRegCount, "Invalid GetReg STRING", "")
         return IntTmpRegs[RegTrackerInteger++];
     }
     
@@ -450,16 +455,16 @@ const char* GetReg(Type t)
 
 void FreeReg(Type t)
 {
-    assert(t < TYPE_COUNT);
+    MY_ASSERT(t < TYPE_COUNT, "Invalid FreeReg",)
 
     if (t == INTEGER)
     {
-        assert(RegTrackerInteger != 0U);
+        MY_ASSERT(RegTrackerInteger != 0U, "Invalid FreeReg Integer",)
         --RegTrackerInteger;
     }
     if (t == FLOATING)
     {
-        assert(RegTrackerFloat != 0U);
+        MY_ASSERT(RegTrackerFloat != 0U, "Invalid FreeReg Floating",)
         --RegTrackerFloat;
     }
 }

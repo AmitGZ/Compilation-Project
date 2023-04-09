@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 #include "MyStructs.h"
 #include "Hash.h"
 
@@ -91,7 +90,7 @@ Reg MipsLoadImmediate(const Val* val);
  * @param t Type to cast to
  * @return Reg Casted register
  */
-Reg MipsCast(const Reg* reg, Type t);
+Reg MipsCast(Reg reg, Type t);
 
 /**
  * @brief Initializes main section label in mips file

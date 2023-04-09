@@ -3,14 +3,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 #include "MyStructs.h"
 
-extern int yylineno;            /**< Parse error line index*/
-extern size_t errorCount;       /**< Total error count */
+#define MY_ASSERT(exp, desc, retVal) if(!(exp)) { printf("SW Error | file: %s, line: %d, %s\n", __FILE__, __LINE__, (desc)); return retVal; }
 
 #define TABLE_SIZE 100
 #define BUFFER_SIZE 256
+
+extern int yylineno;            /**< Parse error line index*/
+extern size_t errorCount;       /**< Total error count */
 
 typedef struct node 
 {

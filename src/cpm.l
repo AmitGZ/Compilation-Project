@@ -2,7 +2,7 @@
 %option yylineno
 %{
 #include "MyStructs.h"
-#include "calc.tab.h"
+#include "cpm.tab.h"
 #include <string.h>
 
 // Global variables

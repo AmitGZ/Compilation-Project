@@ -4,9 +4,8 @@
 4.     string: ID(a), ID(y), ID(i);
 5. final real ID(amit) = NUM(5.8);
 6. 
-7.     ID(amit) = NUM(5.2);
-8.     ID(b) = ID(amit)*NUM(4.0);
-9.     out(ID(amit));
-10.     out(ID(b));
-11. 
-12. end
+7.     ID(b) = ID(amit)*NUM(4.0);
+8.     out(ID(amit));
+9.     out(ID(b));
+10. 
+11. end

@@ -1,7 +1,7 @@
 .vscode
 *.DS_Store
-calc.tab.c
-calc.tab.h
-calc
-calc.output
+cpm.tab.c
+cpm.tab.h
+cpm
+cpm.output
 lex.yy.c
