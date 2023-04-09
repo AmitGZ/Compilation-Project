@@ -5,7 +5,14 @@
 #include <string.h>
 #include "MyStructs.h"
 
+/**
+ * @brief Used to assert function inpus
+ * @param exp Boolean expression to assert
+ * @param desc Description to print in case of fail
+ * @return retVal Value to return if assert fails
+ */
 #define MY_ASSERT(exp, desc, retVal) if(!(exp)) { printf("SW Error | file: %s, line: %d, %s\n", __FILE__, __LINE__, (desc)); return retVal; }
+#define VOID_VAL 
 
 #define TABLE_SIZE 100
 #define BUFFER_SIZE 256
@@ -46,8 +53,9 @@ Node* GetFromTable(const Bucket* table, const char* name);
  * @param id variable name
  * @param t variable type (STR/FLOAING/INTEGER)
  * @param isConst Is variable constant
+ * @return bool Is insertion successful
  */
-void InsertToTable(Bucket* table, const char* id, Type t, bool isConst);
+bool InsertToTable(Bucket* table, const char* id, Type t, bool isConst);
 
 /**
  * @brief Helper function to check if variable assign is valid

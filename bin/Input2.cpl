@@ -1,9 +1,8 @@
 program ForPrint 
 start
-decl int: a;
+decl int: a, i;
     string: d;
         d="Pls enter a number ";
-	  out(i);
         in(a);  
         /* Printing numbers between 1 and a*/
   	  foreach i=1 till a with i=i+1

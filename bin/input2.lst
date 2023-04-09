@@ -1,12 +1,12 @@
+Amit Zohar, Ofek Ben Atar
 1. program ID(ForPrint) 
 2. start
-3. decl int: ID(a);
+3. decl int: ID(a), ID(i);
 4.     string: ID(d);
 5.         ID(d)="Pls enter a number ";
-6. 	  out(ID(i));
-7.         in(ID(a));  
-8.         COMMENT
-9.   	  foreach ID(i)= 1 till ID(a) with ID(i)=ID(i) + 1
-10. 		out(ID(i));  
-11. end
-12. 
+6.         in(ID(a));  
+7.         COMMENT
+8.   	  foreach ID(i)= 1 till ID(a) with ID(i)=ID(i) + 1
+9. 		out(ID(i));  
+10. end
+11. 

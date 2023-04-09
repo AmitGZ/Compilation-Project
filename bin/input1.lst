@@ -1,11 +1,9 @@
+Amit Zohar, Ofek Ben Atar
 1. program  ID(Min)  COMMENT
 2. start
 3. decl real : ID(b),ID(c),ID(e),ID(f);
 4.     string: ID(a), ID(y), ID(i);
 5. final real ID(amit) = NUM(5.8);
 6. 
-7.     ID(b) = ID(amit)*NUM(4.0);
-8.     out(ID(amit));
-9.     out(ID(b));
-10. 
-11. end
+7. 
+8. end

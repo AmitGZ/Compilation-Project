@@ -25,8 +25,7 @@ static RelOp GetRelOp(const char* s)
 	if (strcmp(s, ">") == 0U)
 		return GT;
 
-	// TODO Handle exception
-	return EQ;
+	return -1;
 }
 
 static MathOp GetMathOp(const char* s)
@@ -40,8 +39,7 @@ static MathOp GetMathOp(const char* s)
 	if (strcmp(s, "-") == 0U)
 		return SUB;
 
-	// TODO Handle exception
-	return DIV;
+	return -1;
 }
 
 %}
@@ -51,8 +49,8 @@ DIGIT [0-9]
 SPACES [ \t\n\r]
 
 %%
-\/\*.*\*\/	{ fprintf(yyout, "COMMENT");  col += strlen(yytext);                          }
-[\n] 		{ fprintf(yyout, "\n%zu. ", ++line); col = 0U;                                }
+\/\*.*\*\/	{ fprintf(yyout, "COMMENT");  col += strlen(yytext);                            }
+[\n] 		{ fprintf(yyout, "\n%zu. ", ++line); col = 0U;                                  }
 "break" 	{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return BREAK;         }
 "case" 		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return CASE;          }
 "final" 	{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return FINAL;         }
@@ -66,7 +64,7 @@ SPACES [ \t\n\r]
 "in" 		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return IN;            }
 "int" 		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return INT;           }
 "out" 		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return OUT;           }
-"program" 	{ fprintf(yyout, "1. %s", yytext); col += strlen(yytext); return PROGRAM;       }
+"program" 	{ fprintf(yyout, "Amit Zohar, Ofek Ben Atar\n1. %s", yytext); col += strlen(yytext); return PROGRAM;       }
 "real" 		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return REAL;          }
 "start"		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return START;         }
 "string"	{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return STRING;        }
@@ -85,7 +83,7 @@ SPACES [ \t\n\r]
 ";" 		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return SEMICOLON;     }
 
 \"({LETTER}|\.|,|\!|\?|{SPACES}|{DIGIT})*\" {
-	fprintf(yyout,"%s",yytext);
+	fprintf(yyout, "%s", yytext);
 	col += strlen(yytext);
 	yylval._val._sval = strdup(yytext);
 	yylval._val._type = STR;
@@ -93,14 +91,14 @@ SPACES [ \t\n\r]
 	}
 
 {LETTER}({LETTER}|{DIGIT}){0,8} {
-	fprintf(yyout,"ID(%s)",yytext);
+	fprintf(yyout, "ID(%s)", yytext);
 	col += strlen(yytext);
 	yylval._name = strdup(yytext);
 	return ID;
 	}
 
 {DIGIT}+ 	{
-	fprintf(yyout," %s",yytext); 
+	fprintf(yyout, " %s", yytext); 
 	col += strlen(yytext);
 	yylval._val._sval = strdup(yytext);
 	yylval._val._type = INTEGER; 
@@ -108,7 +106,7 @@ SPACES [ \t\n\r]
 	}
 
 {DIGIT}+\.{DIGIT}* {
-	fprintf(yyout,"NUM(%s)",yytext);
+	fprintf(yyout, "NUM(%s)", yytext);
 	col += strlen(yytext);
 	yylval._val._sval = strdup(yytext);
 	yylval._val._type = FLOATING; 
@@ -116,29 +114,29 @@ SPACES [ \t\n\r]
 	}
 
 (==|<>|<=|>=|<|>) {
-	fprintf(yyout," %s",yytext);
+	fprintf(yyout, " %s", yytext);
 	col += strlen(yytext);
 	yylval._relOp = GetRelOp(strdup(yytext));
 	return RELOP;
 	}
 
 (\+|-) {
-	fprintf(yyout," %s",yytext);
+	fprintf(yyout, " %s", yytext);
 	col += strlen(yytext);
 	yylval._mathOp = GetMathOp(strdup(yytext));
 	return ADDOP;
 	}
 
 (\*|\/) {
-	fprintf(yyout,"%s",yytext);
+	fprintf(yyout, "%s", yytext);
 	col += strlen(yytext);
 	yylval._mathOp = GetMathOp(strdup(yytext));
 	return MULOP;
 	}
 
 = 		 { fprintf(yyout,"%s", yytext); col += strlen(yytext); return ASSIGNOP; }
-\|\|	 { fprintf(yyout,"%s", yytext); col += strlen(yytext); return OROP; }
-&& 		 { fprintf(yyout,"%s", yytext); col += strlen(yytext); return ANDOP; }
-{SPACES} { fprintf(yyout,"%s", yytext); col += strlen(yytext); }
-. 		 { fprintf(yyout,"%s", yytext); printf("Lex error: %s, line: %zu, col: %zu\n", yytext, line, col); errorCount++; } // Error
+\|\|	 { fprintf(yyout,"%s", yytext); col += strlen(yytext); return OROP;     }
+&& 		 { fprintf(yyout,"%s", yytext); col += strlen(yytext); return ANDOP;    }
+{SPACES} { fprintf(yyout,"%s", yytext); col += strlen(yytext);                  }
+. 		 { fprintf(yyout,"%s", yytext); fprintf(stderr, "Lex error: %s, line: %zu, col: %zu\n", yytext, line, col); errorCount++; } // Error
 %%

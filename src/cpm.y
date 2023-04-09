@@ -10,13 +10,13 @@
 // Logical operations (NOR) not tested
 // Create error file
 // main in cpm.c or cpm.y?
+// Can i assign string to float?
 
 
 // Tested:
 // String assignments
 
 // Questions
-// Can we use .cpp?
 // Can we use TABLE_SIZE for hash table?
 
 #include "MyStructs.h"
@@ -164,7 +164,7 @@ stmt            :   assignment_stmt {}
                                                     }
                                                     else
                                                     {
-                                                      yyerror(strcat("ID does not exist: ", $1));
+                                                      yyerror("ID does not exist: ");
                                                     }
                                                   }
                 |   control_stmt {}
@@ -337,9 +337,18 @@ factor          :   O_PARENTHESES expression C_PARENTHESES{ $$ = $2; }
 
 int main(int argc, char** argv) 
 {
+  // Writing student names
+  fprintf(stderr, "Ofek Ben Atar, Amit Zohar\n");
+
   if (argc < 2)
   {
-    printf("Not enough arguments argc = %d\n", argc);
+    fprintf(stderr, "Not enough arguments argc = %d\n", argc);
+    return 1;
+  }
+
+  if (strlen(argv[1]) < 4)
+  {
+    fprintf(stderr, "Invalid file name = %s\n", argv[1]);
     return 1;
   }
 
@@ -347,17 +356,21 @@ int main(int argc, char** argv)
 	extern FILE* yyin;
 	extern FILE* yyout;
 
-  yyin = fopen(argv[1], "r"); // .cpl
+  // Openning .cpl file
+  yyin = fopen(argv[1], "r");
   assert(yyin != NULL);
 
-  strcpy(&argv[1][strlen(argv[1])-3], "lst");
+  // Openning .lst file
+  strcpy(&argv[1][strlen(argv[1]) - 3], "lst");
   yyout = fopen(argv[1], "w");
   assert(yyout != NULL);
 
-  strcpy(&argv[1][strlen(argv[1])-3], "s");
+  // Openning .s file
+  strcpy(&argv[1][strlen(argv[1]) - 3], "s");
   mips = fopen(argv[1], "w");
   assert(mips != NULL);
 
+  fprintf(mips, "# Compiled by Amit Zohar & Ofek Ben Atar\n");
 	do
 	{
 		yyparse();
@@ -368,10 +381,11 @@ int main(int argc, char** argv)
   fclose(yyin);
   fclose(yyout);
 
-  printf("Total Error Count: %zu\n", errorCount);
+  // Printing error count and removing compiled file if errors
+  fprintf(stderr, "Total Error Count: %zu\n", errorCount);
   if(errorCount > 0U)
   {
-    remove(argv[1]); // Removing compiled file in case of error
+    remove(argv[1]);
   }
 
   // Freeing

@@ -29,15 +29,15 @@ Node* GetFromTable(const Bucket* table, const char* name)
     return NULL; // Key not found
 }
 
-void InsertToTable(Bucket* table, const char* id, Type t, bool isConst)
+bool InsertToTable(Bucket* table, const char* id, Type t, bool isConst)
 {
-    MY_ASSERT((table != NULL) && (id != NULL) && (t < TYPE_COUNT), "invalid InsertToTable",)
+    MY_ASSERT((table != NULL) && (id != NULL) && (t < TYPE_COUNT), "invalid InsertToTable", false)
 
     Node* tmp = GetFromTable(table, id);
     if (GetFromTable(table, id) != NULL)
     {
-        yyerror(strcat("Redeclaration of variable: ", id)); // Variable name already exists
-        return;
+        yyerror("Redeclaration of variable: "); // Variable name already exists
+        return false;
     }
     int index = Hash(id);
     Node *new_node = (Node*) malloc(sizeof(Node));
@@ -46,11 +46,12 @@ void InsertToTable(Bucket* table, const char* id, Type t, bool isConst)
     new_node->_type = t;
     new_node->_next = table[index]._head;
     table[index]._head = new_node;
+    return true;
 }
 
 void FreeBucket(Bucket* bucket) 
 {
-    MY_ASSERT(bucket != NULL, "Invalid FreeBucket",)
+    MY_ASSERT(bucket != NULL, "Invalid FreeBucket", VOID_VAL)
 
     Node *current = bucket->_head;
     while (current != NULL)
@@ -64,7 +65,7 @@ void FreeBucket(Bucket* bucket)
 
 void FreeTable(Bucket* table) 
 {
-    MY_ASSERT(table != NULL, "Invalid FreeTable",)
+    MY_ASSERT(table != NULL, "Invalid FreeTable", VOID_VAL)
 
     for (int i = 0; i < TABLE_SIZE; i++) 
     {
@@ -75,5 +76,5 @@ void FreeTable(Bucket* table)
 void yyerror(const char* str)
 {
     errorCount++;
-	fprintf(stderr, "Error | Line: %d,\t%s\n", yylineno, str);
+	fprintf(stderr, "Error    | Line: %d,\t%s\n", yylineno, str);
 }
