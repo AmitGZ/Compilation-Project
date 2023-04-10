@@ -1,25 +1,9 @@
 #pragma once
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <stdarg.h>
 #include "MyStructs.h"
+#include <stdlib.h>
+#include <string.h>
 
-/**
- * @brief Used to assert function inpus
- * @param exp Boolean expression to assert
- * @param desc Description to print in case of fail
- * @return retVal Value to return if assert fails
- */
-#define MY_ASSERT(exp, desc, retVal) if(!(exp)) { printf("SW Error | file: %s, line: %d, %s\n", __FILE__, __LINE__, (desc)); return retVal; }
-#define VOID_VAL 
-
-#define TABLE_SIZE 100
-#define BUFFER_SIZE 256
-
-extern int yylineno;            /**< Parse error line index*/
-extern size_t errorCount;       /**< Total error count */
+#define TABLE_SIZE 500
 
 typedef struct node 
 {
@@ -77,9 +61,3 @@ void FreeBucket(Bucket* bucket);
  * @param table table to free
  */
 void FreeTable(Bucket* table);
-
-/**
- * @brief throws error
- * @param str error description
- */
-void yyerror(const char* str, ...);

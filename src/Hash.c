@@ -36,7 +36,7 @@ bool InsertToTable(Bucket* table, const char* id, Type t, bool isConst)
     Node* tmp = GetFromTable(table, id);
     if (GetFromTable(table, id) != NULL)
     {
-        yyerror("Redeclaration of variable: %s", id); // Variable name already exists
+        yyerror("Redeclaration of variable: \"%s\"", id); // Variable name already exists
         return false;
     }
     int index = Hash(id);
@@ -71,20 +71,4 @@ void FreeTable(Bucket* table)
     {
         FreeBucket(&table[i]);
     }
-}
-
-void yyerror(const char* format, ...)
-{
-    // Incrementing error count
-    errorCount++;
-    
-    // Printing to stderr
-	fprintf(stderr, "Error    | Line: %d,\t", yylineno);
-    
-    va_list args;
-    va_start(args, format);
-    vfprintf(stderr, format, args);
-    va_end(args);
-
-	fprintf(stderr, "\n");
 }

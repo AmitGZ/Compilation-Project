@@ -3,7 +3,6 @@
 %{
 #include "MyStructs.h"
 #include "cpm.tab.h"
-#include <string.h>
 
 // Global variables
 size_t errorCount = 0U;
@@ -64,7 +63,7 @@ SPACES [ \t\n\r]
 "in" 		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return IN;            }
 "int" 		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return INT;           }
 "out" 		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return OUT;           }
-"program" 	{ fprintf(yyout, "Amit Zohar, Ofek Ben Atar\n1. %s", yytext); col += strlen(yytext); return PROGRAM;       }
+"program" 	{ fprintf(yyout, "Amit Zohar 313307720, Ofek Ben Atar 322208430\n1. %s", yytext); col += strlen(yytext); return PROGRAM;       }
 "real" 		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return REAL;          }
 "start"		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return START;         }
 "string"	{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return STRING;        }
@@ -138,5 +137,5 @@ SPACES [ \t\n\r]
 \|\|	 { fprintf(yyout,"%s", yytext); col += strlen(yytext); return OROP;     }
 && 		 { fprintf(yyout,"%s", yytext); col += strlen(yytext); return ANDOP;    }
 {SPACES} { fprintf(yyout,"%s", yytext); col += strlen(yytext);                  }
-. 		 { fprintf(yyout,"%s", yytext); fprintf(stderr, "Lex error: %s, line: %zu, col: %zu\n", yytext, line, col); errorCount++; } // Error
+. 		 { fprintf(yyout,"%s", yytext); yyerror("Error Lex| %s, line: %zu, col: %zu", yytext, line, col); errorCount++; } // Error
 %%

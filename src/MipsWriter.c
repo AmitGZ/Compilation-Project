@@ -238,7 +238,7 @@ Reg MipsLogOp(LogOp logOp, Reg reg0, Reg reg1)
 
     if ((reg0._type == STR) || (reg1._type == STR))
     {
-        yyerror("can't perform arithmetic operations on string");
+        yyerror("can't perform logical operations on string");
         return res;
     }
 

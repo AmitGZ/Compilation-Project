@@ -1,4 +1,4 @@
-# Compiled by Amit Zohar & Ofek Ben Atar
+# Compiled by Amit Zohar 313307720 & Ofek Ben Atar 322208430
 	.data
 i:	.word 0
 a:	.word 0

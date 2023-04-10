@@ -1,13 +1,13 @@
-Amit Zohar, Ofek Ben Atar
+Amit Zohar 313307720, Ofek Ben Atar 322208430
 1. program  ID(Min)  COMMENT
 2. start
-3. decl int : ID(b),ID(c),ID(e),ID(f), ID(b);
+3. decl int : ID(b),ID(c),ID(e),ID(f);
 4.     string: ID(a), ID(y), ID(i);
-5. final real ID(amit) = NUM(5.8);
+5. final string ID(amit) = NUM(5.2);
 6.     in(ID(b));
 7.     in(ID(c));
 8.     if (ID(gg)  > ID(c)) 
-9.     then out(ID(b));
+9.     then out(ID(ggd));
 10.     else     	
 11.     out(ID(c));
 12. 
