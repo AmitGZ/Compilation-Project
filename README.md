@@ -13,16 +13,16 @@ The CPL (Compiler Project Language) is a compiler that translates source code wr
 ```bash
 $ cd src
 $ make all
-$ make compile file=input1.txt
+$ make compile file=<filename>.txt
 ```
 
 ### manually
 
 ```bash
-flex cpm.l
-bison -t -d cpm.y
-gcc -o ../bin/cpm cpm.tab.c lex.yy.c MipsWriter.c Hash.c
-cd ../bin
-./cpm “<filename>.cpl”
+$ flex cpm.l
+$ bison -t -d cpm.y
+$ gcc -o ../bin/cpm cpm.tab.c lex.yy.c MipsWriter.c Hash.c
+$ cd ../bin
+$ ./cpm “<filename>.cpl”
 ```
 
