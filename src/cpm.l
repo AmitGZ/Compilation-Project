@@ -3,6 +3,7 @@
 %{
 #include "MyStructs.h"
 #include "cpm.tab.h"
+#include <string.h>
 
 // Global variables
 size_t errorCount = 0U;

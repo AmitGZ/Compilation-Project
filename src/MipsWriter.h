@@ -1,5 +1,7 @@
 #pragma once
 #include "Hash.h"
+#include <stdint.h>
+#include <string.h>
 
 /**
  * @brief Ask the user for input
