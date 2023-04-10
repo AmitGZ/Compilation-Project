@@ -204,7 +204,6 @@ void MipsAssign(const Node* node, Reg reg)
               (node->_type < TYPE_COUNT) &&
               (reg._type < TYPE_COUNT), "Invalid MipsAssign", VOID_VAL)
 
-    
     // Validating assignment is valid
     if (node->_isConst)
     {
@@ -279,6 +278,7 @@ Reg MipsLoadVar(const Node* node)
     MY_ASSERT((node != NULL) && 
               (node->_type < TYPE_COUNT) &&
               (node->_name != NULL), "Invalid MipsLoadVar", reg)
+    
     // Allocating register
     Type t = node->_type;
     reg._type = node->_type;

@@ -3,7 +3,7 @@ start
 decl int: a, i;
     string: d;
         d="Pls enter a number ";
-        in(a);  
+        in(g);  
         /* Printing numbers between 1 and a*/
   	  foreach i=1 till a with i=i+1
 		out(i);  

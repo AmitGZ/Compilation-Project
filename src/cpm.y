@@ -413,7 +413,7 @@ int main(int argc, char** argv)
   fclose(yyout);
 
   // Printing error count and removing compiled file if errors
-  fprintf(stderr, "Total Error Count: %zu\n", errorCount);
+  fprintf(stderr, "\nTotal Error Count: %zu\n", errorCount);
   if(errorCount > 0U)
   {
     remove(argv[1]);
