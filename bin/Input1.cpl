@@ -1,6 +1,6 @@
 program  Min  /* Finding minimum between two numbers */
 start
-decl int : b,c,e,f;
+decl int : b,c,e,f, b;
     string: a, y, i;
 final real amit = 5.8;
     in(b);

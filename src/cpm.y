@@ -1,10 +1,7 @@
 %{
 // TODO
-// Const declaration
-// Const forbid assignment
 // README
 // Assigning float to int?
-// File output format for lexer?
 // MipsCast finish all types
 // Check if we can fix switch lw every case
 // Create error file?
@@ -13,10 +10,14 @@
 // .lst, how should we copy the program to lst? (with or without COMMENT)
 // Add id 313307720
 
-
 // Tested:
+// Const forbid assignment
 // String assignments
 // Logical operations (NOT)
+// Const declaration
+
+// Done:
+// File output format for lexer?
 
 // Questions
 // Can we use TABLE_SIZE for hash table?
@@ -145,7 +146,7 @@ cdecl           :   FINAL type ID ASSIGNOP NUM SEMICOLON cdecl{
                                                                 }
                                                                 else
                                                                 {
-                                                                  // yyerror("Invalid type conversion, cannot convert variable: \"%s\" of type %s to \"%s\"" , my_reg._name, my_reg._type, my_type);
+                                                                  yyerror("Invalid type conversion, cannot convert variable: \"%s\" of type %s to \"%s\"" , id, my_type, val._type);
                                                                 }
                                                               }
                 | {}
@@ -166,7 +167,7 @@ stmt            :   assignment_stmt {}
                                                     }
                                                     else
                                                     {
-                                                      yyerror("ID does not exist: ");
+                                                      yyerror("ID does not exist: %s", $1);
                                                     }
                                                   }
                 |   control_stmt {}
@@ -186,7 +187,7 @@ in_stmt         :   IN O_PARENTHESES ID C_PARENTHESES SEMICOLON {
                                                                   Node* node = GetFromTable(table, $3);
                                                                   if (node == NULL) 
                                                                   {
-                                                                    yyerror("ID does not exist"); 
+                                                                    yyerror("ID does not exist %s", $3); 
                                                                   }
                                                                   else
                                                                   {
@@ -225,7 +226,7 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                         MipsWhile(&resultReg, 1U);
                                                         MipsForEach(0U);
                                                       }
-                                                      else { yyerror("ID not found"); }
+                                                      else { yyerror("ID not found %s", $2); }
                                                     } WITH step { MipsForEach(1U); } stmt { MipsForEach(2U); MipsWhile(NULL, 3U); }
                 |   FOREACH ID ASSIGNOP NUM TILL ID{
                                                       // Loading startval and assigning to i
@@ -245,9 +246,9 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                           MipsWhile(&resultReg, 1U);
                                                           MipsForEach(0U);
                                                         }
-                                                        else { yyerror("ID not found"); }
+                                                        else { yyerror("ID not found %s", $4); }
                                                       }
-                                                      else { yyerror("ID not found"); }
+                                                      else { yyerror("ID not found %s", $2); }
                                                     } WITH step { MipsForEach(1U); } stmt { MipsForEach(2U); MipsWhile(NULL, 3U); }
                 |   _switch {  }
 
@@ -262,7 +263,7 @@ _switch         :   SWITCH O_PARENTHESES ID C_PARENTHESES {
                                                             }
                                                             else
                                                             {
-                                                              yyerror("ID not found");
+                                                              yyerror("ID not found %s", $3);
                                                             }
                                                           } O_BRACKET cases C_BRACKET { MipsSwitch(NULL, false); }
                 ;
@@ -285,7 +286,14 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                               }
                                               else
                                               {
-                                                yyerror("ID not found");
+                                                if (node0 == NULL)
+                                                {
+                                                  yyerror("ID not found %s", $1);
+                                                }
+                                                if (node1 == NULL)
+                                                {
+                                                  yyerror("ID not found %s", $3);
+                                                }
                                               }
                                             }
 	              |   ID ASSIGNOP ID MULOP NUM{ 
@@ -302,7 +310,14 @@ step            :   ID ASSIGNOP ID ADDOP NUM{
                                               }
                                               else
                                               {
-                                                yyerror("ID not found");
+                                                if (node0 == NULL)
+                                                {
+                                                  yyerror("ID not found %s", $1);
+                                                }
+                                                if (node1 == NULL)
+                                                {
+                                                  yyerror("ID not found %s", $3);
+                                                }
                                               }
                                             }
                 ;
@@ -336,7 +351,7 @@ factor          :   O_PARENTHESES expression C_PARENTHESES{ $$ = $2; }
                         }
                         else
                         {
-                          yyerror("ID does not exist: ");
+                          yyerror("ID does not exist %s\n", $1);
                         }
                       }
                 |   NUM { $$ = MipsLoadImmediate(&($1)); }

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdarg.h>
 #include "MyStructs.h"
 
 /**
@@ -81,5 +82,4 @@ void FreeTable(Bucket* table);
  * @brief throws error
  * @param str error description
  */
-void yyerror(const char* str);
-
+void yyerror(const char* str, ...);

@@ -41,7 +41,7 @@ void MipsIn(const Node* node)
 
     if (node->_isConst)
     {
-        yyerror("Can't assign input to const");
+        yyerror("Can't assign input to const variable \"$s\"", node->_name);
         return;
     }
 
@@ -206,9 +206,15 @@ void MipsAssign(const Node* node, Reg reg)
 
     
     // Validating assignment is valid
-    if (node->_isConst || !IsAssignValid(node->_type, reg._type))
+    if (node->_isConst)
     {
-        yyerror("Invalid assignment ");
+        yyerror("Invalid assignment to const variable \"%s\"", node->_name);
+        return;
+    }
+
+    if (!IsAssignValid(node->_type, reg._type))
+    {
+        yyerror("Invalid type assignment \"%s\"", node->_name);
         return;
     }
 

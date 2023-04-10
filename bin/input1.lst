@@ -1,7 +1,7 @@
 Amit Zohar, Ofek Ben Atar
 1. program  ID(Min)  COMMENT
 2. start
-3. decl int : ID(b),ID(c),ID(e),ID(f);
+3. decl int : ID(b),ID(c),ID(e),ID(f), ID(b);
 4.     string: ID(a), ID(y), ID(i);
 5. final real ID(amit) = NUM(5.8);
 6.     in(ID(b));
