@@ -1,8 +1,13 @@
 program  Min  /* Finding minimum between two numbers */
 start
-decl real : b,c,e,f;
+decl int : b,c,e,f;
     string: a, y, i;
 final real amit = 5.8;
-
+    in(b);
+    in(c);
+    if (gg > c) 
+    then out(b);
+    else     	
+    out(c);
 
 end

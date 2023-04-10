@@ -7,14 +7,16 @@
 // File output format for lexer?
 // MipsCast finish all types
 // Check if we can fix switch lw every case
-// Logical operations (NOR) not tested
-// Create error file
+// Create error file?
 // main in cpm.c or cpm.y?
 // Can i assign string to float?
+// .lst, how should we copy the program to lst? (with or without COMMENT)
+// Add id 313307720
 
 
 // Tested:
 // String assignments
+// Logical operations (NOT)
 
 // Questions
 // Can we use TABLE_SIZE for hash table?
@@ -182,7 +184,14 @@ out_stmt        :   OUT O_PARENTHESES expression C_PARENTHESES SEMICOLON { MipsO
 
 in_stmt         :   IN O_PARENTHESES ID C_PARENTHESES SEMICOLON { 
                                                                   Node* node = GetFromTable(table, $3);
-                                                                  MipsIn(node); 
+                                                                  if (node == NULL) 
+                                                                  {
+                                                                    yyerror("ID does not exist"); 
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                    MipsIn(node); 
+                                                                  }
                                                                 }
                 ;
 
@@ -306,7 +315,7 @@ boolterm        :   boolterm ANDOP boolfactor { $$ = MipsLogOp(AND, $1, $3); }
                 |   boolfactor { $$ = $1; }
                 ;
         
-boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES{ $$ = MipsLogOp(AND, $3, ZeroReg); }
+boolfactor      :   EXCLAMATION O_PARENTHESES boolfactor C_PARENTHESES{ $$ = MipsLogOp(NOR, $3, ZeroReg); /* NOR ZERO = NOT */ }
                 |   expression RELOP expression { $$ = MipsRelOp($2, $1, $3); }
                 ;  
 
@@ -346,7 +355,7 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  if (strlen(argv[1]) < 4)
+  if (strlen(argv[1]) < 4 || strcmp(&argv[1][strlen(argv[1]) - 4], ".cpl"))
   {
     fprintf(stderr, "Invalid file name = %s\n", argv[1]);
     return 1;
@@ -358,19 +367,33 @@ int main(int argc, char** argv)
 
   // Openning .cpl file
   yyin = fopen(argv[1], "r");
-  assert(yyin != NULL);
+  if (yyin == NULL)
+  {
+    fprintf(stderr, "Error openning file: %s", argv[1]);
+    return 1;
+  }
 
   // Openning .lst file
   strcpy(&argv[1][strlen(argv[1]) - 3], "lst");
   yyout = fopen(argv[1], "w");
-  assert(yyout != NULL);
+  if (yyout == NULL)
+  {
+    fprintf(stderr, "Error openning file: %s", argv[1]);
+    return 1;
+  }
 
   // Openning .s file
   strcpy(&argv[1][strlen(argv[1]) - 3], "s");
   mips = fopen(argv[1], "w");
-  assert(mips != NULL);
+  if (mips == NULL)
+  {
+    fprintf(stderr, "Error openning file: %s", argv[1]);
+    return 1;
+  }
 
+  // Printing signature line
   fprintf(mips, "# Compiled by Amit Zohar & Ofek Ben Atar\n");
+
 	do
 	{
 		yyparse();

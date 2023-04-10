@@ -15,7 +15,7 @@ static size_t StringCount        = 0U; /**< String indexer  (used to avoid label
 
 static const Node* SwitchNode = NULL;  /**< Switch Node, once switch is opened stores the node pointer */
 
-bool IsAssignValid(Type type1, Type type2) 
+bool IsAssignValid(Type type1, Type type2)
 {
     MY_ASSERT((type1 < TYPE_COUNT) && (type2 < TYPE_COUNT), "Invalid IsAssignValid", false)
 
@@ -419,7 +419,7 @@ void MipsSwitch(const Node* node, bool start)
     {
         MY_ASSERT(node != NULL, "Invalid MipsSwitch", VOID_VAL)
         
-        fprintf(mips, "# start switch %zu", SwitchIndex);
+        fprintf(mips, "\n\t# start switch %zu\n", SwitchIndex);
         SwitchNode = node;
     }
     else
