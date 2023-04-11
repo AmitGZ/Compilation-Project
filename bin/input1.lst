@@ -1,14 +1,17 @@
 Amit Zohar 313307720, Ofek Ben Atar 322208430
 1. program  ID(Min)  COMMENT
 2. start
-3. decl int : ID(b),ID(c),ID(e),ID(f);
-4.     string: ID(a), ID(y), ID(i);
+3. decl int : ID(b),ID(c), ID(i);
+4.     string: ID(a), ID(y);
 5. final real ID(amit) = NUM(3.4);
 6.     in(ID(b));
 7.     in(ID(c));
 8.     if (ID(b)  > ID(c)) 
 9.     then out(ID(c));
 10.     else     	
-11.     out(ID(c));
+11.     out(ID(b));
 12. 
-13. end
+13.     out(" ")
+14. 
+15.     switch
+Error    | Line: 15,	syntax error
