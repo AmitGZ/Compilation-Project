@@ -3,6 +3,11 @@
 #include <stdint.h>
 #include <string.h>
 
+/*
+* Amit Zohar    313307720
+* Ofek Ben Atar 322208430
+*/
+
 /**
  * @brief Ask the user for input
  * @param node write input value to node

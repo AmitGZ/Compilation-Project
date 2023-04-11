@@ -10,7 +10,7 @@ cpm: lex.yy.c cpm.tab.c cpm.tab.h
 	gcc -o ../bin/cpm cpm.tab.c lex.yy.c MipsWriter.c Hash.c
 
 clean:
-	rm ../bin/cpm cpm.tab.c lex.yy.c cpm.tab.h ../bin/*.s ../bin/*.lst
+	rm ../bin/cpm.exe cpm.tab.c lex.yy.c cpm.tab.h ../bin/*.s ../bin/*.lst
 
 compile:
 	../bin/cpm "../bin/$(file)"

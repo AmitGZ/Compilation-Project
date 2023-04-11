@@ -5,6 +5,11 @@
 
 #define TABLE_SIZE 500
 
+/*
+* Amit Zohar    313307720
+* Ofek Ben Atar 322208430
+*/
+
 typedef struct node 
 {
     const char*  _name;     /**< Variable's name */

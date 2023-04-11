@@ -1,6 +1,10 @@
 %option noyywrap
 %option yylineno
 %{
+/*
+* Amit Zohar    313307720
+* Ofek Ben Atar 322208430
+*/
 #include "MyStructs.h"
 #include "cpm.tab.h"
 #include <string.h>
@@ -49,7 +53,7 @@ DIGIT [0-9]
 SPACES [ \t\n\r]
 
 %%
-\/\*.*\*\/	{ fprintf(yyout, "COMMENT");  col += strlen(yytext);                            }
+\/\*.*\*\/	{ col += strlen(yytext);                            }
 [\n] 		{ fprintf(yyout, "\n%zu. ", ++line); col = 0U;                                  }
 "break" 	{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return BREAK;         }
 "case" 		{ fprintf(yyout, "%s", yytext);    col += strlen(yytext); return CASE;          }
@@ -91,14 +95,14 @@ SPACES [ \t\n\r]
 	}
 
 {LETTER}({LETTER}|{DIGIT}){0,8} {
-	fprintf(yyout, "ID(%s)", yytext);
+	fprintf(yyout, "%s", yytext);
 	col += strlen(yytext);
 	yylval._name = strdup(yytext);
 	return ID;
 	}
 
 {DIGIT}+ 	{
-	fprintf(yyout, " %s", yytext); 
+	fprintf(yyout, "%s", yytext); 
 	col += strlen(yytext);
 	yylval._val._sval = strdup(yytext);
 	yylval._val._type = INTEGER; 
@@ -106,7 +110,7 @@ SPACES [ \t\n\r]
 	}
 
 {DIGIT}+\.{DIGIT}* {
-	fprintf(yyout, "NUM(%s)", yytext);
+	fprintf(yyout, "%s", yytext);
 	col += strlen(yytext);
 	yylval._val._sval = strdup(yytext);
 	yylval._val._type = FLOATING; 
@@ -114,14 +118,14 @@ SPACES [ \t\n\r]
 	}
 
 (==|<>|<=|>=|<|>) {
-	fprintf(yyout, " %s", yytext);
+	fprintf(yyout, "%s", yytext);
 	col += strlen(yytext);
 	yylval._relOp = GetRelOp(strdup(yytext));
 	return RELOP;
 	}
 
 (\+|-) {
-	fprintf(yyout, " %s", yytext);
+	fprintf(yyout, "%s", yytext);
 	col += strlen(yytext);
 	yylval._mathOp = GetMathOp(strdup(yytext));
 	return ADDOP;

@@ -1,22 +1,8 @@
 %{
-// TODO
-// README
-// MipsCast finish all types
-// Check if we can fix switch lw every case
-// Create error file?
-// main in cpm.c or cpm.y?
-// Can i assign string to float?
-// .lst, how should we copy the program to lst? (with or without COMMENT)
-// Write about SW error in documentation
-
-// Tested/Done:
-// Add id 313307720
-// Const forbid assignment
-// String assignments
-// Logical operations (NOT)
-// Const declaration
-// File output format for lexer?
-
+/*
+* Amit Zohar    313307720
+* Ofek Ben Atar 322208430
+*/
 #include "Hash.h"
 #include "MipsWriter.h"
 #include <assert.h>

@@ -1,5 +1,10 @@
 #include "Hash.h"
 
+/*
+* Amit Zohar    313307720
+* Ofek Ben Atar 322208430
+*/
+
 int Hash(const char* key)
 {
     MY_ASSERT(key != NULL, "Invalid Hash key", 0)

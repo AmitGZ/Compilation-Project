@@ -1,5 +1,10 @@
 #include "MipsWriter.h"
 
+/*
+* Amit Zohar    313307720
+* Ofek Ben Atar 322208430
+*/
+
 extern size_t errorCount;        /**< Stores the total number of errors throughout the compilation process */
 extern FILE* mips;               /**< Reference to mips .s file */
 

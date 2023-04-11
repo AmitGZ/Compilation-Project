@@ -3,6 +3,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+/*
+* Amit Zohar    313307720
+* Ofek Ben Atar 322208430
+*/
+
 /* =========================== Macros =========================== */
 /* Buffer max input size */
 #define BUFFER_SIZE 256
