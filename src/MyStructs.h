@@ -13,7 +13,7 @@
  * @param desc Description to print in case of fail
  * @return retVal Value to return if assert fails
  */
-#define MY_ASSERT(exp, desc, retVal) if(!(exp)) { printf("SW Error | file: %s, line: %d, %s\n", __FILE__, __LINE__, (desc)); return retVal; }
+#define MY_ASSERT(exp, desc, retVal) if(!(exp)) { printf("\nSW Error | file: %s, line: %d, %s\n", __FILE__, __LINE__, (desc)); return retVal; }
 #define VOID_VAL 
 
 /* =========================== Enums & Structs =========================== */
@@ -45,6 +45,7 @@ static const Reg ZeroReg = { INTEGER, "$zero" }; /**< Zero register constant */
 /* =========================== yyerror =========================== */
 extern int yylineno;            /**< Parse error line index */
 extern size_t errorCount;       /**< Total error count */
+extern FILE* tmpError;          /**< Total error count */
 /**
  * @brief throws error
  * @param format Receives arguments in the format of printf
@@ -54,13 +55,17 @@ static void yyerror(const char* format, ...)
     // Incrementing error count
     errorCount++;
     
-    // Printing to stderr
-	fprintf(stderr, "Error    | Line: %d,\t", yylineno);
-    
-    va_list args;
-    va_start(args, format);
-    vfprintf(stderr, format, args);
-    va_end(args);
+    FILE* files[] = { stderr, tmpError };
 
-	fprintf(stderr, "\n");
+    for (size_t i = 0U; i < 2U; ++i)
+    {
+        fprintf(files[i], "\nError    | Line: %d,\t", yylineno);
+        
+        va_list args;
+        va_start(args, format);
+        vfprintf(files[i], format, args);
+        va_end(args);
+
+        fprintf(files[i], "\n");
+    }
 }

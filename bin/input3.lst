@@ -1,6 +1,0 @@
-Amit Zohar, Ofek Ben Atar
-1. program ID(Example) start
-2. decl	int:ID(x);	
-3. 		
-4. in(ID(x)) ;	
-5. if    ID(x)

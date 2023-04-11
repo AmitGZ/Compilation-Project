@@ -3,12 +3,12 @@ Amit Zohar 313307720, Ofek Ben Atar 322208430
 2. start
 3. decl int : ID(b),ID(c),ID(e),ID(f);
 4.     string: ID(a), ID(y), ID(i);
-5. final string ID(amit) = NUM(5.2);
+5. final real ID(amit) = NUM(3.4);
 6.     in(ID(b));
 7.     in(ID(c));
-8.     if (ID(gg)  > ID(c)) 
-9.     then out(ID(ggd));
+8.     if (ID(b)  > ID(c)) 
+9.     then out(ID(c));
 10.     else     	
 11.     out(ID(c));
 12. 
-13. endTotal Error Count: 3
+13. end

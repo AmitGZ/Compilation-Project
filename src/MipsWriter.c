@@ -52,7 +52,7 @@ void MipsIn(const Node* node)
                           "buffer%zu: .space %d # allocate buffer to read input\n"\
 	                      "\t.text\n", BufferIndex, BUFFER_SIZE);
         
-        fprintf(mips, "\n\t# input string    \n"\
+        fprintf(mips, "\n\t# input string  \n"\
                       "\tli $v0, 8         \n"\
                       "\tla $a0, buffer%zu \n"\
                       "\tli $a1, %d        \n"\
@@ -63,9 +63,9 @@ void MipsIn(const Node* node)
     else if (node->_type == INTEGER)
     {
         fprintf(mips, "\n\t# input int \n"\
-                      "\tli $v0, 5   \n"\
-                      "\tsyscall     \n"\
-                      "\tsw $v0, %s  \n", node->_name);
+                      "\tli $v0, 5     \n"\
+                      "\tsyscall       \n"\
+                      "\tsw $v0, %s    \n", node->_name);
     }
     else // FLOATING
     {

@@ -27,6 +27,7 @@ extern int yyparse();
 extern size_t errorCount;
 
 FILE* mips;
+FILE* tmpError;
 Type CurrentType;
 Bucket table[TABLE_SIZE];
 
@@ -354,8 +355,8 @@ factor          :   O_PARENTHESES expression C_PARENTHESES{ $$ = $2; }
 
 int main(int argc, char** argv) 
 {
-  // Writing student names
-  fprintf(stderr, "Ofek Ben Atar 322208430, Amit Zohar 313307720\n");
+  // Printing signature line to stderr
+  fprintf(stderr, "\nOfek Ben Atar 322208430, Amit Zohar 313307720\n");
 
   if (argc < 2)
   {
@@ -372,6 +373,14 @@ int main(int argc, char** argv)
   // Openning files
 	extern FILE* yyin;
 	extern FILE* yyout;
+
+  // Create a temporary file to store all errors
+  tmpError = tmpfile();
+  if (tmpError == NULL) 
+  {
+    fprintf(stderr, "Error creating temporary file for stderr\n");
+    return 1;
+  }
 
   // Openning .cpl file
   yyin = fopen(argv[1], "r");
@@ -399,15 +408,24 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  // Printing signature line
+  // Printing signature line to .s mips
   fprintf(mips, "# Compiled by Amit Zohar 313307720 & Ofek Ben Atar 322208430\n");
 
 	do
 	{
 		yyparse();
 	} while(!feof(yyin));
+
+  // Read contents of temporary file and append to .lst
+  rewind(tmpError);
+  char buf[BUFSIZ];
+  while (fgets(buf, BUFSIZ, tmpError) != NULL) 
+  {
+    fputs(buf, yyout);
+  }
   
   // Closing files
+  fclose(tmpError);
   fclose(mips);
   fclose(yyin);
   fclose(yyout);
