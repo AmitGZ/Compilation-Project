@@ -8,21 +8,29 @@ The CPL (Compiler Project Language) is a compiler that translates source code wr
 
 ## Installation
 
-### using makefile
+### Clone Project
+
+### Using Makefile
 
 ```bash
-$ cd src
-$ make all
-$ make compile file=<filename>.txt
+> git clone https://github.com/AmitGZ/Compilation-Project.git
+> cd Compilation-Project
 ```
 
-### manually
+```bash
+Compilation-Project > cd src
+src > make all
+src > make compile file=<filename>.cpl
+```
+
+### Manually
 
 ```bash
-$ flex cpm.l
-$ bison -t -d cpm.y
-$ gcc -o ../bin/cpm cpm.tab.c lex.yy.c MipsWriter.c Hash.c
-$ cd ../bin
-$ ./cpm “<filename>.cpl”
+Compilation-Project > cd src
+src > flex cpm.l
+src > bison -t -d cpm.y
+src > gcc -o ../bin/cpm cpm.tab.c lex.yy.c MipsWriter.c Hash.c
+src > cd ../bin
+bin > ./cpm “<filename>.cpl”
 ```
 
