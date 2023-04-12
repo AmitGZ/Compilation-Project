@@ -10,12 +10,12 @@ The CPL (Compiler Project Language) is a compiler that translates source code wr
 
 ### Clone Project
 
-### Using Makefile
-
 ```bash
 > git clone https://github.com/AmitGZ/Compilation-Project.git
 > cd Compilation-Project
 ```
+
+### Using Makefile
 
 ```bash
 Compilation-Project > cd src
