@@ -1,7 +1,8 @@
 .vscode
 *.DS_Store
-cpm.tab.c
-cpm.tab.h
+*.tab.c
+*.tab.h
+*.exe
+*.output
 cpm
-cpm.output
 lex.yy.c
