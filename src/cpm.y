@@ -42,8 +42,6 @@ Bucket table[TABLE_SIZE];
 %token ELSE
 %token END
 %token FLOAT
-%token FOREACH
-%token IF
 %token IN
 %token INT
 %token OUT
@@ -54,7 +52,6 @@ Bucket table[TABLE_SIZE];
 %token SWITCH
 %token THEN
 %token TILL
-%token WHILE
 %token WITH
 %token COMMA
 %token COLON
@@ -72,7 +69,9 @@ Bucket table[TABLE_SIZE];
 %token <_relOp> RELOP
 %token <_mathOp> ADDOP
 %token <_mathOp> MULOP
-%type <_index> IF
+%token  <_index> IF
+%token  <_index> WHILE
+%token  <_index> FOREACH
 %token ASSIGNOP
 %token OROP
 %token ANDOP
@@ -192,7 +191,7 @@ assignment_stmt :   ID ASSIGNOP expression SEMICOLON {
                 ;
 
 control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3), 0U, &($1)); } stmt ELSE { MipsIf(&($3), 1U, &($1)); } stmt { MipsIf(&($3), 2U, &($1)); }
-		            |   WHILE { MipsWhile(NULL, 0U); } O_PARENTHESES boolexpr C_PARENTHESES { MipsWhile(&($4), 1U); } stmt_block { MipsWhile(NULL, 2U); MipsWhile(NULL, 3U); }
+		            |   WHILE { MipsWhile(NULL, 0U, &($1)); } O_PARENTHESES boolexpr C_PARENTHESES { MipsWhile(&($4), 1U, &($1)); } stmt_block { MipsWhile(NULL, 2U, &($1)); MipsWhile(NULL, 3U, &($1)); }
                 |   FOREACH ID ASSIGNOP NUM TILL NUM{ 
                                                       // Loading startval and assigning to i
                                                       Reg startReg = MipsLoadImmediate(&($4));
@@ -201,15 +200,15 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                       {
                                                         MipsAssign(node, startReg);
                                                         // Declaring while and checking statement
-                                                        MipsWhile(NULL, 0U);
+                                                        MipsWhile(NULL, 0U, &($1));
                                                         Reg indexReg = MipsLoadVar(node);
                                                         Reg endReg = MipsLoadImmediate(&($6));
                                                         Reg resultReg = MipsRelOp(LT, indexReg, endReg);
-                                                        MipsWhile(&resultReg, 1U);
-                                                        MipsForEach(0U);
+                                                        MipsWhile(&resultReg, 1U, &($1));
+                                                        MipsForEach(0U, $1);
                                                       }
                                                       else { yyerror("ID not found \"%s\"", $2); }
-                                                    } WITH step { MipsForEach(1U); } stmt { MipsForEach(2U); MipsWhile(NULL, 3U); }
+                                                    } WITH step { MipsWhile(NULL, 2U, &($1)); MipsForEach(1U, $1); } stmt { MipsForEach(2U, $1); MipsWhile(NULL, 3U, &($1)); }
                 |   FOREACH ID ASSIGNOP NUM TILL ID{
                                                       // Loading startval and assigning to i
                                                       Reg startReg = MipsLoadImmediate(&($4));
@@ -218,20 +217,20 @@ control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3),
                                                       {
                                                         MipsAssign(node, startReg); 
                                                         // Declaring while and checking statement
-                                                        MipsWhile(NULL, 0U);
+                                                        MipsWhile(NULL, 0U, &($1));
                                                         Reg indexReg = MipsLoadVar(node);
                                                         Node* endNode = GetFromTable(table, $6);
                                                         if (endNode != NULL) 
                                                         { 
                                                           Reg endReg = MipsLoadVar(endNode);
                                                           Reg resultReg = MipsRelOp(LT, indexReg, endReg);
-                                                          MipsWhile(&resultReg, 1U);
-                                                          MipsForEach(0U);
+                                                          MipsWhile(&resultReg, 1U, &($1));
+                                                          MipsForEach(0U, $1);
                                                         }
-                                                        else { yyerror("ID not found \"%s\"", $4); }
+                                                        else { yyerror("ID not found \"%s\"", $6); }
                                                       }
                                                       else { yyerror("ID not found \"%s\"", $2); }
-                                                    } WITH step { MipsForEach(1U); } stmt { MipsForEach(2U); MipsWhile(NULL, 3U); }
+                                                    } WITH step { MipsWhile(NULL, 2U, &($1)); MipsForEach(1U, $1); } stmt { MipsForEach(2U, $1); MipsWhile(NULL, 3U, &($1)); }
                 |   _switch {  }
 
 stmt_block      :   O_BRACKET stmtlist C_BRACKET {}

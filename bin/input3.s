@@ -1,5 +1,8 @@
 # Compiled by Amit Zohar 313307720 & Ofek Ben Atar 322208430
 	.data
+y:	.word 0
+j:	.word 0
+i:	.word 0
 x:	.word 0
 	.text
 	.globl main
@@ -13,70 +16,99 @@ main:
 	syscall       
 	sw $v0, x    
 
-	lw $t0, x
+	# read input
+
+	# input int 
+	li $v0, 5     
+	syscall       
+	sw $v0, y    
 
 	# loading immediate int
-	li $t1, 2
+	li $t0, 0
 
-	# compare two ints
-	sge $t0, $t0, $t1
+	# assigning value
+	sw $t0, i
 
-	beq $t0, $zero, else1
+while_1:
+
+	lw $t1, i
 
 	lw $t2, x
 
+	# compare two ints
+	slt $t1, $t1, $t2
+
+	beq $t1, $zero, endwhile_1
+
+	j for_each_stmt_1
+
+for_each_increment_1:
+
 	# loading immediate int
-	li $t3, 5
+	li $t3, 1
+
+	lw $t4, i
+
+	# mathop two ints
+	add $t3, $t3, $t4
+
+	# assigning value
+	sw $t3, i
+
+	j while_1
+
+for_each_stmt_1:
+
+	# loading immediate int
+	li $t4, 0
+
+	# assigning value
+	sw $t4, j
+
+while_2:
+
+	lw $t5, j
+
+	lw $t6, y
 
 	# compare two ints
-	slt $t2, $t2, $t3
+	slt $t5, $t5, $t6
 
-	beq $t2, $zero, else2
+	beq $t5, $zero, endwhile_2
 
-	lw $t4, x
+	j for_each_stmt_2
 
-	# loading immediate int
-	li $t5, 7
-
-	# mathop two ints
-	add $t4, $t4, $t5
-
-	# printing 
-	li $v0, 1   
-	move $a0, $t4       
-	syscall      
-
-	j continue2
-
-else2:
-
-	lw $t5, x
-
-	# printing 
-	li $v0, 1   
-	move $a0, $t5       
-	syscall      
-
-continue2:
-
-	j continue1
-
-else1:
+for_each_increment_2:
 
 	# loading immediate int
-	li $t6, 100
+	li $t7, 1
 
-	lw $t7, x
+	lw $t8, j
 
 	# mathop two ints
-	sub $t6, $t6, $t7
+	add $t7, $t7, $t8
+
+	# assigning value
+	sw $t7, j
+
+	j while_2
+
+for_each_stmt_2:
+
+	lw $t8, j
 
 	# printing 
 	li $v0, 1   
-	move $a0, $t6       
+	move $a0, $t8       
 	syscall      
 
-continue1:
+	j for_each_increment_2
+
+endwhile_2:
+
+	j for_each_increment_1
+
+endwhile_1:
 
 	# exit the program
 	li $v0, 10

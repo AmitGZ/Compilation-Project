@@ -12,7 +12,6 @@ static size_t RegTrackerFloat    = 0U; /**< Floating register tracker, keeps tra
 static size_t RegTrackerInteger  = 0U; /**< Int register tracker, keeps track of the registers in use */
 static size_t IfIndex            = 0U; /**< If indexer      (used to avoid label duplicates) */
 static size_t WhileIndex         = 0U; /**< While indexer   (used to avoid label duplicates) */
-static size_t ForEachIndex       = 0U; /**< ForEach indexer (used to avoid label duplicates) */
 static size_t SwitchIndex        = 0U; /**< Switch indexer  (used to avoid label duplicates) */
 static size_t CaseIndex          = 0U; /**< Case indexer    (used to avoid label duplicates) */
 static size_t BufferIndex        = 0U; /**< Buffer indexer  (used to avoid label duplicates) */
@@ -379,48 +378,46 @@ void MipsIf(const Reg* reg, uint32_t part, uint32_t* ifIndex)
     }
 }
 
-void MipsForEach(uint32_t part)
+void MipsForEach(uint32_t part, uint32_t forEachIndex)
 {
     MY_ASSERT(part < 3U, "Invalid MipsForEach", VOID_VAL)
 
     if(part == 0U)
     {
-        fprintf(mips,"\n\tj for_each_stmt_%zu\n"\
-                     "\nfor_each_increment_%zu:\n", ForEachIndex, ForEachIndex);
+        fprintf(mips,"\n\tj for_each_stmt_%u\n"\
+                     "\nfor_each_increment_%u:\n", forEachIndex, forEachIndex);
     }
     else if(part == 1U)
     {
-        fprintf(mips,"\n\tj while_%zu\n"\
-                     "\nfor_each_stmt_%zu:\n", WhileIndex, ForEachIndex);
+        fprintf(mips, "\nfor_each_stmt_%u:\n", forEachIndex);
     }
     else
     {
-        fprintf(mips,"\n\tj for_each_increment_%zu\n", ForEachIndex);
-        ++ForEachIndex;
+        fprintf(mips,"\n\tj for_each_increment_%u\n", forEachIndex);
     }
 }
 
-void MipsWhile(const Reg* reg, uint32_t part)
+void MipsWhile(const Reg* reg, uint32_t part, uint32_t* whileIndex)
 {
-    MY_ASSERT(part < 4U, "Invalid MipsWhile", VOID_VAL)
+    MY_ASSERT((part < 4U) && (whileIndex != NULL), "Invalid MipsWhile", VOID_VAL)
 
     if (part == 0U)
     {
-        fprintf(mips,"\nwhile_%zu:\n", WhileIndex);
+        *whileIndex = ++WhileIndex;
+        fprintf(mips,"\nwhile_%u:\n", *whileIndex);
     }
     else if (part == 1U)
     {
         MY_ASSERT(reg != NULL, "Invalid MipsWhile", VOID_VAL)
-        fprintf(mips,"\n\tbeq %s, $zero, endwhile_%zu\n", reg->_name, WhileIndex);
+        fprintf(mips,"\n\tbeq %s, $zero, endwhile_%u\n", reg->_name, *whileIndex);
     }
     else if (part == 2U)
     {
-        fprintf(mips,"\n\tj while_%zu\n", WhileIndex);
+        fprintf(mips,"\n\tj while_%u\n", *whileIndex);
     }
     else
     {
-        fprintf(mips,"\nendwhile_%zu:\n", WhileIndex);
-        ++WhileIndex;
+        fprintf(mips,"\nendwhile_%u:\n", *whileIndex);
     }
 }
 

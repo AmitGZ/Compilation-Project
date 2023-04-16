@@ -1,10 +1,9 @@
 program Example start
-decl	int:x;	
+decl	int:x, i, j, y;	
 		
-in(x) ;	
-if    (x >= 2) 
-	then if    (x < 5) 
-		then out(x+7);
-	else     out(x);
-else     	out(100-x);
+in(x);
+in(y);
+foreach i=0 till x with i=i+1
+	foreach j=0 till y with j=j+1
+		out(j);  
 end

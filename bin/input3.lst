@@ -1,12 +1,10 @@
 Amit Zohar 313307720, Ofek Ben Atar 322208430
 1. program Example start
-2. decl	int:x;	
+2. decl	int:x, i, j, y;	
 3. 		
-4. in(x) ;	
-5. if    (x >= 2) 
-6. 	then if    (x < 5) 
-7. 		then out(x+7);
-8. 	else     out(x);
-9. else     	out(100-x);
-10. end
-11. 
+4. in(x);
+5. in(y);
+6. foreach i=0 till x with i=i+1
+7. 	foreach j=0 till y with j=j+1
+8. 		out(j);  
+9. end

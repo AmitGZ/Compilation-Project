@@ -125,8 +125,9 @@ void FreeAllRegs();
  *             2. condition check
  *             3. jump back to start
  *             4. end while label
+ * @param whileIndex 
  */
-void MipsWhile(const Reg* reg, uint32_t part);
+void MipsWhile(const Reg* reg, uint32_t part, uint32_t* whileIndex);
 
 /**
  * @brief Writes if statement to mips file
@@ -146,7 +147,7 @@ void MipsIf(const Reg* reg, uint32_t part, uint32_t* ifIndex);
  *             2. before the statement
  *             3. at the end of ForEach
  */
-void MipsForEach(uint32_t part);
+void MipsForEach(uint32_t part, uint32_t forEachIndex);
 
 /**
  * @brief Writes switch statement to mips file
