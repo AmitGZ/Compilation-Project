@@ -131,12 +131,13 @@ void MipsWhile(const Reg* reg, uint32_t part);
 /**
  * @brief Writes if statement to mips file
  * @param reg boolean register condition
+ * @param ifIndex 
  * @param part Three parts:
  *             1. Check condition, skip to else if false
  *             2. Jump to end if true, and else label 
  *             3. end label
  */
-void MipsIf(const Reg* reg, uint32_t part);
+void MipsIf(const Reg* reg, uint32_t part, uint32_t* ifIndex);
 
 /**
  * @brief Writes ForEach statement to mips file, MipsWhile is also used to save code

@@ -1,0 +1,12 @@
+Amit Zohar 313307720, Ofek Ben Atar 322208430
+1. program Example start
+2. decl	int:x;	
+3. 		
+4. in(x) ;	
+5. if    (x >= 2) 
+6. 	then if    (x < 5) 
+7. 		then out(x+7);
+8. 	else     out(x);
+9. else     	out(100-x);
+10. end
+11. 

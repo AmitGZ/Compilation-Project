@@ -27,6 +27,7 @@ Bucket table[TABLE_SIZE];
   const char* _name;    /**< Description */
   RelOp       _relOp;   /**< Description */
   MathOp      _mathOp;  /**< Description */
+  uint32_t    _index;   /**< Description */
 }
 
 /* tokens & type of gramer variables */
@@ -71,6 +72,7 @@ Bucket table[TABLE_SIZE];
 %token <_relOp> RELOP
 %token <_mathOp> ADDOP
 %token <_mathOp> MULOP
+%type <_index> IF
 %token ASSIGNOP
 %token OROP
 %token ANDOP
@@ -189,7 +191,7 @@ assignment_stmt :   ID ASSIGNOP expression SEMICOLON {
                                                       }
                 ;
 
-control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3), 0U); } stmt ELSE { MipsIf(&($3), 1U); } stmt { MipsIf(&($3), 2U); }
+control_stmt    :   IF O_PARENTHESES boolexpr C_PARENTHESES THEN { MipsIf(&($3), 0U, &($1)); } stmt ELSE { MipsIf(&($3), 1U, &($1)); } stmt { MipsIf(&($3), 2U, &($1)); }
 		            |   WHILE { MipsWhile(NULL, 0U); } O_PARENTHESES boolexpr C_PARENTHESES { MipsWhile(&($4), 1U); } stmt_block { MipsWhile(NULL, 2U); MipsWhile(NULL, 3U); }
                 |   FOREACH ID ASSIGNOP NUM TILL NUM{ 
                                                       // Loading startval and assigning to i

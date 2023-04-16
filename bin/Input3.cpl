@@ -2,7 +2,9 @@ program Example start
 decl	int:x;	
 		
 in(x) ;	
-if    x >= 0) 
-	then out(x);
-else     	out(0-x);
+if    (x >= 2) 
+	then if    (x < 5) 
+		then out(x+7);
+	else     out(x);
+else     	out(100-x);
 end

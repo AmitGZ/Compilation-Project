@@ -359,23 +359,23 @@ Reg MipsCast(Reg reg, Type t)
     return returnReg;
 }
 
-void MipsIf(const Reg* reg, uint32_t part)
+void MipsIf(const Reg* reg, uint32_t part, uint32_t* ifIndex)
 {
-    MY_ASSERT((part < 3U) && (reg != NULL), "Invalid MipsIf", VOID_VAL)
+    MY_ASSERT((part < 3U) && (reg != NULL) && (ifIndex != NULL), "Invalid MipsIf", VOID_VAL)
 
     if(part == 0U)
     {
-        fprintf(mips,"\n\tbeq %s, $zero, else%zu\n", reg->_name, IfIndex);
+        *ifIndex = ++IfIndex;
+        fprintf(mips,"\n\tbeq %s, $zero, else%u\n", reg->_name, *ifIndex);
     }
     else if(part == 1U)
     {
-        fprintf(mips,"\n\tj continue%zu\n", IfIndex);
-        fprintf(mips,"\nelse%zu:\n", IfIndex);
+        fprintf(mips,"\n\tj continue%u\n", *ifIndex);
+        fprintf(mips,"\nelse%u:\n", *ifIndex);
     }
     else
     {
-        fprintf(mips,"\ncontinue%zu:\n", IfIndex);
-        ++IfIndex;
+        fprintf(mips,"\ncontinue%u:\n", *ifIndex);
     }
 }
 
